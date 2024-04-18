@@ -3,6 +3,7 @@
 #include <cassert>
 #include "ImGuiManager.h"
 
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
@@ -38,27 +39,36 @@ void GameScene::Initialize() {
 	//音声再生
 	audio_->PlayWave(soundDateHandle_);
 	voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
+
+	
 }
 
-void GameScene::Update() { 
+void GameScene::Update() {
 
-	//現在のスプライトの座標を取得
-	/*Vector2 position = sprite_->GetPosition();*/
+	// 現在のスプライトの座標を取得
+	Vector2 position = sprite_->GetPosition();
 
-	//座標を{2,1}移動
-	/*position.x += 2.0f;
-	position.y += 1.0f;*/
+	// 座標を{2,1}移動
+	position.x += 2.0f;
+	position.y += 1.0f;
 
-	//移動した座標をスプライトに反映させる
-	/*sprite_->SetPosition(position);*/
+	// 移動した座標をスプライトに反映させる
+	sprite_->SetPosition(position);
 
-	//スペースキーを押した瞬間
+	// スペースキーを押した瞬間
 	if (input_->TriggerKey(DIK_SPACE)) {
-		//音声停止
-		audio_->StopWave(voiceHandle_);
+		if (audio_->IsPlaying(voiceHandle_)) // 音声が再生中であれば
+		{
+			audio_->StopWave(voiceHandle_); // 音声を停止する
+		} else                              // そうでなければ
+		{
+			// 音声再生する
+			voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
+		}
 	}
 
 	//デバッグテキストの表示
+	
 }
 
 void GameScene::Draw() {

@@ -71,4 +71,6 @@ private: // メンバ変数
 
 	//音声再生ハンドル
 	uint32_t voiceHandle_ = 0;
+
+
 };
