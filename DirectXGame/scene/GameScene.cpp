@@ -45,31 +45,39 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	// 現在のスプライトの座標を取得
-	//Vector2 position = sprite_->GetPosition();
+	Vector2 position = sprite_->GetPosition();
 
-	//// 座標を{2,1}移動
-	//position.x += 2.0f;
-	//position.y += 1.0f;
+	// 座標を{2,1}移動
+	position.x += 2.0f;
+	position.y += 1.0f;
 
-	//// 移動した座標をスプライトに反映させる
-	//sprite_->SetPosition(position);
+	// 移動した座標をスプライトに反映させる
+	sprite_->SetPosition(position);
 
-	// スペースキーを押した瞬間
-	//if (input_->TriggerKey(DIK_SPACE)) {
-	//	if (audio_->IsPlaying(voiceHandle_)) // 音声が再生中であれば
-	//	{
-	//		audio_->StopWave(voiceHandle_); // 音声を停止する
-	//	} else                              // そうでなければ
-	//	{
-	//		// 音声再生する
-	//		voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
-	//	}
-	//}
+	//スペースキーを押した瞬間
+	if (input_->TriggerKey(DIK_SPACE)) {
+		if (audio_->IsPlaying(voiceHandle_)) // 音声が再生中であれば
+		{
+			audio_->StopWave(voiceHandle_); // 音声を停止する
+		} else                              // そうでなければ
+		{
+			// 音声再生する
+			voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
+		}
+	}
 
-	//デバッグテキストの表示
 	ImGui::Begin("Begin");
-	ImGui::Text("Arima Naoto %d.%d.%d", 2024, 4, 18);
+	// デバッグテキストの表示
+	ImGui::Text("Kamata Tarou %d.%d.%d", 2024, 4, 18);
+
+	//float3入力ボックス
+	ImGui::InputFloat3("InputFloat3", inputFloat3);
+
+	//float3スライダー
+	ImGui::SliderFloat3("SliderFloat3", inputFloat3,0.0f,1.0f);
 	ImGui::End();
+
+	ImGui::ShowDemoWindow();
 }
 
 void GameScene::Draw() {
