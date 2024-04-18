@@ -44,7 +44,31 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
+	//スプライト
+	Sprite* sprite_ = nullptr;
+
+	//3Dモデル
+	Model* model_ = nullptr;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	
+	//スプライトテクスチャハンドル
+	uint32_t spriteTextureHandle_ = 0;
+
+	//モデルテクスチャハンドル
+	uint32_t modelTextureHandle_ = 0;
+
+	///ワールドトランスフォーム
+	WorldTransform worldTransform_;
+
+	//ビュープロジェクション
+	ViewProjection viewProjection_;
+
+	//サウンドデータハンドル
+	uint32_t soundDateHandle_ = 0;
+
+	//音声再生ハンドル
+	uint32_t voiceHandle_ = 0;
 };
