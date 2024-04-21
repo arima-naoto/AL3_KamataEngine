@@ -2,12 +2,13 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "ImGuiManager.h"
-
+#include "PrimitiveDrawer.h"
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
-	delete sprite_,model_; 
+	delete sprite_,model_,debugCamera_; 
 }
 
 void GameScene::Initialize() {
@@ -40,7 +41,14 @@ void GameScene::Initialize() {
 	audio_->PlayWave(soundDateHandle_);
 	voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
 
-	
+	//デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280, 720);
+
+	//軸方向表示の表示を有効にする
+	AxisIndicator::GetInstance()->SetVisible(true);
+
+	//軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 }
 
 void GameScene::Update() {
@@ -79,6 +87,8 @@ void GameScene::Update() {
 	ImGui::End();
 
 	ImGui::ShowDemoWindow();
+
+	debugCamera_->Update();
 }
 
 void GameScene::Draw() {
@@ -93,7 +103,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-	//sprite_->Draw();
+	sprite_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -108,10 +118,11 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	model_->Draw(worldTransform_, viewProjection_, modelTextureHandle_);
-
+	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), modelTextureHandle_);
+	
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
+
 #pragma endregion
 
 #pragma region 前景スプライト描画
