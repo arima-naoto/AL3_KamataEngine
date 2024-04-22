@@ -76,6 +76,7 @@ private: // メンバ変数
 	//音声再生ハンドル
 	uint32_t voiceHandle_ = 0;
 
+	// ImGuiで値を入力する変数
 	float inputFloat3[3] = {0,0,0};
 
 };
