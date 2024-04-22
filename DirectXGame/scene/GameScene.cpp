@@ -41,6 +41,9 @@ void GameScene::Initialize() {
 	audio_->PlayWave(soundDateHandle_);
 	voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
 
+	//アドレス渡しでライン描画が参照するビュープロジェクションを指定する
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
+
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
@@ -75,6 +78,8 @@ void GameScene::Update() {
 		}
 	}
 
+#ifdef _DEBUG
+
 	ImGui::Begin("Begin");
 	// デバッグテキストの表示
 	ImGui::Text("Kamata Tarou %d.%d.%d", 2024, 4, 18);
@@ -89,6 +94,8 @@ void GameScene::Update() {
 	ImGui::ShowDemoWindow();
 
 	debugCamera_->Update();
+
+#endif
 }
 
 void GameScene::Draw() {
@@ -122,6 +129,7 @@ void GameScene::Draw() {
 	
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
+	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 1.0f});
 
 #pragma endregion
 
