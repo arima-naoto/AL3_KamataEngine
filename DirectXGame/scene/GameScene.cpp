@@ -82,19 +82,19 @@ void GameScene::Update() {
 
 #ifdef _DEBUG
 
-	ImGui::Begin("Begin");
+	//ImGui::Begin("Begin");
 	// デバッグテキストの表示
-	ImGui::Text("Kamata Tarou %d.%d.%d", 2024, 4, 18);
+	//ImGui::Text("Kamata Tarou %d.%d.%d", 2024, 4, 18);
 
 	//float3入力ボックス
-	ImGui::InputFloat3("InputFloat3", inputFloat3);
+	//ImGui::InputFloat3("InputFloat3", inputFloat3);
 
 	//float3スライダー
-	ImGui::SliderFloat3("SliderFloat3", inputFloat3,0.0f,1.0f);
-	ImGui::End();
+	//ImGui::SliderFloat3("SliderFloat3", inputFloat3,0.0f,1.0f);
+	//ImGui::End();
 
 	//デモウィンドウの表示を有効化
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 
 	//デバッグカメラの更新
 	debugCamera_->Update();
@@ -133,10 +133,10 @@ void GameScene::Draw() {
 	//3Dモデルを描画する
 	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), modelTextureHandle_);
 	
-	float lineMeshWidth = 40;
-	float lineMeshHeight = 40;
-	float lineMeshSpanW = 2;
-	float lineMeshSpanH = 2;
+	float lineMeshWidth = 30;
+	float lineMeshHeight = 30;
+	float lineMeshSpanW = 1.5f;
+	float lineMeshSpanH = 1.5f;
 
 	for (float h = -lineMeshWidth / 2; h <= lineMeshWidth / 2; h += lineMeshSpanW) {
 		PrimitiveDrawer::GetInstance()->DrawLine3d({h, -lineMeshHeight/ 2, 0}, {h, lineMeshHeight / 2 , 0}, {1.0f, 0.0f, 0.0f, 1.0f});
