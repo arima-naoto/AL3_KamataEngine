@@ -91,8 +91,10 @@ void GameScene::Update() {
 	ImGui::SliderFloat3("SliderFloat3", inputFloat3,0.0f,1.0f);
 	ImGui::End();
 
+	//デモウィンドウの表示を有効化
 	ImGui::ShowDemoWindow();
 
+	//デバッグカメラの更新
 	debugCamera_->Update();
 
 #endif
@@ -125,12 +127,17 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
+	//3Dモデルを描画する
 	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), modelTextureHandle_);
 	
-	// 3Dオブジェクト描画後処理
-	Model::PostDraw();
+	//ラインの描画
 	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 1.0f});
 
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+
+	//ラインを描画する
 #pragma endregion
 
 #pragma region 前景スプライト描画
