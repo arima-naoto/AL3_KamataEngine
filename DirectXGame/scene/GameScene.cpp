@@ -131,6 +131,20 @@ void GameScene::Draw() {
 	//3Dモデルを描画する
 	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), modelTextureHandle_);
 	
+	float lineMeshWidth = 40;
+	float lineMeshHeight = 40;
+	float lineMeshSpanW = 2;
+	float lineMeshSpanH = 2;
+
+	for (float h = -lineMeshWidth / 2; h <= lineMeshWidth / 2; h += lineMeshSpanW) {
+		PrimitiveDrawer::GetInstance()->DrawLine3d({h, -lineMeshHeight/ 2, 0}, {h, lineMeshHeight / 2 , 0}, {1.0f, 0.0f, 0.0f, 1.0f});
+	}
+
+	for (float w = -lineMeshHeight / 2; w <= lineMeshHeight / 2; w += lineMeshSpanH) {
+		PrimitiveDrawer::GetInstance()->DrawLine3d({-lineMeshWidth / 2, w, 0}, {lineMeshWidth / 2, w, 0}, {0.0f, 0.0f, 1.0f, 1.0f});
+	}
+
+
 	//ラインの描画
 	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 1.0f});
 
