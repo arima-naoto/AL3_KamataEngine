@@ -41,17 +41,19 @@ void GameScene::Initialize() {
 	audio_->PlayWave(soundDateHandle_);
 	voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
 
-	//アドレス渡しでライン描画が参照するビュープロジェクションを指定する
-	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
-
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
+
+	// アドレス渡しでライン描画が参照するビュープロジェクションを指定する
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
 
 	//軸方向表示の表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
 
 	//軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
+
+	
 }
 
 void GameScene::Update() {
