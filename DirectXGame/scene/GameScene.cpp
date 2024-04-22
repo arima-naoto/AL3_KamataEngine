@@ -82,19 +82,19 @@ void GameScene::Update() {
 
 #ifdef _DEBUG
 
-	//ImGui::Begin("Begin");
+	ImGui::Begin("Begin");
 	// デバッグテキストの表示
-	//ImGui::Text("Kamata Tarou %d.%d.%d", 2024, 4, 18);
+	ImGui::Text("Kamata Tarou %d.%d.%d", 2024, 4, 18);
 
 	//float3入力ボックス
-	//ImGui::InputFloat3("InputFloat3", inputFloat3);
+	ImGui::InputFloat3("InputFloat3", inputFloat3);
 
 	//float3スライダー
-	//ImGui::SliderFloat3("SliderFloat3", inputFloat3,0.0f,1.0f);
-	//ImGui::End();
+	ImGui::SliderFloat3("SliderFloat3", inputFloat3,0.0f,1.0f);
+	ImGui::End();
 
 	//デモウィンドウの表示を有効化
-	//ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();
 
 	//デバッグカメラの更新
 	debugCamera_->Update();
