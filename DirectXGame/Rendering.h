@@ -68,6 +68,6 @@ public://メンバ関数の作成
 	/// <returns></returns>
 	static Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
-	
+#pragma endregion
 };
 
