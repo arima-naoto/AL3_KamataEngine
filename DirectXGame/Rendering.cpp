@@ -102,8 +102,8 @@ Matrix4x4 Rendering::MakeRotateZMatrix(float radian)
 /// <returns></returns>
 Matrix4x4 Rendering::MakeRotateMatrix(const Vector3& radian)
 {
-	//行列の積を使用して、X軸・Y軸・Z軸回転行列を結合する
-	return Multiply(MakeRotateXMatrix(radian.z), Multiply(MakeRotateYMatrix(radian.y), MakeRotateZMatrix(radian.x)));
+	//メンバ関数Multiplyを使用して、X軸・Y軸・Z軸回転行列を結合する
+	return Multiply(MakeRotateXMatrix(radian.z), Multiply(MakeRotateYMatrix(radian.x), MakeRotateZMatrix(radian.y)));
 }
 
 /// <summary>
@@ -130,7 +130,7 @@ Matrix4x4 Rendering::MakeTranslateMatrix(const Vector3& translate)
 /// <returns></returns>
 Matrix4x4 Rendering::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
 {
-	//行列の積を使用し、拡大縮小行列・回転行列・平行移動行列を結合する
+	//メンバ関数Mutiplyを使用し、拡大縮小行列・回転行列・平行移動行列を結合する
 	return Multiply(Multiply(MakeScaleMatrix(scale),MakeRotateMatrix(rotate)),MakeTranslateMatrix(translate));
 }
 
