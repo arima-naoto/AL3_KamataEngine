@@ -5,7 +5,7 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
-	delete modelBlock_; 
+	delete modelBlock_;
 
 	//ワールドトランスフォームの解放
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) 
