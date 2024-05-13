@@ -9,6 +9,7 @@
 #include "WorldTransform.h"
 #include "Player.h"
 #include <vector>
+#include "DebugCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -49,6 +50,9 @@ private: // メンバ変数
 	//3Dモデルデータ
 	Model* modelBlock_ = nullptr;
 
+	//デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr; 
+
 	//自キャラ
 	//Player* player_ = nullptr;
 
@@ -57,10 +61,13 @@ private: // メンバ変数
 	/// </summary>
 	
 	//テクスチャハンドル
-	uint32_t textureHandle_ = 0;
+	uint32_t blockTextureHandle_ = 0u;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+
+	//デバッグカメラを有効
+	bool isDebugCameraActive_ = false;
 };

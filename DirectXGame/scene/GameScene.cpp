@@ -1,7 +1,6 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
-#include "Rendering.h"
 
 GameScene::GameScene() {}
 
@@ -18,6 +17,9 @@ GameScene::~GameScene() {
 	}
 
 	worldTransformBlocks_.clear();
+
+	//デバッグカメラの解放
+	delete debugCamera_;
 }
 
 void GameScene::Initialize() {
@@ -28,10 +30,11 @@ void GameScene::Initialize() {
 
 	//3Dモデルデータの生成
 	modelBlock_ = Model::Create();
+	blockTextureHandle_ = TextureManager::Load("cube/cube.jpg"); 
 
 	//textureHandle_ = TextureManager::Load("uvChecker.png");
 
-	//ビュープロジェクションの初期化
+	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
 	//自キャラの生成
@@ -40,27 +43,29 @@ void GameScene::Initialize() {
 	//自キャラの初期化
 	//player_->Initialize(model_,textureHandle_,&viewProjection_);
 
+	//デバッグカメラの生成
+	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
+
 #pragma region ワールドトランスフォームの初期化
 
 	//要素数
 	const uint32_t kNumBlockVirtical = 10;
 	const uint32_t kNumBlockHorizontal = 20;
+
 	//ブロック1個分の横幅
 	const float kBlockWidth = 2.0f;
 	const float kBlockHeight = 2.0f;
 	//要素数を変更する
 	//列数を設定(縦方向のブロック数)
 	worldTransformBlocks_.resize(kNumBlockVirtical);
-	for (uint32_t i = 0; i < kNumBlockVirtical; i++) 
-	{
+	
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
 		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 	}
-
 	//キューブの生成
-	for (uint32_t i = 0; i < kNumBlockVirtical; i++) 
-	{
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
-
+			if ((i + j) % 2 != 0) {continue;}
 			worldTransformBlocks_[i][j] = new WorldTransform();
 			worldTransformBlocks_[i][j]->Initialize();
 			worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
@@ -78,36 +83,51 @@ void GameScene::Update() {
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-		
-				// 拡大縮小行列の作成
-				Rendering::MakeScaleMatrix(worldTransformBlock->scale_);
-
-				// X軸回転行列の作成
-				Rendering::MakeRotateXMatrix(worldTransformBlock->rotation_.x);
-
-				// Y軸回転行列の作成
-				Rendering::MakeRotateYMatrix(worldTransformBlock->rotation_.y);
-
-				// Z軸回転行列の作成
-				Rendering::MakeRotateZMatrix(worldTransformBlock->rotation_.z);
-
-				// 回転行列の作成
-				Rendering::MakeRotateMatrix(worldTransformBlock->rotation_);
-
-				// 平行移動行列の作成
-				Rendering::MakeTranslateMatrix(worldTransformBlock->translation_);
-
-				// アフィン変換行列の作成
-				worldTransformBlock->matWorld_ = Rendering::MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
-				// 定数バッファに転送する
-				worldTransformBlock->TransferMatrix();
-
-			
+			if (!worldTransformBlock) { continue; }
+			worldTransformBlock->UpdateMatrix();
 		}
 	}
-
 #pragma endregion
+
+#pragma region デバッグカメラの更新処理
+
+// デバッグビルドの時だけに呼び出す
+#ifdef _DEBUG 
+	//SPACEキーが押されている間
+	if (input_->TriggerKey(DIK_SPACE)) 
+	{
+		//デバッグカメラ有効のフラグが立てられている場合
+		if (isDebugCameraActive_ == true) {
+			//デバッグカメラ有効のフラグをおる
+			isDebugCameraActive_ = false;
+		} else {//そうでなければ
+			
+			//カメラ有効のフラグを立てる
+			isDebugCameraActive_ = true;
+		}
+	}
+#endif
+
+	//デバッグカメラ有効のフラグが立っている時に
+	if (isDebugCameraActive_ == true) 
+	{
+		//デバッグカメラの更新処理を行う
+		debugCamera_->Update();
+
+		//デバッグカメラからビュー行列とプロジェクション行列をコピーする
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+
+		//ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+	} else {
+
+		//ビュープロジェクション行列の更新と行列
+		viewProjection_.UpdateMatrix();
+	}
+
+#pragma endregion 
+
 }
 
 void GameScene::Draw() {
@@ -141,7 +161,8 @@ void GameScene::Draw() {
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+			if (!worldTransformBlock) {continue;}
+			modelBlock_->Draw(*worldTransformBlock, debugCamera_->GetViewProjection(), blockTextureHandle_);
 		}
 	}
 
