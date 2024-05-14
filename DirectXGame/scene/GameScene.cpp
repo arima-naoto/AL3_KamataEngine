@@ -5,7 +5,14 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
+	//スカイドームの解放
+	delete skyDome_;
+
+	//ブロックの解放
 	delete modelBlock_;
+
+	//スカイドームの解放
+	delete modelSkyDome_;
 
 	//ワールドトランスフォームの解放
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) 
@@ -37,14 +44,19 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
-	//自キャラの生成
-	//player_ = new Player();
+	//スカイドームモデルの生成
+	modelSkyDome_ = Model::CreateFromOBJ("SkyDome", true);
 
-	//自キャラの初期化
-	//player_->Initialize(model_,textureHandle_,&viewProjection_);
+	//スカイドームの生成
+	skyDome_ = new SkyDome();
+
+	//スカイドームの初期化
+	skyDome_->Initialize(modelSkyDome_, &viewProjection_);
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
+
+
 
 #pragma region ワールドトランスフォームの初期化
 
@@ -77,7 +89,7 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() { 
-	//player_->Update(); 
+	skyDome_->Update(); 
 
 #pragma region ワールドトランスフォームの更新処理
 
@@ -127,7 +139,6 @@ void GameScene::Update() {
 	}
 
 #pragma endregion 
-
 }
 
 void GameScene::Draw() {
@@ -156,7 +167,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	//player_->Draw();
+	skyDome_->Draw();
 
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {

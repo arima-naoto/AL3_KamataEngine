@@ -10,6 +10,7 @@
 #include "Player.h"
 #include <vector>
 #include "DebugCamera.h"
+#include "SkyDome.h"
 
 /// <summary>
 /// ゲームシーン
@@ -47,14 +48,18 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
-	//3Dモデルデータ
+	//3Dモデルデータ(ブロック)
 	Model* modelBlock_ = nullptr;
+
+	//3Dモデルデータ(スカイドーム)
+	Model* modelSkyDome_ = nullptr;
 
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr; 
 
-	//自キャラ
-	//Player* player_ = nullptr;
+	//スカイドーム
+	SkyDome* skyDome_ = nullptr;
+
 
 	/// <summary>
 	/// ゲームシーン用
