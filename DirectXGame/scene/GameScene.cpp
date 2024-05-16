@@ -42,7 +42,9 @@ void GameScene::Initialize() {
 	//textureHandle_ = TextureManager::Load("uvChecker.png");
 
 	// ビュープロジェクションの初期化
+
 	viewProjection_.Initialize();
+	
 
 	//スカイドームモデルの生成
 	modelSkyDome_ = Model::CreateFromOBJ("SkyDome", true);
@@ -55,6 +57,7 @@ void GameScene::Initialize() {
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
+	debugCamera_->SetFarZ(5000);
 
 
 
