@@ -11,6 +11,7 @@
 #include <vector>
 #include "DebugCamera.h"
 #include "SkyDome.h"
+#include "MapChipField.h"
 
 /// <summary>
 /// ゲームシーン
@@ -27,6 +28,8 @@ public: // メンバ関数
 	/// デストラクタ
 	/// </summary>
 	~GameScene();
+
+	void GenerateBlocks();
 
 	/// <summary>
 	/// 初期化
@@ -60,6 +63,8 @@ private: // メンバ変数
 	//スカイドーム
 	SkyDome* skyDome_ = nullptr;
 
+	//マップチップ
+	MapChipField* mapChipField_;
 
 	/// <summary>
 	/// ゲームシーン用

@@ -27,6 +27,17 @@ GameScene::~GameScene() {
 
 	//デバッグカメラの解放
 	delete debugCamera_;
+
+	delete mapChipField_;
+}
+
+void GameScene::GenerateBlocks() { 
+	uint32_t numBlockVirtical = mapChipField_->GetNumBlockVirtical();
+	uint32_t numBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
+
+	worldTransformBlocks_.resize(numBlockHorizontal);
+	for (uint32_t i = 0; i < numBlockHorizontal; ++i) {
+	}
 }
 
 void GameScene::Initialize() {
@@ -54,6 +65,10 @@ void GameScene::Initialize() {
 
 	//スカイドームの初期化
 	skyDome_->Initialize(modelSkyDome_, &viewProjection_);
+
+	//マップチップフィールドの生成
+	mapChipField_ = new MapChipField();
+	mapChipField_->LoadMapChipCsv("Resources/Blocks.csv");
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
