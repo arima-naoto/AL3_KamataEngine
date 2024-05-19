@@ -8,7 +8,6 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Player.h"
-#include <vector>
 #include "DebugCamera.h"
 #include "SkyDome.h"
 #include "MapChipField.h"
