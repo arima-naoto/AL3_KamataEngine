@@ -57,7 +57,11 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	//3Dモデルデータの生成
-	modelBlock_ = Model::Create();
+	modelBlock_ = Model::CreateFromOBJ("block",true);
+
+	block_ = new Block();
+	block_->Initialize(modelBlock_, &viewProjection_);
+
 	blockTextureHandle_ = TextureManager::Load("cube/cube.jpg"); 
 
 	//textureHandle_ = TextureManager::Load("uvChecker.png");
@@ -84,7 +88,7 @@ void GameScene::Initialize() {
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 	debugCamera_->SetFarZ(1500);
 
-	GenerateBlocks();
+	GameScene::GenerateBlocks();
 
 
 #pragma endregion
@@ -175,7 +179,7 @@ void GameScene::Draw() {
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {continue;}
-			modelBlock_->Draw(*worldTransformBlock, debugCamera_->GetViewProjection(), blockTextureHandle_);
+			block_->Draw(*worldTransformBlock,debugCamera_->GetViewProjection());
 		}
 	}
 

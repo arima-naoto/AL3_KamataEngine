@@ -11,6 +11,7 @@
 #include "DebugCamera.h"
 #include "SkyDome.h"
 #include "MapChipField.h"
+#include "Block.h"
 
 /// <summary>
 /// ゲームシーン
@@ -52,6 +53,8 @@ private: // メンバ変数
 
 	//3Dモデルデータ(ブロック)
 	Model* modelBlock_ = nullptr;
+
+	Block* block_ = nullptr;
 
 	//3Dモデルデータ(スカイドーム)
 	Model* modelSkyDome_ = nullptr;
