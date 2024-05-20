@@ -16,7 +16,7 @@ public://メンバ関数
 	/// <param name="model">モデル</param>
 	/// <param name="textureHandle">テクスチャハンドル</param>
 	/// <param name="viewProjection">ビュープロジェクション</param>
-	void Initialize(Model* model, uint32_t textureHandle, ViewProjection* viewProjection);
+	void Initialize(Model* model, ViewProjection* viewProjection);
 
 	/// <summary>
 	/// 更新
@@ -26,7 +26,7 @@ public://メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw(const ViewProjection& viewProjection);
 
 private://メンバ変数
 
@@ -35,9 +35,6 @@ private://メンバ変数
 
 	//モデル
 	Model* model_ = nullptr;
-
-	//テクスチャハンドル
-	uint32_t textureHandle_ = 0u;
 
 	//ビュープロジェクション
 	ViewProjection *viewProjection_ = nullptr;

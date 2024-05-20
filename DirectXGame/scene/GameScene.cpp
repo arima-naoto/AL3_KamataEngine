@@ -5,14 +5,18 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
-	//スカイドームの解放
-	delete skyDome_;
+	
+	//プレイヤーの解放
+	//delete modelPlayer_;
+	//delete player_;
 
 	//ブロックの解放
 	delete modelBlock_;
+	delete block_;
 
-	//スカイドームの解放
+	// スカイドームの解放
 	delete modelSkyDome_;
+	delete skyDome_;
 
 	//ワールドトランスフォームの解放
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) 
@@ -28,6 +32,7 @@ GameScene::~GameScene() {
 	//デバッグカメラの解放
 	delete debugCamera_;
 
+	//マップチップフィールドの解放
 	delete mapChipField_;
 }
 
@@ -56,28 +61,27 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	//modelPlayer_ = Model::CreateFromOBJ("player", true);
+	//player_ = new Player();
+	//player_->Initialize(modelPlayer_, &viewProjection_);
+
 	//3Dモデルデータの生成
 	modelBlock_ = Model::CreateFromOBJ("block",true);
 
 	block_ = new Block();
 	block_->Initialize(modelBlock_, &viewProjection_);
 
-	blockTextureHandle_ = TextureManager::Load("cube/cube.jpg"); 
+	//blockTextureHandle_ = TextureManager::Load("cube/cube.jpg"); 
 
 	//textureHandle_ = TextureManager::Load("uvChecker.png");
 
 	// ビュープロジェクションの初期化
-
 	viewProjection_.Initialize();
-	
 
 	//スカイドームモデルの生成
 	modelSkyDome_ = Model::CreateFromOBJ("SkyDome", true);
-
 	//スカイドームの生成
 	skyDome_ = new SkyDome();
-
-	//スカイドームの初期化
 	skyDome_->Initialize(modelSkyDome_, &viewProjection_);
 
 	//マップチップフィールドの生成
@@ -96,6 +100,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() { 
 	skyDome_->Update(); 
+	//player_->Update();
 
 #pragma region ワールドトランスフォームの更新処理
 
@@ -173,7 +178,12 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
+	//スカイドームの描画
 	skyDome_->Draw();
+	
+	//プレイヤーの描画
+	//player_->Draw(debugCamera_->GetViewProjection());
 
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {

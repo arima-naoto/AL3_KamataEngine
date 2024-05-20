@@ -51,19 +51,20 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
+	//3Dモデルデータ(プレイヤー)
+	//Model* modelPlayer_ = nullptr;
+	//Player* player_ = nullptr;
+
 	//3Dモデルデータ(ブロック)
 	Model* modelBlock_ = nullptr;
-
 	Block* block_ = nullptr;
 
 	//3Dモデルデータ(スカイドーム)
 	Model* modelSkyDome_ = nullptr;
+	SkyDome* skyDome_ = nullptr;
 
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr; 
-
-	//スカイドーム
-	SkyDome* skyDome_ = nullptr;
 
 	//マップチップ
 	MapChipField* mapChipField_;
