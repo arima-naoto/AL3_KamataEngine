@@ -52,8 +52,8 @@ private: // メンバ変数
 	Audio* audio_ = nullptr;
 
 	//3Dモデルデータ(プレイヤー)
-	//Model* modelPlayer_ = nullptr;
-	//Player* player_ = nullptr;
+	Model* modelPlayer_ = nullptr;
+	Player* player_ = nullptr;
 
 	//3Dモデルデータ(ブロック)
 	Model* modelBlock_ = nullptr;

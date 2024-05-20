@@ -5,10 +5,6 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
-	
-	//プレイヤーの解放
-	//delete modelPlayer_;
-	//delete player_;
 
 	//ブロックの解放
 	delete modelBlock_;
@@ -61,10 +57,6 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	//modelPlayer_ = Model::CreateFromOBJ("player", true);
-	//player_ = new Player();
-	//player_->Initialize(modelPlayer_, &viewProjection_);
-
 	//3Dモデルデータの生成
 	modelBlock_ = Model::CreateFromOBJ("block",true);
 
@@ -100,7 +92,6 @@ void GameScene::Initialize() {
 
 void GameScene::Update() { 
 	skyDome_->Update(); 
-	//player_->Update();
 
 #pragma region ワールドトランスフォームの更新処理
 
@@ -183,7 +174,6 @@ void GameScene::Draw() {
 	skyDome_->Draw();
 	
 	//プレイヤーの描画
-	//player_->Draw(debugCamera_->GetViewProjection());
 
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
