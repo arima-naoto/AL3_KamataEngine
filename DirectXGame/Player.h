@@ -52,6 +52,12 @@ public://メンバ関数
 	void LeftDirection();
 
 	/// <summary>
+	/// 角度補間
+	/// </summary>
+	/// <param name="RotationY">角度Y</param>
+	void RotateInterpolation(float rotationY);
+
+	/// <summary>
 	/// 旋回制御メンバ関数
 	/// </summary>
 	void TurningControl();
@@ -107,12 +113,12 @@ private://メンバ変数
 	bool onGround_ = true;
 
 	// 重力加速度(下方向)
-	static inline const float kGravityAcceleration = 0.5f;
+	static inline const float kGravityAcceleration = 0.03f;
 
 	// 最大落下速度(下方向)
-	static inline const float kLimitFallSpeed = 0.3f;
+	static inline const float kLimitFallSpeed = 1.0f;
 
 	// ジャンプ初速(上方向)
-	static inline const float kJumpAcceleration = 2.5f ;
+	static inline const float kJumpAcceleration = 0.65f ;
 
 };

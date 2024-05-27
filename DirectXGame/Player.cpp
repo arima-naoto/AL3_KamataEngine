@@ -89,6 +89,22 @@ void Player::LeftDirection()
 }
 
 /// <summary>
+/// 角度補間
+/// </summary>
+/// <param name="rotationY">角度Y</param>
+/// <returns></returns>
+void Player::RotateInterpolation(float rotationY) {
+
+	float Turning = 1 + turnTimer_ / kTimeTurn;
+
+	// 角度補間した変数にイージングをかける
+	float easing = Player::EaseInOutSine(Turning);
+
+	// 角度補間をする
+	worldTransform_.rotation_.y = lerp(turnFirstRotationY_, rotationY, easing);
+}
+
+/// <summary>
 /// 旋回制御
 /// </summary>
 void Player::TurningControl() 
@@ -105,15 +121,8 @@ void Player::TurningControl()
 
 		// 状態に応じた角度を取得する
 		float destinationRotationY = destinationRotationYTabel[static_cast<uint32_t>(lrDirection_)];
-		
-		//角度補間をする
-		float Turning = 1 + turnTimer_ / kTimeTurn;
 
-		//角度補間した変数にイージングをかける
-		float easing = Player::EaseInOutSine(Turning);
-		
-		//自キャラの角度を設定する
-		worldTransform_.rotation_.y = lerp(turnFirstRotationY_, destinationRotationY, easing);
+		Player::RotateInterpolation(destinationRotationY);
 	}
 }
 

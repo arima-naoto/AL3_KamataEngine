@@ -20,6 +20,11 @@ struct Vector3 final {
 		return *this; 
 	}
 
+	/// <summary>
+	/// 複合減算演算子の作成
+	/// </summary>
+	/// <param name="num"></param>
+	/// <returns></returns>
 	Vector3& operator-=(const Vector3& num) {
 		x = this->x - num.x;
 		y = this->y - num.y;
