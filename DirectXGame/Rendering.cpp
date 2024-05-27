@@ -103,7 +103,7 @@ Matrix4x4 Rendering::MakeRotateZMatrix(float radian)
 Matrix4x4 Rendering::MakeRotateMatrix(const Vector3& radian)
 {
 	//メンバ関数Multiplyを使用して、X軸・Y軸・Z軸回転行列を結合する
-	return Multiply(MakeRotateXMatrix(radian.z), Multiply(MakeRotateYMatrix(radian.x), MakeRotateZMatrix(radian.y)));
+	return Multiply(MakeRotateZMatrix(radian.z), Multiply(MakeRotateXMatrix(radian.x), MakeRotateYMatrix(radian.y)));
 }
 
 /// <summary>

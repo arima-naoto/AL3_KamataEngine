@@ -1,10 +1,14 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include <AxisIndicator.h>
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
+
+	delete modelPlayer_;
+	delete player_;
 
 	//ブロックの解放
 	delete modelBlock_;
@@ -57,6 +61,12 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	
+	player_ = new Player();
+	player_->Initialize(modelPlayer_, &viewProjection_,playerPosition);
+
 	//3Dモデルデータの生成
 	modelBlock_ = Model::CreateFromOBJ("block",true);
 
@@ -82,8 +92,9 @@ void GameScene::Initialize() {
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
-	debugCamera_->SetFarZ(1500);
+	debugCamera_->SetFarZ(5000);
 
+	//ブロックの生成
 	GameScene::GenerateBlocks();
 
 
@@ -92,7 +103,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() { 
 	skyDome_->Update(); 
-
+	player_->Update();
 #pragma region ワールドトランスフォームの更新処理
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -174,6 +185,7 @@ void GameScene::Draw() {
 	skyDome_->Draw();
 	
 	//プレイヤーの描画
+	player_->Draw();
 
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
