@@ -61,6 +61,9 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	// ビュープロジェクションの初期化
+	viewProjection_.Initialize();
+
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	
@@ -73,13 +76,6 @@ void GameScene::Initialize() {
 	block_ = new Block();
 	block_->Initialize(modelBlock_, &viewProjection_);
 
-	//blockTextureHandle_ = TextureManager::Load("cube/cube.jpg"); 
-
-	//textureHandle_ = TextureManager::Load("uvChecker.png");
-
-	// ビュープロジェクションの初期化
-	viewProjection_.Initialize();
-
 	//スカイドームモデルの生成
 	modelSkyDome_ = Model::CreateFromOBJ("SkyDome", true);
 	//スカイドームの生成
@@ -88,7 +84,19 @@ void GameScene::Initialize() {
 
 	//マップチップフィールドの生成
 	mapChipField_ = new MapChipField();
+	//csvファイル読み込み
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+
+	// カメラコントローラのインスタンス作成
+	cameraController_ = new CameraController();
+	// 初期化処理
+	cameraController_->Initialize();
+	// 追従対象をセット
+	cameraController_->SetTarget(player_);
+	// リセット(瞬間合わせ)
+	cameraController_->Reset();
+
+	cameraController_->SetMovableArea({20, 175, 0, 50});
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
@@ -101,9 +109,14 @@ void GameScene::Initialize() {
 #pragma endregion
 }
 
-void GameScene::Update() { 
+void GameScene::Update()
+{
+	//スカイドームの更新処理
 	skyDome_->Update(); 
+	
+	//プレイヤーの更新処理
 	player_->Update();
+
 #pragma region ワールドトランスフォームの更新処理
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -119,16 +132,16 @@ void GameScene::Update() {
 // デバッグビルドの時だけに呼び出す
 #ifdef _DEBUG 
 	//SPACEキーが押されている間
-	if (input_->TriggerKey(DIK_SPACE)) 
-	{
-		//デバッグカメラ有効のフラグが立てられている場合
-		if (isDebugCameraActive_ == true) {
-			//デバッグカメラ有効のフラグをおる
-			isDebugCameraActive_ = false;
-		} else {//そうでなければ
-			
-			//カメラ有効のフラグを立てる
+	if (input_->TriggerKey(DIK_SPACE)) {
+		//デバッグカメラ有効のフラグがおられている時
+		if (isDebugCameraActive_ == false) {
+			//フラグを立てる
 			isDebugCameraActive_ = true;
+		}
+		//デバッグカメラ有効のフラグが立てられている場合
+		else if (isDebugCameraActive_ == true) {
+			//フラグを折る
+			isDebugCameraActive_ = false;
 		}
 	}
 #endif
@@ -138,17 +151,24 @@ void GameScene::Update() {
 	{
 		//デバッグカメラの更新処理を行う
 		debugCamera_->Update();
-
 		//デバッグカメラからビュー行列とプロジェクション行列をコピーする
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 
 		//ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
+
 	} else {
 
-		//ビュープロジェクション行列の更新と行列
-		viewProjection_.UpdateMatrix();
+		// カメラコントローラの更新処理
+		cameraController_->Update();
+
+		// カメラコントローラからビュー行列とプロジェクション行列をコピーする
+		viewProjection_.matView = cameraController_->GetViewProjection().matView;
+		viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
+		
+		//ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
 	}
 
 #pragma endregion 
@@ -185,13 +205,13 @@ void GameScene::Draw() {
 	skyDome_->Draw();
 	
 	//プレイヤーの描画
-	player_->Draw();
+	player_->Draw(viewProjection_);
 
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {continue;}
-			block_->Draw(*worldTransformBlock,debugCamera_->GetViewProjection());
+			block_->Draw(*worldTransformBlock, viewProjection_);
 		}
 	}
 

@@ -33,7 +33,7 @@ void Player::Initialize(Model* model,ViewProjection * viewProjection,const Vecto
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
-	worldTransform_.rotation_.y = std::numbers::pi_v<float>/ 2.0f;
+	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 
 	//引数の内容をメンバ変数に記録
 	viewProjection_ = viewProjection;
@@ -96,7 +96,6 @@ void Player::LeftDirection()
 void Player::RotateInterpolation(float rotationY) {
 
 	float Turning = 1 + turnTimer_ / kTimeTurn;
-
 	// 角度補間した変数にイージングをかける
 	float easing = Player::EaseInOutSine(Turning);
 
@@ -186,19 +185,23 @@ void Player::Update()
 			{
 				//右の減速
 				Player::IsRightDecelerate();
+
+				// 右の振り向き
+				Player::RightDirection();
+
 				// 右加速を加算する
 				acceleration.x += kAcceleration;
-				//右の振り向き
-				Player::RightDirection();
 
 			} else if (isLeftBottom) {
 
 				//左の減速
 				Player::IsLeftDecelerate();
+
+				// 左の振り向き
+				Player::LeftDirection();
+
 				// 左加速を減算する
 				acceleration.x -= kAcceleration;
-				//左の振り向き
-				Player::LeftDirection();
 			}
 			// 加速/減速
 			velocity_ += acceleration;
@@ -237,8 +240,8 @@ void Player::Update()
 /// <summary>
 /// 描画処理
 /// </summary>
-void Player::Draw() 
+void Player::Draw(const ViewProjection &viewProjection) 
 { 
 	//3Dモデルを描画
-	model_->Draw(worldTransform_,*viewProjection_); 
+	model_->Draw(worldTransform_,viewProjection); 
 }

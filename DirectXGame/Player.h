@@ -75,7 +75,11 @@ public://メンバ関数
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw();
+	void Draw(const ViewProjection &viewProjection);
+
+	const WorldTransform& GetWorldTransform() { return worldTransform_; };
+
+	const Vector3& GetVelocity() const { return velocity_; }
 
 private://メンバ変数
 
@@ -119,6 +123,6 @@ private://メンバ変数
 	static inline const float kLimitFallSpeed = 1.0f;
 
 	// ジャンプ初速(上方向)
-	static inline const float kJumpAcceleration = 0.65f ;
+	static inline const float kJumpAcceleration = 0.65f;
 
 };

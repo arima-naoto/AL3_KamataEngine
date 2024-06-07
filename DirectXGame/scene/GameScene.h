@@ -12,6 +12,7 @@
 #include "SkyDome.h"
 #include "MapChipField.h"
 #include "Block.h"
+#include "CameraController.h"
 
 /// <summary>
 /// ゲームシーン
@@ -29,6 +30,9 @@ public: // メンバ関数
 	/// </summary>
 	~GameScene();
 
+	/// <summary>
+	/// ブロックの生成
+	/// </summary>
 	void GenerateBlocks();
 
 	/// <summary>
@@ -68,6 +72,8 @@ private: // メンバ変数
 
 	//マップチップ
 	MapChipField* mapChipField_;
+
+	CameraController* cameraController_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
