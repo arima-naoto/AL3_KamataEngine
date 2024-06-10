@@ -5,7 +5,11 @@
 #include <algorithm>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <MapChipField.h>
+#include "DebugText.h"
 using namespace std;
+
+#pragma region 移動用メンバ関数の定義
 
 /// <summary>
 /// インアウトサイン
@@ -164,11 +168,118 @@ void Player::JumpControl()
 	}
 }
 
+#pragma endregion
+
+#pragma region 衝突判定用メンバ関数の定義
+
+/// <summary>
+/// 指定した角の座標計算
+/// </summary>
+/// <param name="center"></param>
+/// <param name="corner"></param>
+/// <returns></returns>
+Vector3 Player::CornerPosition(const Vector3& center, Corner corner) 
+{ 
+	Vector3 offsetTable[kNumCorner] = {
+	    {+kwidth / 2.0f, -kheight / 2.0f, 0}, //  kRightBottom
+	    {-kwidth / 2.0f, -kheight / 2.0f, 0}, //  kLeftbottom
+	    {+kwidth / 2.0f, +kheight / 2.0f, 0}, //  kRightTop
+	    {-kwidth / 2.0f, +kheight / 2.0f, 0}, //  kLeftTop
+	};
+
+	return center + offsetTable[static_cast<uint32_t>(corner)];
+}
+
+/// <summary>
+/// マップ衝突判定上方向
+/// </summary>
+/// <param name="info"></param>
+void Player::MapCollisionTop(CollisionMapInfo& info) {
+	
+	// 上昇あり？
+	if (info.move.y <= 0) {
+		return;
+	}
+
+	//移動後の四つの角の座標
+	array<Vector3, static_cast<uint32_t>(Corner::kNumCorner)> positionsNew; 
+
+	for (uint32_t index = 0; index < positionsNew.size(); index++) {
+		positionsNew[index] = CornerPosition(worldTransform_.translation_ + info.move, static_cast<Corner>(index));
+	}
+
+	MapChipType mapChipType;
+
+	//真上の当たり判定を行う
+	bool hit = false;
+	//左上点の判定
+	IndexSet indexSet;
+
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock) {
+		hit = true;
+	}
+
+	//右上点の判定
+	//kRightTopについて同様に判定する
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock) {
+		hit = true;
+	}
+
+	//ブロックにヒット?
+	if (hit) {
+		// めり込みを排除する方向に移動量を設定する
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(info.move);
+		// めり込み先ブロックの範囲短形
+		RangeRect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		info.move.y = std::max(0.0f, info.move.y);
+		//天井に当たったことを記録する
+		info.isCeiling = true;
+	}
+}
+
+/// <summary>
+/// マップ衝突判定
+/// </summary>
+/// <param name="info"></param>
+void Player::MapCollision(CollisionMapInfo& info) 
+{ 
+	Player::MapCollisionTop(info); 
+}
+
+/// <summary>
+/// 判定結果反映移動
+/// </summary>
+/// <param name="info"></param>
+void Player::ReflectMove(const CollisionMapInfo& info) 
+{
+	//移動
+	worldTransform_.translation_ += info.move;
+}
+
+void Player::CeilingContact(const CollisionMapInfo& info) {
+	//天井に当たった？
+	if (info.isCeiling) {
+		DebugText::GetInstance()->ConsolePrintf("hit ceiling\n");
+		velocity_.y = 0;
+	}
+}
+
+#pragma endregion
+
 /// <summary>
 /// 更新処理
 /// </summary>
 void Player::Update() 
 {
+#pragma region プレイヤーの挙動
+
+
+	//==============================================<①移動入力>==========================================================
+	
 	bool isRightBottom = Input::GetInstance()->PushKey(DIK_RIGHT);
 	bool isLeftBottom = Input::GetInstance()->PushKey(DIK_LEFT);
 	bool isUpBottom = Input::GetInstance()->PushKey(DIK_UP);
@@ -207,6 +318,7 @@ void Player::Update()
 			velocity_ += acceleration;
 			// 最大速度制限
 			velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
+
 		} 
 		else {
 			velocity_.x *= (1.0f - kAttenuation);
@@ -229,12 +341,33 @@ void Player::Update()
 
 	//ジャンプしたときの処理や地面に接地したときの処理
 	Player::JumpControl();
-	// 旋回制御
-	Player::TurningControl();
+
+	//==========================================<②移動量を加味して衝突判定する>==========================================
+
+	// 衝突情報を初期化
+	CollisionMapInfo collisionMapInfo;
+	// 移動量に速度の値をコピー
+	collisionMapInfo.move = velocity_;
+
+	// マップ衝突チェック
+	Player::MapCollision(collisionMapInfo);
+
+	//==========================================<③判定結果を反映して移動させる>=========================================
+	Player::ReflectMove(collisionMapInfo);
+
+	//=============================================<④天井に接触している場合>============================================
+	Player::CeilingContact(collisionMapInfo);
+
 	//ワールドトランスフォームの座標に加速度を加算する
 	worldTransform_.translation_ += velocity_;
-	//行列を定数バッファに転送
+
+	// 旋回制御
+	Player::TurningControl();
+
+	// 行列を定数バッファに転送
 	worldTransform_.UpdateMatrix();
+
+#pragma endregion 
 }
 	
 /// <summary>

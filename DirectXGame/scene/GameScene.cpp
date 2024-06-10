@@ -67,8 +67,15 @@ void GameScene::Initialize() {
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	
+	// マップチップフィールドの生成
+	mapChipField_ = new MapChipField();
+	// csvファイル読み込み
+	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+
+	//自キャラの生成と初期化
 	player_ = new Player();
 	player_->Initialize(modelPlayer_, &viewProjection_,playerPosition);
+	player_->SetMapChipField(mapChipField_);
 
 	//3Dモデルデータの生成
 	modelBlock_ = Model::CreateFromOBJ("block",true);
@@ -82,11 +89,6 @@ void GameScene::Initialize() {
 	skyDome_ = new SkyDome();
 	skyDome_->Initialize(modelSkyDome_, &viewProjection_);
 
-	//マップチップフィールドの生成
-	mapChipField_ = new MapChipField();
-	//csvファイル読み込み
-	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
-
 	// カメラコントローラのインスタンス作成
 	cameraController_ = new CameraController();
 	// 初期化処理
@@ -96,7 +98,7 @@ void GameScene::Initialize() {
 	// リセット(瞬間合わせ)
 	cameraController_->Reset();
 
-	cameraController_->SetMovableArea({20, 175, 0, 50});
+	cameraController_->SetMovableArea({21, 175, 0, 50});
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
