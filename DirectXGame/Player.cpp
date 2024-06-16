@@ -213,7 +213,7 @@ void Player::MapCollisionTop(CollisionMapInfo& info) {
 	//真上の当たり判定を行う
 	bool hit = false;
 	//左上点の判定
-	IndexSet indexSet;
+	MapChipField::IndexSet indexSet;
 
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
@@ -234,9 +234,17 @@ void Player::MapCollisionTop(CollisionMapInfo& info) {
 		// めり込みを排除する方向に移動量を設定する
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(info.move);
 		// めり込み先ブロックの範囲短形
-		RangeRect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		info.move.y = std::max(0.0f, info.move.y);
-		//天井に当たったことを記録する
+		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+
+		float breadth = rect.bottom - worldTransform_.translation_.y;
+		float margin = kBlank / 2.0f;
+
+		float moveY = breadth - margin;
+
+		// Y移動量の更新
+		info.move.y = std::max(0.0f, moveY);
+
+		// 天井に当たったことを記録する
 		info.isCeiling = true;
 	}
 }
@@ -260,6 +268,10 @@ void Player::ReflectMove(const CollisionMapInfo& info)
 	worldTransform_.translation_ += info.move;
 }
 
+/// <summary>
+/// 天井衝突時の処理
+/// </summary>
+/// <param name="info"></param>
 void Player::CeilingContact(const CollisionMapInfo& info) {
 	//天井に当たった？
 	if (info.isCeiling) {

@@ -21,7 +21,7 @@ enum class LRDirection {
 struct CollisionMapInfo {
 	bool isCeiling = false; // 天井衝突フラグ
 	bool isRanding = false; // 着地フラグ
-	bool hitWall = false;   // 壁接触フラグ
+	bool ishitWall = false; // 壁接触フラグ
 	Vector3 move;           // 移動量
 };
 
@@ -125,6 +125,10 @@ public://メンバ関数
 	/// <param name="info"></param>
 	void ReflectMove(const CollisionMapInfo& info);
 
+	/// <summary>
+	/// 天井衝突時メンバ関数
+	/// </summary>
+	/// <param name="info"></param>
 	void CeilingContact(const CollisionMapInfo &info);
 
 #pragma endregion
@@ -177,12 +181,12 @@ private://メンバ変数
 	// 重力加速度(下方向)
 	static inline const float kGravityAcceleration = 0.03f;
 	// 最大落下速度(下方向)
-	static inline const float kLimitFallSpeed = 0.5f;
+	static inline const float kLimitFallSpeed = 0.6f;
 	// ジャンプ初速(上方向)
-	static inline const float kJumpAcceleration = 0.45f;
+	static inline const float kJumpAcceleration = 0.35f;
 	//キャラクターの当たり判定サイズ
 	static inline const float kwidth = 0.8f;  //横幅
-	static inline const float kheight = 2.5f; // 縦幅
+	static inline const float kheight = 2.0f; // 縦幅
 
-	static inline const float kBlank = 1.5f;
+	static inline const float kBlank = 0.5f;
 };

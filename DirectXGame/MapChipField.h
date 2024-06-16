@@ -13,20 +13,6 @@ struct MapChipDate
 	std::vector<std::vector<MapChipType>> date;
 };
 
-struct IndexSet {
-	uint32_t xIndex;
-	uint32_t yIndex;
-};
-
-/// <summary>
-/// 範囲短形構造体の宣言
-/// </summary>
-struct RangeRect {
-	float left;   // 左端
-	float right;  // 右端
-	float bottom; // 下端
-	float top;    // 上端
-};
 
 /// <summary>
 /// マップチップフィールドクラスの宣言
@@ -51,6 +37,24 @@ public:
 
 public:
 
+	/// <summary>
+	/// マップチップ番号の構造体
+	/// </summary>
+	struct IndexSet {
+		uint32_t xIndex;
+		uint32_t yIndex;
+	};
+
+	/// <summary>
+	/// 範囲短形構造体の宣言
+	/// </summary>
+	struct Rect {
+		float left;   // 左端
+		float right;  // 右端
+		float bottom; // 下端
+		float top;    // 上端
+	};
+
 	void ResetMapChipDate();
 
 	void LoadMapChipCsv(const std::string& filePath);
@@ -61,7 +65,7 @@ public:
 
 	IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
 
-	RangeRect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
 
 
 
