@@ -43,9 +43,9 @@ struct Vector3 final {
 	/// <param name="num"></param>
 	/// <returns></returns>
 	Vector3& operator+=(const Vector3& num) {
-		x = this->x + num.x;
-		y = this->y + num.y;
-		z = this->z + num.z;
+		this->x += num.x;
+		this->y += num.y;
+		this->z += num.z;
 		return *this;
 	}
 
@@ -55,9 +55,9 @@ struct Vector3 final {
 	/// <param name="num"></param>
 	/// <returns></returns>
 	Vector3& operator-=(const Vector3& num) {
-		x = this->x - num.x;
-		y = this->y - num.y;
-		z = this->z - num.z;
+		this->x -= num.x;
+		this->y -= num.y;
+		this->z -= num.z;
 		return *this;
 	}
 };

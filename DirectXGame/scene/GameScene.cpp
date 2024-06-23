@@ -70,7 +70,7 @@ void GameScene::Initialize() {
 	// マップチップフィールドの生成
 	mapChipField_ = new MapChipField();
 	// csvファイル読み込み
-	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+	mapChipField_->LoadMapChipCsv("Resources/DebugBlock.csv");
 
 	//自キャラの生成と初期化
 	player_ = new Player();

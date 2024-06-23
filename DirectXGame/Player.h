@@ -114,6 +114,24 @@ public://メンバ関数
 	void MapCollisionTop(CollisionMapInfo& info);
 
 	/// <summary>
+	/// マップ衝突判定下方向
+	/// </summary>
+	/// <param name="info"></param>
+	void MapCollisionBottom(CollisionMapInfo& info);
+
+	/// <summary>
+	/// マップ衝突判定右方向
+	/// </summary>
+	/// <param name="info"></param>
+	void MapCollisionRight(CollisionMapInfo& info);
+
+	/// <summary>
+	/// マップ衝突判定左方向
+	/// </summary>
+	/// <param name="info"></param>
+	void MapCollisionLeft(CollisionMapInfo& info);
+
+	/// <summary>
 	/// マップ衝突判定
 	/// </summary>
 	/// <param name="info"></param>
@@ -130,6 +148,24 @@ public://メンバ関数
 	/// </summary>
 	/// <param name="info"></param>
 	void CeilingContact(const CollisionMapInfo &info);
+
+	/// <summary>
+	/// 接地状態の処理
+	/// </summary>
+	/// <param name="info"></param>
+	void RandingState(const CollisionMapInfo& info);
+
+	/// <summary>
+	/// 状態の切り替えメンバ関数
+	/// </summary>
+	/// <param name="info"></param>
+	void StateSwitching(const CollisionMapInfo& info);
+
+	/// <summary>
+	/// 壁接触時処理メンバ関数
+	/// </summary>
+	/// <param name="info"></param>
+	void WallContact(const CollisionMapInfo& info);
 
 #pragma endregion
 
@@ -173,20 +209,26 @@ private://メンバ変数
 	// 旋回時間
 	static inline const float kTimeTurn = 0.3f;
 
-	static inline const float kAcceleration = 0.005f;
+	static inline const float kAcceleration = 0.01f;
 	//移動減衰
-	static inline const float kAttenuation = 0.2f;
+	static inline const float kAttenuation = 0.15f;
+	//着地減衰
+	static inline const float kAttenuationLanding = 0.4f;
 	//最大速度制限
-	static inline const float kLimitRunSpeed = 0.3f;
+	static inline const float kLimitRunSpeed = 0.09f;
 	// 重力加速度(下方向)
-	static inline const float kGravityAcceleration = 0.03f;
+	static inline const float kGravityAcceleration = 0.02f;
 	// 最大落下速度(下方向)
-	static inline const float kLimitFallSpeed = 0.6f;
+	static inline const float kLimitFallSpeed = 1.0f / 4.5f;
 	// ジャンプ初速(上方向)
-	static inline const float kJumpAcceleration = 0.35f;
+	static inline const float kJumpAcceleration = 0.36f;
 	//キャラクターの当たり判定サイズ
-	static inline const float kwidth = 0.8f;  //横幅
-	static inline const float kheight = 2.0f; // 縦幅
+	static inline const float kwidth = 1.90f;  //横幅
+	static inline const float kheight = 1.85f; // 縦幅
 
-	static inline const float kBlank = 0.5f;
+	static inline const float kBlankWidth = 0.1f;
+	static inline const float kBlankHeight = 0.1f;
+
+	///着地時の移動減衰率
+	static inline const float kAttenuationWall = 1.0f;
 };
