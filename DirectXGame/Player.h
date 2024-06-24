@@ -42,8 +42,6 @@ enum Corner {
 class Player {
 public://メンバ関数
 
-#pragma region 移動用メンバ関数
-
 	/// <summary>
 	/// インアウトサイン
 	/// </summary>
@@ -58,6 +56,8 @@ public://メンバ関数
 	/// <param name="textureHandle">テクスチャハンドル</param>
 	/// <param name="viewProjection">ビュープロジェクション</param>
 	void Initialize(Model* model, ViewProjection* viewProjection,const Vector3&position);
+
+#pragma region 移動用メンバ関数
 
 	/// <summary>
 	/// 右の減速メンバ関数

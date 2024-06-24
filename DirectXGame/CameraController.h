@@ -78,7 +78,7 @@ private://メンバ変数
 	/// <summary>
 	/// 追従対象とカメラの座標の差(オフセット)
 	/// </summary>
-	Vector3 targetOffset_ = {0, 0, -30.0f};
+	Vector3 targetOffset_ = {0, 0, -40.0f};
 
 	// カメラ移動範囲
 	Rect movableArea_ = {0, 100, 0, 100};

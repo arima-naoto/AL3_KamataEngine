@@ -10,6 +10,10 @@ GameScene::~GameScene() {
 	delete modelPlayer_;
 	delete player_;
 
+	//敵キャラの解放
+	delete modelEnemy_;
+	delete enemy_;
+
 	//ブロックの解放
 	delete modelBlock_;
 	delete block_;
@@ -66,7 +70,8 @@ void GameScene::Initialize() {
 
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-	
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(35, 18);
+
 	// マップチップフィールドの生成
 	mapChipField_ = new MapChipField();
 	// csvファイル読み込み
@@ -77,15 +82,18 @@ void GameScene::Initialize() {
 	player_->Initialize(modelPlayer_, &viewProjection_,playerPosition);
 	player_->SetMapChipField(mapChipField_);
 
-	//3Dモデルデータの生成
-	modelBlock_ = Model::CreateFromOBJ("block",true);
+	//敵キャラの生成と初期化
+	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
+	enemy_ = new Enemy();
+	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
 
+	//ブロックの生成と初期化
+	modelBlock_ = Model::CreateFromOBJ("block",true);
 	block_ = new Block();
 	block_->Initialize(modelBlock_, &viewProjection_);
 
-	//スカイドームモデルの生成
+	//スカイドームの生成と初期化
 	modelSkyDome_ = Model::CreateFromOBJ("SkyDome", true);
-	//スカイドームの生成
 	skyDome_ = new SkyDome();
 	skyDome_->Initialize(modelSkyDome_, &viewProjection_);
 
@@ -118,6 +126,9 @@ void GameScene::Update()
 	
 	//プレイヤーの更新処理
 	player_->Update();
+
+	//敵キャラの更新処理
+	enemy_->Update();
 
 #pragma region ワールドトランスフォームの更新処理
 
@@ -205,14 +216,19 @@ void GameScene::Draw() {
 	
 	//スカイドームの描画
 	skyDome_->Draw();
-	
+
 	//プレイヤーの描画
 	player_->Draw(viewProjection_);
 
-	//ブロックの描画
+	//敵キャラの描画
+	enemy_->Draw(viewProjection_);
+
+	// ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock) {continue;}
+			if (!worldTransformBlock) {
+				continue;
+			}
 			block_->Draw(*worldTransformBlock, viewProjection_);
 		}
 	}

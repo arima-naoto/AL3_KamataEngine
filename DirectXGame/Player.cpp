@@ -9,8 +9,6 @@
 #include "DebugText.h"
 using namespace std;
 
-#pragma region 移動用メンバ関数の定義
-
 /// <summary>
 /// インアウトサイン
 /// </summary>
@@ -43,6 +41,8 @@ void Player::Initialize(Model* model,ViewProjection * viewProjection,const Vecto
 	viewProjection_ = viewProjection;
 	
 }
+
+#pragma region 移動用メンバ関数の定義
 
 /// <summary>
 /// 右の減速関数

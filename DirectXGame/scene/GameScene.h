@@ -13,6 +13,7 @@
 #include "MapChipField.h"
 #include "Block.h"
 #include "CameraController.h"
+#include "Enemy.h"
 
 /// <summary>
 /// ゲームシーン
@@ -59,6 +60,10 @@ private: // メンバ変数
 	Model* modelPlayer_ = nullptr;
 	Player* player_ = nullptr;
 
+    //3Dモデルデータ(敵機)
+	Model* modelEnemy_ = nullptr;
+	Enemy* enemy_ = nullptr;
+	
 	//3Dモデルデータ(ブロック)
 	Model* modelBlock_ = nullptr;
 	Block* block_ = nullptr;
