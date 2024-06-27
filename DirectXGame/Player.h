@@ -4,6 +4,10 @@
 #include "cassert"
 #include "ViewProjection.h"
 #include "Vector3.h"
+#include "MyStruct.h"
+
+///Enemyクラスの前方宣言
+class Enemy;
 
 /// <summary>
 /// マップチップクラスの前方宣言
@@ -179,6 +183,12 @@ public://メンバ関数
 	/// </summary>
 	void Draw(const ViewProjection &viewProjection);
 
+	/// <summary>
+	/// 衝突応答
+	/// </summary>
+	/// <param name="enemy"></param>
+	void OnCollision(Enemy* enemy);
+
 public://カプセル化とアクセッサ
 
 	const WorldTransform& GetWorldTransform() { return worldTransform_; };
@@ -186,6 +196,12 @@ public://カプセル化とアクセッサ
 	const Vector3& GetVelocity() const { return velocity_; }
 	
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
+
+	//ワールド座標を取得
+	Vector3 GetWorldPosition();
+
+	// AABBを取得
+	AABB GetAABB();
 
 private://メンバ変数
 
@@ -229,6 +245,12 @@ private://メンバ変数
 	static inline const float kBlankWidth = 0.1f;
 	static inline const float kBlankHeight = 0.1f;
 
+	static inline const float kBlank = 0.1f;
+
 	///着地時の移動減衰率
 	static inline const float kAttenuationWall = 1.0f;
+
+	static inline const float kCharacterWidth = 2.0f;
+	static inline const float kCharacterHeight = 2.0f;
+
 };

@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include <AxisIndicator.h>
+#include "MyStruct.h"
 
 GameScene::GameScene() {}
 
@@ -119,6 +120,32 @@ void GameScene::Initialize() {
 #pragma endregion
 }
 
+/// <summary>
+/// 全ての当たり判定を行う
+/// </summary>
+void GameScene::CheckAllCollision() {
+
+#pragma region 自キャラと敵キャラの当たり判定
+
+	//判定対象の1と2の座標
+
+	AABB aabb1, aabb2;
+
+	//自キャラの座標
+	aabb1 = player_->GetAABB();
+	//敵弾の座標
+	aabb2 = enemy_->GetAABB();
+
+	//AABB同士の交差判定
+	if (IsCollision(aabb1)) {
+		//自キャラの衝突時コールバック関数を呼び出す
+		player_->OnCollision(enemy_);
+	}
+
+#pragma endregion
+
+}
+
 void GameScene::Update()
 {
 	//スカイドームの更新処理
@@ -185,6 +212,9 @@ void GameScene::Update()
 	}
 
 #pragma endregion 
+
+	// 全ての当たり判定を行う
+	GameScene::CheckAllCollision();
 }
 
 void GameScene::Draw() {

@@ -14,11 +14,12 @@
 #include "Block.h"
 #include "CameraController.h"
 #include "Enemy.h"
+#include "MyStruct.h"
 
 /// <summary>
 /// ゲームシーン
 /// </summary>
-class GameScene {
+class GameScene : public AABB {
 
 public: // メンバ関数
 	/// <summary>
@@ -40,6 +41,11 @@ public: // メンバ関数
 	/// 初期化
 	/// </summary>
 	void Initialize();
+
+	/// <summary>
+	/// 全ての当たり判定を行う
+	/// </summary>
+	void CheckAllCollision();
 
 	/// <summary>
 	/// 毎フレーム処理

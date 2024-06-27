@@ -2,6 +2,10 @@
 #include "WorldTransform.h"
 #include "Model.h"
 #include "ViewProjection.h"
+#include "MyStruct.h"
+
+//Playerクラスを前方宣言する
+class Player;
 
 /// <summary>
 /// 敵クラス
@@ -33,6 +37,15 @@ public://メンバ関数
 	/// <param name="viewprojection"></param>
 	void Draw(const ViewProjection& viewprojection);
 
+	//衝突応答
+	void OnCollision(Player* player);
+
+public:
+
+	Vector3 GetWorldPosition();
+
+	AABB GetAABB();
+
 private://メンバ変数
 
 	///ワールドトランスフォーム
@@ -61,4 +74,9 @@ private://メンバ変数
 
 	///経過時間
 	float walkTimer_ = 0.0f;
+
+	static inline const float kWidth = 2.0f;
+	static inline const float kHeight = 2.0f;
+
+
 };
