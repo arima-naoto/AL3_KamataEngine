@@ -651,7 +651,7 @@ void Player::OnCollision(Enemy* enemy) {
 	(void)enemy;
 
 	//ジャンプ開始(仮処理)
-	velocity_ += Vector3(1, 2.0f, 1);
+	velocity_ += Vector3(0, 0.36f, 0);
 }
 
 /// <summary>
@@ -664,9 +664,9 @@ Vector3 Player::GetWorldPosition() {
 	Vector3 worldPos;
 
 	//ワールド行列の平行移動成分を取得(ワールド座標)
-	worldPos.x = worldTransform_.matWorld_.m[3][1];//ワールド行列のTx
-	worldPos.y = worldTransform_.matWorld_.m[3][2];//ワールド行列のTy
-	worldPos.z = worldTransform_.matWorld_.m[3][3];//ワールド行列のTz
+	worldPos.x = worldTransform_.matWorld_.m[3][0];//ワールド行列のTx
+	worldPos.y = worldTransform_.matWorld_.m[3][1];//ワールド行列のTy
+	worldPos.z = worldTransform_.matWorld_.m[3][2];//ワールド行列のTz
 
 	return worldPos;
 
@@ -683,8 +683,8 @@ AABB Player::GetAABB()
 
 	AABB aabb;
 
-	aabb.min = {worldPos.x -  kCharacterWidth / 2.0f, worldPos.y -  kCharacterHeight / 2.0f, worldPos.z -  kCharacterWidth / 2.0f};
-	aabb.max = {worldPos.x +  kCharacterWidth / 2.0f, worldPos.y +  kCharacterHeight / 2.0f, worldPos.z +  kCharacterWidth / 2.0f};
+	aabb.min = {worldPos.x -  kwidth / 2.0f, worldPos.y -  kheight / 2.0f, worldPos.z -  kwidth / 2.0f};
+	aabb.max = {worldPos.x +  kwidth / 2.0f, worldPos.y +  kheight / 2.0f, worldPos.z +  kwidth / 2.0f};
 
 	return aabb;
 

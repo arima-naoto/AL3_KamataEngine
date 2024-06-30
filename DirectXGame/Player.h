@@ -250,7 +250,4 @@ private://メンバ変数
 	///着地時の移動減衰率
 	static inline const float kAttenuationWall = 1.0f;
 
-	static inline const float kCharacterWidth = 2.0f;
-	static inline const float kCharacterHeight = 2.0f;
-
 };

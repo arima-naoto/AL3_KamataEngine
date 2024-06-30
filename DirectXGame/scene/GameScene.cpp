@@ -13,7 +13,10 @@ GameScene::~GameScene() {
 
 	//敵キャラの解放
 	delete modelEnemy_;
-	delete enemy_;
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
+	enemies_.clear();
 
 	//ブロックの解放
 	delete modelBlock_;
@@ -71,7 +74,6 @@ void GameScene::Initialize() {
 
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(35, 18);
 
 	// マップチップフィールドの生成
 	mapChipField_ = new MapChipField();
@@ -85,8 +87,16 @@ void GameScene::Initialize() {
 
 	//敵キャラの生成と初期化
 	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
-	enemy_ = new Enemy();
-	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+
+	for (int32_t i = 0; i < 2; i++) {
+		Enemy* newEnemy = new Enemy();
+
+		// X座標とY座標の計算を直接行う
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(35 + (i * 6) ,18 - i);
+
+		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+		enemies_.push_back(newEnemy);
+	}
 
 	//ブロックの生成と初期化
 	modelBlock_ = Model::CreateFromOBJ("block",true);
@@ -133,13 +143,18 @@ void GameScene::CheckAllCollision() {
 
 	//自キャラの座標
 	aabb1 = player_->GetAABB();
-	//敵弾の座標
-	aabb2 = enemy_->GetAABB();
+	//自キャラと敵弾全ての当たり判定
+	for (Enemy* enemy : enemies_) {
 
-	//AABB同士の交差判定
-	if (IsCollision(aabb1)) {
-		//自キャラの衝突時コールバック関数を呼び出す
-		player_->OnCollision(enemy_);
+		aabb2 = enemy->GetAABB();
+
+		// AABB同士の交差判定
+		if (IsCollision(aabb1, aabb2)) {
+			// 自キャラの衝突時コールバック関数を呼び出す
+			player_->OnCollision(enemy);
+
+			enemy->OnCollision(player_);
+		}
 	}
 
 #pragma endregion
@@ -155,7 +170,9 @@ void GameScene::Update()
 	player_->Update();
 
 	//敵キャラの更新処理
-	enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
 
 #pragma region ワールドトランスフォームの更新処理
 
@@ -251,7 +268,11 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 
 	//敵キャラの描画
-	enemy_->Draw(viewProjection_);
+	
+	// 敵キャラの更新処理
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw(viewProjection_);
+	}
 
 	// ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {

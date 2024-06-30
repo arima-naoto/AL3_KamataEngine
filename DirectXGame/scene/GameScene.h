@@ -14,12 +14,12 @@
 #include "Block.h"
 #include "CameraController.h"
 #include "Enemy.h"
-#include "MyStruct.h"
+#include "Rendering.h"
 
 /// <summary>
 /// ゲームシーン
 /// </summary>
-class GameScene : public AABB {
+class GameScene : public Rendering{
 
 public: // メンバ関数
 	/// <summary>
@@ -68,7 +68,7 @@ private: // メンバ変数
 
     //3Dモデルデータ(敵機)
 	Model* modelEnemy_ = nullptr;
-	Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
 	
 	//3Dモデルデータ(ブロック)
 	Model* modelBlock_ = nullptr;

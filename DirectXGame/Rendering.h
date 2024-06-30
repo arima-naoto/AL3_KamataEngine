@@ -71,5 +71,7 @@ public://メンバ関数の作成
 
 #pragma endregion
 
+	static bool IsCollision(const AABB& aabb1, const AABB& aabb2);
+
 };
 
