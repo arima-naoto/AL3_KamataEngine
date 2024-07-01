@@ -69,6 +69,14 @@ public://メンバ関数の作成
 	/// <returns></returns>
 	static Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
+	/// <summary>
+	/// トランスフォーム
+	/// </summary>
+	/// <param name="vector"></param>
+	/// <param name="matrix"></param>
+	/// <returns></returns>
+	static Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
+
 #pragma endregion
 
 	static bool IsCollision(const AABB& aabb1, const AABB& aabb2);

@@ -14,7 +14,7 @@ void Block::Initialize(Model* model, ViewProjection* viewProjection)
 
 void Block::Update() {}
 
-void Block::Draw(const WorldTransform &worldTransform,const ViewProjection& viewProjection) 
+void Block::Draw(const WorldTransform &worldTransform) 
 { 
-	model_->Draw(worldTransform, viewProjection); 
+	model_->Draw(worldTransform, *viewProjection_); 
 }

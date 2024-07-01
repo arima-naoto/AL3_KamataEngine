@@ -35,7 +35,7 @@ public://メンバ関数
 	/// 更新処理
 	/// </summary>
 	/// <param name="viewprojection"></param>
-	void Draw(const ViewProjection& viewprojection);
+	void Draw();
 
 	//衝突応答
 	void OnCollision(Player* player);

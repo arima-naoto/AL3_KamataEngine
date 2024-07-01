@@ -181,7 +181,7 @@ public://メンバ関数
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw(const ViewProjection &viewProjection);
+	void Draw();
 
 	/// <summary>
 	/// 衝突応答

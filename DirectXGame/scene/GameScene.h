@@ -15,6 +15,7 @@
 #include "CameraController.h"
 #include "Enemy.h"
 #include "Rendering.h"
+#include "DeathParticles.h"
 
 /// <summary>
 /// ゲームシーン
@@ -66,9 +67,13 @@ private: // メンバ変数
 	Model* modelPlayer_ = nullptr;
 	Player* player_ = nullptr;
 
+	//3Dモデルデータ(デス演出用パーティクル)
+	Model* modelDeathParticles_ = nullptr;
+	DeathParticles* deathParticles_ = nullptr;
+
     //3Dモデルデータ(敵機)
 	Model* modelEnemy_ = nullptr;
-	std::list<Enemy*> enemies_;
+	Enemy* enemy_ = nullptr;
 	
 	//3Dモデルデータ(ブロック)
 	Model* modelBlock_ = nullptr;

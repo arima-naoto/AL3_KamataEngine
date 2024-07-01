@@ -73,8 +73,8 @@ void Enemy::Update()
 /// <summary>
 /// 描画処理
 /// </summary>
-void Enemy::Draw(const ViewProjection&viewprojection) {
-	model_->Draw(worldTransform_, viewprojection);
+void Enemy::Draw() {
+	model_->Draw(worldTransform_, *viewProjection_);
 }
 
 /// <summary>

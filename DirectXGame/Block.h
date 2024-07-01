@@ -14,7 +14,7 @@ public:
 
 	void Update();
 
-	void Draw(const WorldTransform& worldTransform, const ViewProjection& viewProjection);
+	void Draw(const WorldTransform& worldTransform);
 
 private:
 

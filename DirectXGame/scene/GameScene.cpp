@@ -8,15 +8,19 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
 
+	//自キャラの解放
 	delete modelPlayer_;
 	delete player_;
 
+	delete modelDeathParticles_;
+
+	if (deathParticles_ != nullptr) {
+		delete deathParticles_;
+	}
+
 	//敵キャラの解放
 	delete modelEnemy_;
-	for (Enemy* enemy : enemies_) {
-		delete enemy;
-	}
-	enemies_.clear();
+	delete enemy_;
 
 	//ブロックの解放
 	delete modelBlock_;
@@ -72,8 +76,9 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(35, 18);
 
 	// マップチップフィールドの生成
 	mapChipField_ = new MapChipField();
@@ -81,22 +86,20 @@ void GameScene::Initialize() {
 	mapChipField_->LoadMapChipCsv("Resources/DebugBlock.csv");
 
 	//自キャラの生成と初期化
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	player_ = new Player();
 	player_->Initialize(modelPlayer_, &viewProjection_,playerPosition);
 	player_->SetMapChipField(mapChipField_);
 
+	//デス演出用パーティクルの生成と初期化
+	modelDeathParticles_ = Model::CreateFromOBJ("DeathParticles", true);
+	deathParticles_ = new DeathParticles();
+	deathParticles_->Initialize(modelDeathParticles_, &viewProjection_, playerPosition);
+
 	//敵キャラの生成と初期化
 	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
-
-	for (int32_t i = 0; i < 2; i++) {
-		Enemy* newEnemy = new Enemy();
-
-		// X座標とY座標の計算を直接行う
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(35 + (i * 6) ,18 - i);
-
-		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
-		enemies_.push_back(newEnemy);
-	}
+	enemy_ = new Enemy();
+	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
 
 	//ブロックの生成と初期化
 	modelBlock_ = Model::CreateFromOBJ("block",true);
@@ -143,19 +146,18 @@ void GameScene::CheckAllCollision() {
 
 	//自キャラの座標
 	aabb1 = player_->GetAABB();
-	//自キャラと敵弾全ての当たり判定
-	for (Enemy* enemy : enemies_) {
+	//自キャラと敵弾の当たり判定
 
-		aabb2 = enemy->GetAABB();
+	aabb2 = enemy_->GetAABB();
 
-		// AABB同士の交差判定
-		if (IsCollision(aabb1, aabb2)) {
-			// 自キャラの衝突時コールバック関数を呼び出す
-			player_->OnCollision(enemy);
+	// AABB同士の交差判定
+	if (IsCollision(aabb1, aabb2)) {
+		// 自キャラの衝突時コールバック関数を呼び出す
+		player_->OnCollision(enemy_);
 
-			enemy->OnCollision(player_);
-		}
+		enemy_->OnCollision(player_);
 	}
+	
 
 #pragma endregion
 
@@ -169,9 +171,12 @@ void GameScene::Update()
 	//プレイヤーの更新処理
 	player_->Update();
 
-	//敵キャラの更新処理
-	for (Enemy* enemy : enemies_) {
-		enemy->Update();
+	//エネミーの更新処理
+	enemy_->Update();
+
+	//デス演出用パーティクルの更新処理
+	if (deathParticles_ != nullptr) {
+		deathParticles_->Update();
 	}
 
 #pragma region ワールドトランスフォームの更新処理
@@ -264,25 +269,27 @@ void GameScene::Draw() {
 	//スカイドームの描画
 	skyDome_->Draw();
 
-	//プレイヤーの描画
-	player_->Draw(viewProjection_);
-
-	//敵キャラの描画
-	
-	// 敵キャラの更新処理
-	for (Enemy* enemy : enemies_) {
-		enemy->Draw(viewProjection_);
-	}
-
 	// ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {
 				continue;
 			}
-			block_->Draw(*worldTransformBlock, viewProjection_);
+			block_->Draw(*worldTransformBlock);
 		}
 	}
+
+	// プレイヤーの描画
+	player_->Draw();
+
+	// デス演出用パーティクルの描画
+	if (deathParticles_ != nullptr) {
+		deathParticles_->Draw();
+	}
+
+	// 敵キャラの描画
+	enemy_->Draw();
+
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

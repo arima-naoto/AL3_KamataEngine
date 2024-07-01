@@ -641,17 +641,17 @@ void Player::Update()
 /// <summary>
 /// 描画処理
 /// </summary>
-void Player::Draw(const ViewProjection &viewProjection) 
+void Player::Draw() 
 { 
 	//3Dモデルを描画
-	model_->Draw(worldTransform_,viewProjection); 
+	model_->Draw(worldTransform_,*viewProjection_); 
 }
 
 void Player::OnCollision(Enemy* enemy) { 
 	(void)enemy;
 
-	//ジャンプ開始(仮処理)
-	velocity_ += Vector3(0, 0.36f, 0);
+	velocity_ = Vector3(0, 1.0f, 0);
+
 }
 
 /// <summary>
