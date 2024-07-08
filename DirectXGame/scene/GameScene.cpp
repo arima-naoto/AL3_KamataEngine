@@ -76,7 +76,8 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
-	
+#pragma region 各オブジェクトの生成と初期化
+
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(35, 18);
 
@@ -91,10 +92,8 @@ void GameScene::Initialize() {
 	player_->Initialize(modelPlayer_, &viewProjection_,playerPosition);
 	player_->SetMapChipField(mapChipField_);
 
-	//デス演出用パーティクルの生成と初期化
+	//デス演出用パーティクルのモデルデータを読み込む
 	modelDeathParticles_ = Model::CreateFromOBJ("DeathParticles", true);
-	deathParticles_ = new DeathParticles();
-	deathParticles_->Initialize(modelDeathParticles_, &viewProjection_, playerPosition);
 
 	//敵キャラの生成と初期化
 	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
@@ -129,6 +128,10 @@ void GameScene::Initialize() {
 	//ブロックの生成
 	GameScene::GenerateBlocks();
 
+#pragma endregion
+
+	//ゲームプレイフェーズから開始
+	phase_ = Phase::kPlay;
 
 #pragma endregion
 }
@@ -157,86 +160,191 @@ void GameScene::CheckAllCollision() {
 
 		enemy_->OnCollision(player_);
 	}
-	
+
+	//自キャラがデス状態
+	if (player_->GetIsDead()) {
+
+		//デス演出フェーズに切り替え
+		phase_ = Phase::kDeath;
+
+		//自キャラの座標を取得
+		const Vector3& deathParticlesPosition = player_->GetWorldPosition();
+		
+		//自キャラの座標にデスパーティクルを発生、初期化
+		deathParticles_ = new DeathParticles();
+		deathParticles_->Initialize(modelDeathParticles_, &viewProjection_, deathParticlesPosition);
+
+	}
 
 #pragma endregion
 
 }
 
-void GameScene::Update()
-{
-	//スカイドームの更新処理
-	skyDome_->Update(); 
-	
-	//プレイヤーの更新処理
+/// <summary>
+/// ゲームプレイフェーズの更新処理
+/// </summary>
+void GameScene::UpdatekPlay() {
+
+#pragma region 各クラスの更新処理
+
+	// スカイドームの更新処理
+	skyDome_->Update();
+
+	// プレイヤーの更新処理
 	player_->Update();
 
-	//エネミーの更新処理
+	// エネミーの更新処理
 	enemy_->Update();
 
-	//デス演出用パーティクルの更新処理
-	if (deathParticles_ != nullptr) {
-		deathParticles_->Update();
-	}
-
-#pragma region ワールドトランスフォームの更新処理
-
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock) { continue; }
-			worldTransformBlock->UpdateMatrix();
-		}
-	}
-#pragma endregion
-
-#pragma region デバッグカメラの更新処理
-
-// デバッグビルドの時だけに呼び出す
-#ifdef _DEBUG 
-	//SPACEキーが押されている間
-	if (input_->TriggerKey(DIK_SPACE)) {
-		//デバッグカメラ有効のフラグがおられている時
-		if (isDebugCameraActive_ == false) {
-			//フラグを立てる
-			isDebugCameraActive_ = true;
-		}
-		//デバッグカメラ有効のフラグが立てられている場合
-		else if (isDebugCameraActive_ == true) {
-			//フラグを折る
-			isDebugCameraActive_ = false;
-		}
-	}
-#endif
-
-	//デバッグカメラ有効のフラグが立っている時に
-	if (isDebugCameraActive_ == true) 
-	{
-		//デバッグカメラの更新処理を行う
-		debugCamera_->Update();
-		//デバッグカメラからビュー行列とプロジェクション行列をコピーする
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-
-		//ビュープロジェクション行列の転送
-		viewProjection_.TransferMatrix();
-
-	} else {
-
-		// カメラコントローラの更新処理
+	// デバッグカメラが無効になっている時に
+	if (isDebugCameraActive_ == false) {
+		// カメラコントローラの更新処理を行う
 		cameraController_->Update();
 
 		// カメラコントローラからビュー行列とプロジェクション行列をコピーする
 		viewProjection_.matView = cameraController_->GetViewProjection().matView;
 		viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
-		
-		//ビュープロジェクション行列の転送
+
+		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	}
 
-#pragma endregion 
+	// デバッグカメラの更新処理
+
+#ifdef _DEBUG
+
+	// SPACEキーが押されている間
+	if (input_->TriggerKey(DIK_SPACE)) {
+		// デバッグカメラ有効のフラグがおられている時
+		if (isDebugCameraActive_ == false) {
+			// フラグを立てる
+			isDebugCameraActive_ = true;
+		}
+		// デバッグカメラ有効のフラグが立てられている場合
+		else if (isDebugCameraActive_ == true) {
+			// フラグを折る
+			isDebugCameraActive_ = false;
+		}
+	}
+
+#endif
+
+	// デバッグカメラ有効のフラグが立っている時に
+	if (isDebugCameraActive_ == true) {
+		// デバッグカメラの更新処理を行う
+		debugCamera_->Update();
+		// デバッグカメラからビュー行列とプロジェクション行列をコピーする
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+
+		// ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+	}
+
+	// ブロックの更新処理
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock) {
+				continue;
+			}
+			worldTransformBlock->UpdateMatrix();
+		}
+	}
 
 	// 全ての当たり判定を行う
 	GameScene::CheckAllCollision();
+
+#pragma endregion
+
+}
+
+
+/// <summary>
+/// フェーズデス演出の更新処理
+/// </summary>
+void GameScene::UpdateKDeath() {
+
+#pragma region 各クラスの更新処理
+
+	// スカイドームの更新処理
+	skyDome_->Update();
+
+	// エネミーの更新処理
+	enemy_->Update();
+
+	// デス演出用パーティクルの更新処理
+	if (deathParticles_ != nullptr) {
+		deathParticles_->Update();
+	}
+
+	// デバッグカメラの更新処理
+
+#ifdef _DEBUG
+
+	// SPACEキーが押されている間
+	if (input_->TriggerKey(DIK_SPACE)) {
+		// デバッグカメラ有効のフラグがおられている時
+		if (isDebugCameraActive_ == false) {
+			// フラグを立てる
+			isDebugCameraActive_ = true;
+		}
+		// デバッグカメラ有効のフラグが立てられている場合
+		else if (isDebugCameraActive_ == true) {
+			// フラグを折る
+			isDebugCameraActive_ = false;
+		}
+	}
+#endif
+
+	// デバッグカメラ有効のフラグが立っている時に
+	if (isDebugCameraActive_ == true) {
+		// デバッグカメラの更新処理を行う
+		debugCamera_->Update();
+		// デバッグカメラからビュー行列とプロジェクション行列をコピーする
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+
+		// ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+	}
+
+	// ブロックの更新処理
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock) {
+				continue;
+			}
+			worldTransformBlock->UpdateMatrix();
+		}
+	}
+
+#pragma endregion
+
+}
+
+/// <summary>
+/// フェーズの切り替え処理
+/// </summary>
+void GameScene::ChangePhase() {
+
+	switch (phase_) {
+	case Phase::kPlay:
+
+		GameScene::UpdatekPlay();
+
+		break;
+
+	case Phase::kDeath:
+
+		GameScene::UpdateKDeath();
+
+		break;
+	}
+
+}
+
+void GameScene::Update() { 
+	GameScene::ChangePhase();
 }
 
 void GameScene::Draw() {

@@ -17,6 +17,12 @@
 #include "Rendering.h"
 #include "DeathParticles.h"
 
+/// ゲームのフェーズ
+enum class Phase {
+	kPlay,  // ゲームプレイ
+	kDeath, // デス演出
+};
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -49,6 +55,21 @@ public: // メンバ関数
 	void CheckAllCollision();
 
 	/// <summary>
+	/// フェーズゲームプレイの更新処理
+	/// </summary>
+	void UpdatekPlay();
+
+	/// <summary>
+	/// フェーズデス演出の更新処理
+	/// </summary>
+	void UpdateKDeath();
+
+	/// <summary>
+	/// フェーズ切り替えメンバ関数
+	/// </summary>
+	void ChangePhase();
+
+	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
@@ -59,6 +80,7 @@ public: // メンバ関数
 	void Draw();
 
 private: // メンバ変数
+
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
@@ -105,4 +127,8 @@ private: // メンバ変数
 
 	//デバッグカメラを有効
 	bool isDebugCameraActive_ = false;
+
+	//現在の現在フェーズ
+	Phase phase_;
+
 };

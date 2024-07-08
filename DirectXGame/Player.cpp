@@ -641,17 +641,20 @@ void Player::Update()
 /// <summary>
 /// 描画処理
 /// </summary>
-void Player::Draw() 
-{ 
-	//3Dモデルを描画
-	model_->Draw(worldTransform_,*viewProjection_); 
+void Player::Draw() {
+
+	//死亡フラグがtrueになってなければ
+	if (!isDead_) {
+
+		//自キャラの3Dモデルを描画する
+		model_->Draw(worldTransform_, *viewProjection_);
+	}
 }
 
 void Player::OnCollision(Enemy* enemy) { 
 	(void)enemy;
 
-	velocity_ = Vector3(0, 1.0f, 0);
-
+	isDead_ = true;
 }
 
 /// <summary>

@@ -203,6 +203,8 @@ public://カプセル化とアクセッサ
 	// AABBを取得
 	AABB GetAABB();
 
+	bool GetIsDead() const { return this->isDead_; }
+
 private://メンバ変数
 
 	//ワールド変換データ
@@ -249,5 +251,8 @@ private://メンバ変数
 
 	///着地時の移動減衰率
 	static inline const float kAttenuationWall = 1.0f;
+
+	///自キャラの死亡フラグ
+	bool isDead_ = false;
 
 };
