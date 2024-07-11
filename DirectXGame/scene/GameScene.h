@@ -16,11 +16,14 @@
 #include "Enemy.h"
 #include "Rendering.h"
 #include "DeathParticles.h"
+#include "Fade.h"
 
 /// ゲームのフェーズ
-enum class Phase {
-	kPlay,  // ゲームプレイ
-	kDeath, // デス演出
+enum class GamePhase {
+	kFadeIn, // フェードイン
+	kPlay,   // ゲームプレイ
+	kDeath,  // デス演出
+	kFadeOut // フェードアウト
 };
 
 /// <summary>
@@ -132,9 +135,12 @@ private: // メンバ変数
 	bool isDebugCameraActive_ = false;
 
 	//現在フェーズ
-	Phase phase_;
+	GamePhase phase_;
 
 	//終了フラグ
 	bool isFinished_ = false;
+
+	Fade* fade_ = nullptr;
+
 
 };

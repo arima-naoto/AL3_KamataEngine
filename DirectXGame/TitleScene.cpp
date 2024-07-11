@@ -1,6 +1,18 @@
 #include "TitleScene.h"
 #include "Player.h"
 
+TitleScene::TitleScene() {}
+
+TitleScene::~TitleScene() {
+
+	delete titleBar_;
+	delete bar_;
+
+	///フェードクラスの解放
+	delete fade_;
+
+}
+
 /// 初期化処理
 void TitleScene::Initialize() {
 
@@ -14,18 +26,58 @@ void TitleScene::Initialize() {
 	titleBar_ = Model::CreateFromOBJ("TitleLetter", true);
 	bar_ = new Bar();
 	bar_->Initialize(titleBar_, &viewProjection_);
+
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 3.0f);
+
+}
+
+void TitleScene::ChangeFade() {
+
+	
+
+	switch (phase_) 
+	{
+	case TitlePhase::kFadeIn:
+
+		if (fade_->IsFinished()) {
+			phase_ = TitlePhase::kMain;
+		}
+		
+		break;
+	
+	case TitlePhase::kMain:
+		
+		bar_->Update();
+
+		if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+			fade_->Start(Fade::Status::FadeOut, 3.0f);
+			phase_ = TitlePhase::kFadeOut;
+		}
+
+		break;
+	
+	case TitlePhase::kFadeOut:
+
+		if (fade_->IsFinished()) {
+			isFinished_ = true;
+		}
+		
+		break;
+	}
+
 }
 
 /// 更新処理
-void TitleScene::Update() {
+void TitleScene::Update() {	
 
-	bar_->Update();
+	/// フェードクラスの更新処理
+	fade_->Update();
 
-	bool buttonSpace = Input::GetInstance()->PushKey(DIK_SPACE);
+	///フェードの切り替え
+	TitleScene::ChangeFade();
 
-	if (buttonSpace) {
-		isFinished_ = true;
-	}
 }
 
 /// 描画処理
@@ -45,6 +97,7 @@ void TitleScene::Draw() {
 	Sprite::PostDraw();
 	// 深度バッファクリア
 	dxCommon_->ClearDepthBuffer();
+
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
@@ -55,7 +108,11 @@ void TitleScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
+	
 	bar_->Draw();
+
+	fade_->Draw(commandList);
+
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

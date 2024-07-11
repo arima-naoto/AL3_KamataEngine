@@ -131,7 +131,10 @@ void GameScene::Initialize() {
 #pragma endregion
 
 	//ゲームプレイフェーズから開始
-	phase_ = Phase::kPlay;
+	phase_ = GamePhase::kFadeIn;
+
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 3.0f);
 
 #pragma endregion
 }
@@ -165,7 +168,7 @@ void GameScene::CheckAllCollision() {
 	if (player_->GetIsDead()) {
 
 		//デス演出フェーズに切り替え
-		phase_ = Phase::kDeath;
+		phase_ = GamePhase::kDeath;
 
 		//自キャラの座標を取得
 		const Vector3& deathParticlesPosition = player_->GetWorldPosition();
@@ -332,13 +335,20 @@ void GameScene::UpdateKDeath() {
 void GameScene::ChangePhase() {
 
 	switch (phase_) {
-	case Phase::kPlay:
+
+	case GamePhase::kFadeIn:
+
+		if (fade_->IsFinished()) {
+			phase_ = GamePhase::kPlay;
+		}
+	
+	case GamePhase::kPlay:
 
 		GameScene::UpdatekPlay();
 
 		break;
 
-	case Phase::kDeath:
+	case GamePhase::kDeath:
 
 		GameScene::UpdateKDeath();
 
@@ -401,6 +411,9 @@ void GameScene::Draw() {
 
 	// 敵キャラの描画
 	enemy_->Draw();
+
+
+	fade_->Draw(commandList);
 
 
 	// 3Dオブジェクト描画後処理
