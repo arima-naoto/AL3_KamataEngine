@@ -7,6 +7,8 @@
 #include <math.h>
 #include <MapChipField.h>
 #include "DebugText.h"
+#include "Fade.h"
+#include "GameScene.h"
 using namespace std;
 
 /// <summary>
@@ -539,7 +541,6 @@ void Player::Update()
 {
 #pragma region プレイヤーの挙動
 
-
 	//==============================================<①移動入力>==========================================================
 	
 	bool isRightBottom = Input::GetInstance()->PushKey(DIK_RIGHT);
@@ -644,11 +645,12 @@ void Player::Update()
 void Player::Draw() {
 
 	//死亡フラグがtrueになってなければ
-	if (!isDead_) {
-
-		//自キャラの3Dモデルを描画する
-		model_->Draw(worldTransform_, *viewProjection_);
+	if (isDead_ != false) {
+		return;
 	}
+
+	// 自キャラの3Dモデルを描画する
+	model_->Draw(worldTransform_, *viewProjection_);
 }
 
 void Player::OnCollision(Enemy* enemy) { 

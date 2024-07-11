@@ -58,6 +58,11 @@ public: // メンバ関数
 	void CheckAllCollision();
 
 	/// <summary>
+	/// フェーズフェードインの更新処理
+	/// </summary>
+	void UpdateFadeIn();
+
+	/// <summary>
 	/// フェーズゲームプレイの更新処理
 	/// </summary>
 	void UpdatekPlay();
@@ -66,6 +71,11 @@ public: // メンバ関数
 	/// フェーズデス演出の更新処理
 	/// </summary>
 	void UpdateKDeath();
+
+	/// <summary>
+	/// フェーズフェードアウトの更新処理
+	/// </summary>
+	void UpdateFadeOut();
 
 	/// <summary>
 	/// フェーズ切り替えメンバ関数
@@ -140,7 +150,5 @@ private: // メンバ変数
 	//終了フラグ
 	bool isFinished_ = false;
 
-	Fade* fade_ = nullptr;
-
-
+	Fade fade_;
 };
