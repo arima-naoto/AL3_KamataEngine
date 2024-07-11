@@ -318,6 +318,10 @@ void GameScene::UpdateKDeath() {
 		}
 	}
 
+	if (deathParticles_ && deathParticles_->GetIsFinished()) {
+		isFinished_ = true;
+	}
+
 #pragma endregion
 
 }

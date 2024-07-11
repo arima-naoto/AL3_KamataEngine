@@ -25,6 +25,9 @@ public://メンバ関数
 	/// 描画処理
 	/// </summary>
 	void Draw();
+	
+	//デスフラグのgetter
+	bool GetIsFinished() const { return isFinished_; }
 
 private://メンバ変数
 

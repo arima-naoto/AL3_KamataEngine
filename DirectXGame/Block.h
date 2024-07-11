@@ -4,8 +4,6 @@
 #include "ViewProjection.h"
 #include <vector>
 
-
-
 class Block 
 {
 public:

@@ -79,6 +79,9 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	///デスフラグのgetter
+	bool IsFinished() const { return this->isFinished_; }
+
 private: // メンバ変数
 
 	DirectXCommon* dxCommon_ = nullptr;
@@ -128,7 +131,10 @@ private: // メンバ変数
 	//デバッグカメラを有効
 	bool isDebugCameraActive_ = false;
 
-	//現在の現在フェーズ
+	//現在フェーズ
 	Phase phase_;
+
+	//終了フラグ
+	bool isFinished_ = false;
 
 };
