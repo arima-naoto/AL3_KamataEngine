@@ -106,7 +106,7 @@ void GameScene::Initialize() {
 	block_->Initialize(modelBlock_, &viewProjection_);
 
 	//スカイドームの生成と初期化
-	modelSkyDome_ = Model::CreateFromOBJ("SkyDome", true);
+	modelSkyDome_ = Model::CreateFromOBJ("skydome", true);
 	skyDome_ = new SkyDome();
 	skyDome_->Initialize(modelSkyDome_, &viewProjection_);
 
