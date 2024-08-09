@@ -178,10 +178,10 @@ void Player::JumpControl()
 Vector3 Player::CornerPosition(const Vector3& center, Corner corner) 
 { 
 	Vector3 offsetTable[kNumCorner] = {
-	    {+kwidth / 2.0f, -kheight / 2.0f, 0}, //  kRightBottom
-	    {-kwidth / 2.0f, -kheight / 2.0f, 0}, //  kLeftbottom
-	    {+kwidth / 2.0f, +kheight / 2.0f, 0}, //  kRightTop
-	    {-kwidth / 2.0f, +kheight / 2.0f, 0}, //  kLeftTop
+	    {+kWidth / 2.0f, -kHeight / 2.0f, 0}, //  kRightBottom
+	    {-kWidth / 2.0f, -kHeight / 2.0f, 0}, //  kLeftbottom
+	    {+kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kRightTop
+	    {-kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kLeftTop
 	};
 
 	return center + offsetTable[static_cast<uint32_t>(corner)];
@@ -232,7 +232,7 @@ void Player::MapCollisionTop(CollisionMapInfo& info) {
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 
 		float breadth = rect.bottom - worldTransform_.translation_.y;
-		float margin = kBlankHeight + 2.0f;
+		float margin = kBlank + 2.0f;
 
 		float moveY = breadth - margin;
 
@@ -342,7 +342,7 @@ void Player::MapCollisionRight(CollisionMapInfo& info) {
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 
 		float breadth = rect.left - worldTransform_.translation_.x;
-		float margin = kBlankWidth + 2.0f;
+		float margin = kBlank + 2.0f;
 
 		float moveX = breadth - margin;
 
@@ -395,7 +395,7 @@ void Player::MapCollisionLeft(CollisionMapInfo& info) {
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 
 		float breadth = rect.left - worldTransform_.translation_.x;
-		float margin = kBlankWidth / 2.0f;
+		float margin = kBlank / 2.0f;
 		// Y移動量を求める
 		float moveX = breadth + margin;
 		info.move.x = std::max(0.0f, moveX);
@@ -627,7 +627,7 @@ void Player::Update()
 	Player::StateSwitching(collisionMapInfo);
 
 	//ワールドトランスフォームの座標に加速度を加算する
-	worldTransform_.translation_ += velocity_;
+	//worldTransform_.translation_ += velocity_;
 
 	// 旋回制御
 	Player::TurningControl();
@@ -686,8 +686,8 @@ AABB Player::GetAABB()
 
 	AABB aabb;
 
-	aabb.min = {worldPos.x -  kwidth / 2.0f, worldPos.y -  kheight / 2.0f, worldPos.z -  kwidth / 2.0f};
-	aabb.max = {worldPos.x +  kwidth / 2.0f, worldPos.y +  kheight / 2.0f, worldPos.z +  kwidth / 2.0f};
+	aabb.min = {worldPos.x -  kWidth / 2.0f, worldPos.y -  kHeight / 2.0f, worldPos.z -  kWidth / 2.0f};
+	aabb.max = {worldPos.x +  kWidth / 2.0f, worldPos.y +  kHeight / 2.0f, worldPos.z +  kWidth / 2.0f};
 
 	return aabb;
 
