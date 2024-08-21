@@ -22,10 +22,11 @@
 
 /// ゲームのフェーズ
 enum class GamePhase {
-	kFadeIn, // フェードイン
-	kPlay,   // ゲームプレイ
-	kDeath,  // デス演出
-	kDeathFadeOut // フェードアウト
+	kFadeIn,       // フェードイン
+	kPlay,         // ゲームプレイ
+	kDeath,        // デス演出
+	kClearFadeOut, // クリアフェードアウト
+	kDeathFadeOut  // デス演出フェードアウト
 };
 
 /// <summary>
@@ -54,9 +55,6 @@ public: // メンバ関数
 	/// </summary>
 	void Initialize();
 
-	void EnemyCollision();
-	void GoalCollision();
-
 	/// <summary>
 	/// 全ての当たり判定を行う
 	/// </summary>
@@ -76,6 +74,8 @@ public: // メンバ関数
 	/// フェーズデス演出の更新処理
 	/// </summary>
 	void UpdateKDeath();
+
+	void UpdateKClearFadeOut();
 
 	/// <summary>
 	/// フェーズフェードアウトの更新処理

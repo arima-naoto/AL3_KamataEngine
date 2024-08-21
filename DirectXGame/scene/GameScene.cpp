@@ -83,7 +83,7 @@ void GameScene::Initialize() {
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(2, 18);
 	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(35, 18);
-	Vector3 goalPosition = mapChipField_->GetMapChipPositionByIndex(2, 4);
+	Vector3 goalPosition = mapChipField_->GetMapChipPositionByIndex(2, 3);
 
 	// マップチップフィールドの生成
 	mapChipField_ = new MapChipField();
@@ -147,9 +147,12 @@ void GameScene::Initialize() {
 #pragma endregion
 }
 
-void GameScene::EnemyCollision() {
+/// <summary>
+/// 全ての当たり判定を行う
+/// </summary>
+void GameScene::CheckAllCollision() {
 
-	#pragma region 自キャラと敵キャラの当たり判定
+#pragma region 自キャラと敵キャラの当たり判定
 
 	// 判定対象の1と2の座標
 
@@ -184,33 +187,19 @@ void GameScene::EnemyCollision() {
 
 #pragma endregion
 
-}
+	AABB aabb3;
 
-void GameScene::GoalCollision() {
+	aabb3 = goal_->GetAABB();
 
-	AABB aabb1, aabb2;
-
-	aabb1 = player_->GetAABB();
-	aabb2 = goal_->GetAABB();
-
-	if (IsCollision(aabb1, aabb2)) {
+	if (IsCollision(aabb1, aabb3)) {
 
 		goal_->OnCollision(player_);
-
 	}
 
-}
-
-/// <summary>
-/// 全ての当たり判定を行う
-/// </summary>
-void GameScene::CheckAllCollision() {
-
-	///敵とプレイヤーの衝突判定
-	GameScene::EnemyCollision();
-
-	///ゴールとプレイヤーの衝突判定
-	GameScene::GoalCollision();
+	if (goal_->IsGet()) {
+		fade_.Start(Fade::Status::FadeOut, 3.0f);
+		phase_ = GamePhase::kClearFadeOut;
+	}
 
 }
 
@@ -266,6 +255,8 @@ void GameScene::UpdatekPlay(){
 
 	// プレイヤーの更新処理
 	player_->Update();
+
+	goal_->Update();
 
 	// エネミーの更新処理
 	enemy_->Update();
@@ -401,7 +392,78 @@ void GameScene::UpdateKDeath() {
 
 }
 
-///フェーズフェードアウトの処理
+void GameScene::UpdateKClearFadeOut() {
+
+	fade_.Update();
+
+	// プレイヤーの更新処理
+	player_->Update();
+
+	// エネミーの更新処理
+	enemy_->Update();
+
+	// デバッグカメラが無効になっている時に
+	if (isDebugCameraActive_ == false) {
+		// カメラコントローラの更新処理を行う
+		cameraController_->Update();
+
+		// カメラコントローラからビュー行列とプロジェクション行列をコピーする
+		viewProjection_.matView = cameraController_->GetViewProjection().matView;
+		viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
+
+		// ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+	}
+
+	// デバッグカメラの更新処理
+
+#ifdef _DEBUG
+
+	// SPACEキーが押されている間
+	if (input_->TriggerKey(DIK_SPACE)) {
+		// デバッグカメラ有効のフラグがおられている時
+		if (isDebugCameraActive_ == false) {
+			// フラグを立てる
+			isDebugCameraActive_ = true;
+		}
+		// デバッグカメラ有効のフラグが立てられている場合
+		else if (isDebugCameraActive_ == true) {
+			// フラグを折る
+			isDebugCameraActive_ = false;
+		}
+	}
+
+#endif
+
+	// デバッグカメラ有効のフラグが立っている時に
+	if (isDebugCameraActive_ == true) {
+		// デバッグカメラの更新処理を行う
+		debugCamera_->Update();
+		// デバッグカメラからビュー行列とプロジェクション行列をコピーする
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+
+		// ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+	}
+
+	// ブロックの更新処理
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock) {
+				continue;
+			}
+			worldTransformBlock->UpdateMatrix();
+		}
+	}
+
+	if (fade_.IsFinished()) {
+		isFinished_ = true;
+	}
+
+}
+
+///フェーズデス演出フェードアウトの処理
 void GameScene::UpdateFadeOut() {
 
 	fade_.Update();
@@ -449,6 +511,12 @@ void GameScene::ChangePhase() {
 	case GamePhase::kDeath:
 
 		GameScene::UpdateKDeath();
+
+		break;
+
+	case GamePhase::kClearFadeOut:
+
+		GameScene::UpdateKClearFadeOut();
 
 		break;
 
@@ -572,6 +640,32 @@ void GameScene::Draw() {
 		if (deathParticles_ != nullptr) {
 			deathParticles_->Draw();
 		}
+
+		break;
+
+	case GamePhase::kClearFadeOut:
+
+		// スカイドームの描画
+		skyDome_->Draw();
+
+		// ブロックの描画
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock) {
+					continue;
+				}
+				block_->Draw(*worldTransformBlock);
+			}
+		}
+
+		// プレイヤーの描画
+
+		player_->Draw();
+
+		// 敵キャラの描画
+		enemy_->Draw();
+
+		fade_.Draw(commandList);
 
 		break;
 

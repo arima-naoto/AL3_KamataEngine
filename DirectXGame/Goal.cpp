@@ -2,6 +2,8 @@
 #include "Model.h"
 #include "ViewProjection.h"
 #include "cassert"
+#include "numbers"
+#include "Player.h"
 
 void Goal::Initialize(Model *model,ViewProjection *viewProjection,const Vector3 &position) {
 
@@ -13,6 +15,7 @@ void Goal::Initialize(Model *model,ViewProjection *viewProjection,const Vector3 
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
+	worldTransform_.rotation_.y = std::numbers::pi_v<float> ;
 
 }
 
@@ -24,7 +27,12 @@ void Goal::Update() {
 
 void Goal::Draw() {
 
+	if (isGet != false) {
+		return;
+	}
+
 	model_->Draw(worldTransform_, *viewProjection_);
+
 
 }
 
@@ -32,8 +40,7 @@ void Goal::OnCollision(Player* player) {
 
 	(void)player;
 
-	worldTransform_.rotation_ += {0, 0.5f, 0};
-
+	isGet = true;
 }
 
 Vector3 Goal::GetWorldPosition() {

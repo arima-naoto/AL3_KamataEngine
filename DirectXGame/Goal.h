@@ -22,6 +22,8 @@ public:
 
 	AABB GetAABB();
 
+	bool IsGet() { return this->isGet; }
+
 private:
 
 	Model* model_ = nullptr;
@@ -32,6 +34,9 @@ private:
 
 	static inline const float kwidth = 1.85f;
 	static inline const float kheight = 1.85f;
+
+	///ゲットされたか
+	bool isGet = false;
 
 
 };
