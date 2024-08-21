@@ -17,13 +17,15 @@
 #include "Rendering.h"
 #include "DeathParticles.h"
 #include "Fade.h"
+#include "Goal.h"
+
 
 /// ゲームのフェーズ
 enum class GamePhase {
 	kFadeIn, // フェードイン
 	kPlay,   // ゲームプレイ
 	kDeath,  // デス演出
-	kFadeOut // フェードアウト
+	kDeathFadeOut // フェードアウト
 };
 
 /// <summary>
@@ -112,6 +114,9 @@ private: // メンバ変数
     //3Dモデルデータ(敵機)
 	Model* modelEnemy_ = nullptr;
 	Enemy* enemy_ = nullptr;
+
+	Model* modelGoal_ = nullptr;
+	Goal* goal_ = nullptr;
 	
 	//3Dモデルデータ(ブロック)
 	Model* modelBlock_ = nullptr;

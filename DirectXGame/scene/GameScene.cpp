@@ -22,6 +22,9 @@ GameScene::~GameScene() {
 	delete modelEnemy_;
 	delete enemy_;
 
+	delete modelGoal_;
+	delete goal_;
+
 	//ブロックの解放
 	delete modelBlock_;
 	delete block_;
@@ -78,13 +81,14 @@ void GameScene::Initialize() {
 
 #pragma region 各オブジェクトの生成と初期化
 
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(2, 18);
 	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(35, 18);
+	Vector3 goalPosition = mapChipField_->GetMapChipPositionByIndex(2, 4);
 
 	// マップチップフィールドの生成
 	mapChipField_ = new MapChipField();
 	// csvファイル読み込み
-	mapChipField_->LoadMapChipCsv("Resources/DebugBlock.csv");
+	mapChipField_->LoadMapChipCsv("Resources/block.csv");
 
 	//自キャラの生成と初期化
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
@@ -99,6 +103,10 @@ void GameScene::Initialize() {
 	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
 	enemy_ = new Enemy();
 	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+
+	modelGoal_ = Model::CreateFromOBJ("goal", true);
+	goal_ = new Goal();
+	goal_->Initialize(modelGoal_, &viewProjection_, goalPosition);
 
 	//ブロックの生成と初期化
 	modelBlock_ = Model::CreateFromOBJ("block",true);
@@ -134,7 +142,7 @@ void GameScene::Initialize() {
 	phase_ = GamePhase::kFadeIn;
 	
 	fade_.Initialize();
-	fade_.Start(Fade::Status::FadeIn, 3.0f);
+	fade_.Start(Fade::Status::FadeIn, 2.0f);
 
 #pragma endregion
 }
@@ -189,11 +197,12 @@ void GameScene::UpdateFadeIn() {
 	fade_.Update();
 
 	// プレイヤーの更新処理
-
 	player_->Update();
 
 	// スカイドームの更新処理
 	skyDome_->Update();
+
+	goal_->Update();
 
 	// デバッグカメラが無効になっている時に
 	if (isDebugCameraActive_ == false) {
@@ -308,6 +317,8 @@ void GameScene::UpdateKDeath() {
 	// スカイドームの更新処理
 	skyDome_->Update();
 
+	goal_->Update();
+
 	// エネミーの更新処理
 	enemy_->Update();
 
@@ -360,7 +371,7 @@ void GameScene::UpdateKDeath() {
 
 	if (deathParticles_ && deathParticles_->GetIsFinished()) {
 		fade_.Start(Fade::Status::FadeOut, 3.0f);
-		phase_ = GamePhase::kFadeOut;
+		phase_ = GamePhase::kDeathFadeOut;
 	}
 
 #pragma endregion
@@ -371,6 +382,8 @@ void GameScene::UpdateKDeath() {
 void GameScene::UpdateFadeOut() {
 
 	fade_.Update();
+
+	goal_->Update();
 
 	// スカイドームの更新処理
 	skyDome_->Update();
@@ -416,7 +429,7 @@ void GameScene::ChangePhase() {
 
 		break;
 
-	case GamePhase::kFadeOut:
+	case GamePhase::kDeathFadeOut:
 
 		GameScene::UpdateFadeOut();
 
@@ -464,6 +477,8 @@ void GameScene::Draw() {
 		// スカイドームの描画
 		skyDome_->Draw();
 
+		goal_->Draw();
+
 		// ブロックの描画
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -490,6 +505,8 @@ void GameScene::Draw() {
 		// スカイドームの描画
 		skyDome_->Draw();
 
+		goal_->Draw();
+
 		// ブロックの描画
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -513,6 +530,8 @@ void GameScene::Draw() {
 		// スカイドームの描画
 		skyDome_->Draw();
 
+		goal_->Draw();
+
 		// ブロックの描画
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -533,10 +552,12 @@ void GameScene::Draw() {
 
 		break;
 
-	case GamePhase::kFadeOut:
+	case GamePhase::kDeathFadeOut:
 
 		// スカイドームの描画
 		skyDome_->Draw();
+
+		goal_->Draw();
 
 		// ブロックの描画
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -556,7 +577,6 @@ void GameScene::Draw() {
 		break;
 	}
 
-	
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
