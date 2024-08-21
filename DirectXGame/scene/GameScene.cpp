@@ -147,21 +147,17 @@ void GameScene::Initialize() {
 #pragma endregion
 }
 
-/// <summary>
-/// 全ての当たり判定を行う
-/// </summary>
-void GameScene::CheckAllCollision() {
+void GameScene::EnemyCollision() {
 
-#pragma region 自キャラと敵キャラの当たり判定
+	#pragma region 自キャラと敵キャラの当たり判定
 
-	//判定対象の1と2の座標
+	// 判定対象の1と2の座標
 
 	AABB aabb1, aabb2;
 
-	//自キャラの座標
+	// 自キャラの座標
 	aabb1 = player_->GetAABB();
-	//自キャラと敵弾の当たり判定
-
+	// 自キャラと敵弾の当たり判定
 	aabb2 = enemy_->GetAABB();
 
 	// AABB同士の交差判定
@@ -172,22 +168,49 @@ void GameScene::CheckAllCollision() {
 		enemy_->OnCollision(player_);
 	}
 
-	//自キャラがデス状態
+	// 自キャラがデス状態
 	if (player_->GetIsDead()) {
 
-		//デス演出フェーズに切り替え
+		// デス演出フェーズに切り替え
 		phase_ = GamePhase::kDeath;
 
-		//自キャラの座標を取得
+		// 自キャラの座標を取得
 		const Vector3& deathParticlesPosition = player_->GetWorldPosition();
-		
-		//自キャラの座標にデスパーティクルを発生、初期化
+
+		// 自キャラの座標にデスパーティクルを発生、初期化
 		deathParticles_ = new DeathParticles();
 		deathParticles_->Initialize(modelDeathParticles_, &viewProjection_, deathParticlesPosition);
-
 	}
 
 #pragma endregion
+
+}
+
+void GameScene::GoalCollision() {
+
+	AABB aabb1, aabb2;
+
+	aabb1 = player_->GetAABB();
+	aabb2 = goal_->GetAABB();
+
+	if (IsCollision(aabb1, aabb2)) {
+
+		goal_->OnCollision(player_);
+
+	}
+
+}
+
+/// <summary>
+/// 全ての当たり判定を行う
+/// </summary>
+void GameScene::CheckAllCollision() {
+
+	///敵とプレイヤーの衝突判定
+	GameScene::EnemyCollision();
+
+	///ゴールとプレイヤーの衝突判定
+	GameScene::GoalCollision();
 
 }
 

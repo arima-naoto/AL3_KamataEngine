@@ -54,6 +54,9 @@ public: // メンバ関数
 	/// </summary>
 	void Initialize();
 
+	void EnemyCollision();
+	void GoalCollision();
+
 	/// <summary>
 	/// 全ての当たり判定を行う
 	/// </summary>
