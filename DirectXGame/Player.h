@@ -207,12 +207,12 @@ public://カプセル化とアクセッサ
 
 private://メンバ変数
 
-	//ワールド変換データ
+		// ワールド変換データ
 	WorldTransform worldTransform_;
-	//モデル
+	// モデル
 	Model* model_ = nullptr;
-	//ビュープロジェクション
-	ViewProjection *viewProjection_ = nullptr;
+	// ビュープロジェクション
+	ViewProjection* viewProjection_ = nullptr;
 	Vector3 velocity_ = {};
 	LRDirection lrDirection_ = LRDirection::kRight;
 	// 旋回開始時の角度
@@ -224,35 +224,29 @@ private://メンバ変数
 	// マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
 
-	// 旋回時間
+	static inline const float kAcceleration = 0.01f;
+
+	static inline const float kAttenuation = 0.2f;
+
+	static inline const float kLimitRunSpeed = 0.2f;
+
 	static inline const float kTimeTurn = 0.3f;
 
-	static inline const float kAcceleration = 0.01f;
-	//移動減衰
-	static inline const float kAttenuation = 0.15f;
-	//着地減衰
-	static inline const float kAttenuationLanding = 0.4f;
-	//最大速度制限
-	static inline const float kLimitRunSpeed = 0.09f;
-	// 重力加速度(下方向)
-	static inline const float kGravityAcceleration = 0.02f;
-	// 最大落下速度(下方向)
-	static inline const float kLimitFallSpeed = 1.0f / 4.5f;
-	// ジャンプ初速(上方向)
-	static inline const float kJumpAcceleration = 0.36f;
-	//キャラクターの当たり判定サイズ
-	static inline const float kwidth = 1.90f;  //横幅
-	static inline const float kheight = 1.85f; // 縦幅
+	static inline const float kGravityAcceleration = 0.03f;
 
-	static inline const float kBlankWidth = 0.1f;
-	static inline const float kBlankHeight = 0.1f;
+	static inline const float kLimitFallSpeed = 0.5f;
+
+	static inline const float kJumpAcceleration = 0.65f;
+
+	static inline const float kwidth = 1.85f;
+	static inline const float kheight = 1.85f;
+
+	static inline const float kAttenuationLanding = 0.5f;
+	static inline const float kAttenuationWall = 1.0f;
 
 	static inline const float kBlank = 0.1f;
 
-	///着地時の移動減衰率
-	static inline const float kAttenuationWall = 1.0f;
-
-	///自キャラの死亡フラグ
+	/// 自キャラの死亡フラグ
 	bool isDead_ = false;
 
 };

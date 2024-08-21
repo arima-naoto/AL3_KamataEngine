@@ -234,7 +234,7 @@ void Player::MapCollisionTop(CollisionMapInfo& info) {
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 
 		float breadth = rect.bottom - worldTransform_.translation_.y;
-		float margin = kBlankHeight + 2.0f;
+		float margin = kBlank + 2.0f;
 
 		float moveY = breadth - margin;
 
@@ -344,7 +344,7 @@ void Player::MapCollisionRight(CollisionMapInfo& info) {
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 
 		float breadth = rect.left - worldTransform_.translation_.x;
-		float margin = kBlankWidth + 2.0f;
+		float margin = kBlank + 2.0f;
 
 		float moveX = breadth - margin;
 
@@ -397,7 +397,7 @@ void Player::MapCollisionLeft(CollisionMapInfo& info) {
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 
 		float breadth = rect.left - worldTransform_.translation_.x;
-		float margin = kBlankWidth / 2.0f;
+		float margin = kBlank / 2.0f;
 		// Y移動量を求める
 		float moveX = breadth + margin;
 		info.move.x = std::max(0.0f, moveX);
@@ -628,7 +628,7 @@ void Player::Update()
 	Player::StateSwitching(collisionMapInfo);
 
 	//ワールドトランスフォームの座標に加速度を加算する
-	worldTransform_.translation_ += velocity_;
+	//worldTransform_.translation_ += velocity_;
 
 	// 旋回制御
 	Player::TurningControl();
