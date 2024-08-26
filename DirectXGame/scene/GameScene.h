@@ -18,7 +18,7 @@
 #include "DeathParticles.h"
 #include "Fade.h"
 #include "Goal.h"
-
+#include "vector"
 
 /// ゲームのフェーズ
 enum class GamePhase {
@@ -119,7 +119,7 @@ private: // メンバ変数
 
     //3Dモデルデータ(敵機)
 	Model* modelEnemy_ = nullptr;
-	Enemy* enemy_ = nullptr;
+	std::vector<Enemy*> enemy_;
 
 	Model* modelGoal_ = nullptr;
 	Goal* goal_ = nullptr;

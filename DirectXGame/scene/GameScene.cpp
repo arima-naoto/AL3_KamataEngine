@@ -4,6 +4,8 @@
 #include <AxisIndicator.h>
 #include "MyStruct.h"
 
+#define CREATE_ENEMY 2
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
@@ -100,6 +102,15 @@ void GameScene::Initialize() {
 	modelDeathParticles_ = Model::CreateFromOBJ("DeathParticles", true);
 
 	//敵キャラの生成と初期化
+
+	for (int32_t index = 0; index < CREATE_ENEMY; index++) {
+
+		modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
+
+		Vector3 enemyPosition = ;
+
+	}
+
 	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
 	enemy_ = new Enemy();
 	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
