@@ -75,12 +75,15 @@ public: // メンバ関数
 	/// </summary>
 	void UpdateKDeath();
 
+	/// <summary>
+	/// フェーズクリアフェードアウトの更新処理
+	/// </summary>
 	void UpdateKClearFadeOut();
 
 	/// <summary>
-	/// フェーズフェードアウトの更新処理
+	/// フェーズデス演出フェードアウトの更新処理
 	/// </summary>
-	void UpdateFadeOut();
+	void UpdatekDeathFadeOut();
 
 	/// <summary>
 	/// フェーズ切り替えメンバ関数

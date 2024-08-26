@@ -464,7 +464,7 @@ void GameScene::UpdateKClearFadeOut() {
 }
 
 ///フェーズデス演出フェードアウトの処理
-void GameScene::UpdateFadeOut() {
+void GameScene::UpdatekDeathFadeOut() {
 
 	fade_.Update();
 
@@ -522,7 +522,7 @@ void GameScene::ChangePhase() {
 
 	case GamePhase::kDeathFadeOut:
 
-		GameScene::UpdateFadeOut();
+		GameScene::UpdatekDeathFadeOut();
 
 		break;
 
