@@ -29,15 +29,14 @@ struct CollisionMapInfo {
 	Vector3 move;           // 移動量
 };
 
-/// <summary>
-/// 列挙体Cornerの宣言
-/// </summary>
 enum Corner {
-	kRightBottom, // 右下
+
+	KRightBottom, // 右下
 	kLeftBottom,  // 左下
 	kRightTop,    // 右上
 	kLeftTop,     // 左上
 	kNumCorner    // 要素数
+
 };
 
 /// <summary>
@@ -194,6 +193,8 @@ public://カプセル化とアクセッサ
 	const WorldTransform& GetWorldTransform() { return worldTransform_; };
 
 	const Vector3& GetVelocity() const { return velocity_; }
+
+	bool GetIsJump() { return this->isJump; }
 	
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
@@ -237,6 +238,8 @@ private://メンバ変数
 	static inline const float kLimitFallSpeed = 0.5f;
 
 	static inline const float kJumpAcceleration = 0.65f;
+
+	bool isJump = false;
 
 	static inline const float kwidth = 1.85f;
 	static inline const float kheight = 1.85f;

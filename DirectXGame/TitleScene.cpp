@@ -52,7 +52,7 @@ void TitleScene::ChangeFade() {
 		bar_->Update();
 
 		if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-			fade_->Start(Fade::Status::FadeOut, 3.0f);
+			fade_->Start(Fade::Status::FadeOut, 2.0f);
 			phase_ = TitlePhase::kFadeOut;
 		}
 

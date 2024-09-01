@@ -8,24 +8,15 @@
 #include <MapChipField.h>
 #include "DebugText.h"
 #include "Fade.h"
-#include "GameScene.h"
+#include "Enemy.h"
 using namespace std;
 
-/// <summary>
 /// インアウトサイン
-/// </summary>
-/// <param name="easing">イージング</param>
-/// <returns></returns>
 float Player::EaseInOutSine(float easing) { 
 	return -(cosf(float(M_PI) * easing) - 1) / 2; 
 }
 
-/// <summary>
 /// 初期化処理
-/// </summary>
-/// <param name="model">3Dモデルデータ</param>
-/// <param name="viewProjection">ビュープロジェクション</param>
-/// <param name="position">三次元座標</param>
 void Player::Initialize(Model* model,ViewProjection * viewProjection,const Vector3 &position) {
 
 	//NULLポインタチェック
@@ -46,9 +37,7 @@ void Player::Initialize(Model* model,ViewProjection * viewProjection,const Vecto
 
 #pragma region 移動用メンバ関数の定義
 
-/// <summary>
 /// 右の減速関数
-/// </summary>
 void Player::IsRightDecelerate() 
 {
 	// 移動中の右入力
@@ -58,9 +47,7 @@ void Player::IsRightDecelerate()
 	}
 }
 
-/// <summary>
 /// 左の減速関数
-/// </summary>
 void Player::IsLeftDecelerate() 
 {
 	// 右移動中の左入力
@@ -70,9 +57,7 @@ void Player::IsLeftDecelerate()
 	}
 }
 
-/// <summary>
 /// 右の振り向き
-/// </summary>
 void Player::RightDirection()
 {
 	if (lrDirection_ != LRDirection::kRight) {
@@ -82,9 +67,7 @@ void Player::RightDirection()
 	}
 }
 
-/// <summary>
 /// 左の振り向き
-/// </summary>
 void Player::LeftDirection() 
 {
 	if (lrDirection_ != LRDirection::kLeft) {
@@ -94,11 +77,7 @@ void Player::LeftDirection()
 	}
 }
 
-/// <summary>
 /// 角度補間
-/// </summary>
-/// <param name="rotationY">角度Y</param>
-/// <returns></returns>
 void Player::RotateInterpolation(float rotationY) {
 
 	float Turning = 1 + turnTimer_ / kTimeTurn;
@@ -109,9 +88,7 @@ void Player::RotateInterpolation(float rotationY) {
 	worldTransform_.rotation_.y = lerp(turnFirstRotationY_, rotationY, easing);
 }
 
-/// <summary>
 /// 旋回制御
-/// </summary>
 void Player::TurningControl() 
 {
 	if (turnTimer_ > 0.0f) 
@@ -131,9 +108,7 @@ void Player::TurningControl()
 	}
 }
 
-/// <summary>
 /// ジャンプ制御
-/// </summary>
 void Player::JumpControl() 
 {
 	// 着地フラグ
@@ -171,12 +146,7 @@ void Player::JumpControl()
 
 #pragma region 衝突判定用メンバ関数の定義
 
-/// <summary>
 /// 指定した角の座標計算
-/// </summary>
-/// <param name="center"></param>
-/// <param name="corner"></param>
-/// <returns></returns>
 Vector3 Player::CornerPosition(const Vector3& center, Corner corner) 
 { 
 	Vector3 offsetTable[kNumCorner] = {
@@ -189,10 +159,7 @@ Vector3 Player::CornerPosition(const Vector3& center, Corner corner)
 	return center + offsetTable[static_cast<uint32_t>(corner)];
 }
 
-/// <summary>
 /// マップ衝突判定上方向
-/// </summary>
-/// <param name="info"></param>
 void Player::MapCollisionTop(CollisionMapInfo& info) {
 	
 	// 上昇あり？
@@ -246,10 +213,7 @@ void Player::MapCollisionTop(CollisionMapInfo& info) {
 	}
 }
 
-/// <summary>
 /// マップ衝突判定下方向
-/// </summary>
-/// <param name="info"></param>
 void Player::MapCollisionBottom(CollisionMapInfo& info) {
 
 	// 下降なし？
@@ -277,7 +241,7 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 	}
 
 	// 右下点の判定 (kRightBottomについて判定する)
-	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom]);
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[KRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
@@ -300,10 +264,7 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 	}
 }
 
-/// <summary>
 /// マップ衝突判定右方向
-/// </summary>
-/// <param name="info"></param>
 void Player::MapCollisionRight(CollisionMapInfo& info) {
 	// 右方向への移動がない場合
 	if (info.move.x <= 0) {
@@ -330,7 +291,7 @@ void Player::MapCollisionRight(CollisionMapInfo& info) {
 	}
 
 	// 右下点の判定 (kRightBottomについて判定する)
-	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom]);
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[KRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
@@ -355,10 +316,7 @@ void Player::MapCollisionRight(CollisionMapInfo& info) {
 	}
 }
 
-/// <summary>
 /// マップ衝突判定左方向
-/// </summary>
-/// <param name="info"></param>
 void Player::MapCollisionLeft(CollisionMapInfo& info) {
 	// 左方向の移動か？
 	if (info.move.x >= 0) {
@@ -406,10 +364,7 @@ void Player::MapCollisionLeft(CollisionMapInfo& info) {
 	}
 }
 
-/// <summary>
 /// マップ衝突判定
-/// </summary>
-/// <param name="info"></param>
 void Player::MapCollision(CollisionMapInfo& info) 
 { 
 	//マップ衝突判定上方向メンバ関数の呼び出し
@@ -425,20 +380,14 @@ void Player::MapCollision(CollisionMapInfo& info)
 	Player::MapCollisionLeft(info);
 }
 
-/// <summary>
 /// 判定結果反映移動
-/// </summary>
-/// <param name="info"></param>
 void Player::ReflectMove(const CollisionMapInfo& info) 
 {
 	//移動
 	worldTransform_.translation_ += info.move;
 }
 
-/// <summary>
 /// 天井衝突時の処理
-/// </summary>
-/// <param name="info"></param>
 void Player::CeilingContact(const CollisionMapInfo& info) {
 	//天井に当たった？
 	if (info.isCeiling) {
@@ -447,10 +396,7 @@ void Player::CeilingContact(const CollisionMapInfo& info) {
 	}
 }
 
-/// <summary>
 /// 接地状態の処理
-/// </summary>
-/// <param name="info"></param>
 void Player::RandingState(const CollisionMapInfo& info) {
 	// ジャンプ開始
 	if (velocity_.y > 0.0f) {
@@ -475,7 +421,7 @@ void Player::RandingState(const CollisionMapInfo& info) {
 		}
 
 		// 右下点の判定(kRightBottom + Vector3(0, -kBlank, 0)について判定する)
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom] + Vector3(0, -kBlank, 0));
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[KRightBottom] + Vector3(0, -kBlank, 0));
 		mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 		if (mapChipType == MapChipType::kBlock) {
 			hit = true;
@@ -493,10 +439,7 @@ void Player::RandingState(const CollisionMapInfo& info) {
 	}
 }
 
-/// <summary>
 /// 状態切り替えの処理
-/// </summary>
-/// <param name="info"></param>
 void Player::StateSwitching(const CollisionMapInfo& info) 
 {
 	//自キャラが接地状態?
@@ -521,10 +464,7 @@ void Player::StateSwitching(const CollisionMapInfo& info)
 	}
 }
 
-/// <summary>
 /// 壁接触時処理
-/// </summary>
-/// <param name="inifo"></param>
 void Player::WallContact(const CollisionMapInfo& info) {
 	//壁接触による減速
 	if (info.ishitWall) {
@@ -534,28 +474,26 @@ void Player::WallContact(const CollisionMapInfo& info) {
 
 #pragma endregion
 
-/// <summary>
 /// 更新処理
-/// </summary>
 void Player::Update() 
 {
 #pragma region プレイヤーの挙動
 
 	//==============================================<①移動入力>==========================================================
 	
-	bool isRightBottom = Input::GetInstance()->PushKey(DIK_RIGHT);
-	bool isLeftBottom = Input::GetInstance()->PushKey(DIK_LEFT);
-	bool isUpBottom = Input::GetInstance()->PushKey(DIK_UP);
+	bool isRightButton = Input::GetInstance()->PushKey(DIK_RIGHT);
+	bool isLeftButton = Input::GetInstance()->PushKey(DIK_LEFT);
+	bool isUpButton = Input::GetInstance()->PushKey(DIK_UP);
 
 	if (onGround_) {
 
 		// 移動入力
 		// 左右移動操作
-		if (isRightBottom || isLeftBottom) {
+		if (isRightButton || isLeftButton) {
 			// 左右加速
 			Vector3 acceleration = {};
 		
-			if (isRightBottom) 
+			if (isRightButton) 
 			{
 				//右の減速
 				Player::IsRightDecelerate();
@@ -566,7 +504,7 @@ void Player::Update()
 				// 右加速を加算する
 				acceleration.x += kAcceleration;
 
-			} else if (isLeftBottom) {
+			} else if (isLeftButton) {
 
 				//左の減速
 				Player::IsLeftDecelerate();
@@ -590,9 +528,18 @@ void Player::Update()
 			}
 		}
 
-		if (isUpBottom) {
-			//ジャンプ初速
-			velocity_ += Vector3(0, kJumpAcceleration, 0);
+		if (isUpButton) {
+
+			isJump = true;
+
+			if (isJump) {
+				// ジャンプ初速
+				velocity_ += Vector3(0, kJumpAcceleration, 0);
+			}
+		} else if (!isUpButton) {
+
+			isJump = false;
+
 		}
 
 	} else {
@@ -639,9 +586,7 @@ void Player::Update()
 #pragma endregion 
 }
 	
-/// <summary>
 /// 描画処理
-/// </summary>
 void Player::Draw() {
 
 	//死亡フラグがtrueになってなければ
@@ -654,15 +599,17 @@ void Player::Draw() {
 }
 
 void Player::OnCollision(Enemy* enemy) { 
+
 	(void)enemy;
+
+	if (isJump != false) {
+		return;
+	}
 
 	isDead_ = true;
 }
 
-/// <summary>
 /// ワールド座標を取得
-/// </summary>
-/// <returns></returns>
 Vector3 Player::GetWorldPosition() {
 
 	//ワールド座標を入れる変数
@@ -677,10 +624,7 @@ Vector3 Player::GetWorldPosition() {
 
 }
 
-/// <summary>
 /// AABBを取得
-/// </summary>
-/// <returns></returns>
 AABB Player::GetAABB() 
 {
 

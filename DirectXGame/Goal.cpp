@@ -15,7 +15,7 @@ void Goal::Initialize(Model *model,ViewProjection *viewProjection,const Vector3 
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
-	worldTransform_.rotation_.y = std::numbers::pi_v<float> ;
+	worldTransform_.rotation_.y = std::numbers::pi_v<float>;
 
 }
 

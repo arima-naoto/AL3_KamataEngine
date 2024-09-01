@@ -16,7 +16,13 @@ void SkyDome::Initialize(Model *model,ViewProjection *viewProjection)
 	viewProjection_ = viewProjection;
 }
 
-void SkyDome::Update() {}
+void SkyDome::Update() {
+
+	worldTransform_.rotation_ += Vector3(0, 0.001f, 0);
+
+	worldTransform_.UpdateMatrix();
+
+}
 
 void SkyDome::Draw() 
 {

@@ -1,8 +1,14 @@
+#define NOMINMAX
 #include "Enemy.h"
+#include "Model.h"
+#include "ViewProjection.h"
 #include <cassert>
 #include <numbers>
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <algorithm>
+#include <Player.h>
+using namespace std;
 
 /// <summary>
 /// 度をラジアンに変換する
@@ -50,7 +56,7 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection,const Vector
 void Enemy::Update() 
 { 
 	//移動
-	worldTransform_.translation_.x += velocity_.x;
+	worldTransform_.translation_ += velocity_;
 
 	//タイマーを加算
 	walkTimer_ += 1.0f / 60.0f;
@@ -74,7 +80,14 @@ void Enemy::Update()
 /// 描画処理
 /// </summary>
 void Enemy::Draw() {
+
+	if (isDead_ != false) {
+		return;
+	}
+
 	model_->Draw(worldTransform_, *viewProjection_);
+
+	
 }
 
 /// <summary>
@@ -82,7 +95,21 @@ void Enemy::Draw() {
 /// </summary>
 /// <param name="player"></param>
 void Enemy::OnCollision(Player* player) { 
+
 	(void)player;
+
+	//衝突しているならば加速度を0にする
+	moveTranslate_ = true;
+
+	if (moveTranslate_ == true) 
+	{
+		worldTransform_.translation_.y -= 0.5f;
+
+		if (worldTransform_.translation_.y <= 1) {
+			isDead_ = true;
+		}
+
+	}
 }
 
 Vector3 Enemy::GetWorldPosition() {

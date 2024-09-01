@@ -114,6 +114,7 @@
     <ClCompile Include="CameraController.cpp" />
     <ClCompile Include="DeathParticles.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="ExplainBar.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="Goal.cpp" />
     <ClCompile Include="main.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="CameraController.h" />
     <ClInclude Include="DeathParticles.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="ExplainBar.h" />
     <ClInclude Include="Fade.h" />
     <ClInclude Include="Goal.h" />
     <ClInclude Include="input\Input.h" />

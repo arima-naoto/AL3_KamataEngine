@@ -1,9 +1,9 @@
 #pragma once
 #include "WorldTransform.h"
-#include "Model.h"
-#include "ViewProjection.h"
 #include "MyStruct.h"
 
+class Model;
+class ViewProjection;
 //Playerクラスを前方宣言する
 class Player;
 
@@ -13,38 +13,34 @@ class Player;
 class Enemy {
 public://メンバ関数
 
-	/// <summary>
 	/// 度をラジアンに変換するメンバ関数を用意
-	/// </summary>
-	/// <param name="pi"></param>
-	/// <param name="radian"></param>
-	/// <returns></returns>
 	float Lerp(float radian);
 
-	/// <summary>
 	/// 初期化処理
-	/// </summary>
 	void Initialize(Model* model, ViewProjection* viewprojection,const Vector3& position);
 
-	/// <summary>
 	/// 更新処理
-	/// </summary>
 	void Update();
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
-	/// <param name="viewprojection"></param>
+	/// 描画処理
 	void Draw();
 
-	//衝突応答
+	/// 衝突応答
 	void OnCollision(Player* player);
 
 public:
 
+	const WorldTransform& GetWorldTransform() { return worldTransform_; };
+
 	Vector3 GetWorldPosition();
 
 	AABB GetAABB();
+
+	bool GetIsDead() const { return this->isDead_; }
+
+	
+	bool GetMoveTranslate() { return this->moveTranslate_; }
+	bool SetMoveTranslate(bool moveTranslate) { return this->moveTranslate_ = moveTranslate; }
 
 private://メンバ変数
 
@@ -78,5 +74,10 @@ private://メンバ変数
 	static inline const float kWidth = 2.0f;
 	static inline const float kHeight = 2.0f;
 
+	//衝突したときに座標が動くフラグ
+	bool moveTranslate_ = false;
+	
+	
+	bool isDead_ = false;
 
 };

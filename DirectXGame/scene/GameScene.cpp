@@ -3,8 +3,19 @@
 #include <cassert>
 #include <AxisIndicator.h>
 #include "MyStruct.h"
+#include "Player.h"
+#include "DebugCamera.h"
+#include "SkyDome.h"
+#include "MapChipField.h"
+#include "Block.h"
+#include "CameraController.h"
+#include "Enemy.h"
+#include "DeathParticles.h"
+#include "Goal.h"
+#include "Bar.h"
+#include "ExplainBar.h"
 
-#define CREATE_ENEMY 2
+#define CREATE_ENEMY 3
 
 GameScene::GameScene() {}
 
@@ -22,7 +33,10 @@ GameScene::~GameScene() {
 
 	//敵キャラの解放
 	delete modelEnemy_;
-	delete enemy_;
+
+	for (auto* enemy : enemys_) {
+		delete enemy;
+	}
 
 	delete modelGoal_;
 	delete goal_;
@@ -84,7 +98,6 @@ void GameScene::Initialize() {
 #pragma region 各オブジェクトの生成と初期化
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(2, 18);
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(35, 18);
 	Vector3 goalPosition = mapChipField_->GetMapChipPositionByIndex(2, 3);
 
 	// マップチップフィールドの生成
@@ -103,17 +116,15 @@ void GameScene::Initialize() {
 
 	//敵キャラの生成と初期化
 
+	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
+
 	for (int32_t index = 0; index < CREATE_ENEMY; index++) {
 
-		modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
-
-		Vector3 enemyPosition = ;
-
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(82 + (index * 5), 15 - (index * 1));
+		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+		enemys_.push_back(newEnemy);
 	}
-
-	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
-	enemy_ = new Enemy();
-	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
 
 	modelGoal_ = Model::CreateFromOBJ("goal", true);
 	goal_ = new Goal();
@@ -129,6 +140,17 @@ void GameScene::Initialize() {
 	skyDome_ = new SkyDome();
 	skyDome_->Initialize(modelSkyDome_, &viewProjection_);
 
+
+	modelClearBar_ = Model::CreateFromOBJ("GameClearText", true);
+	clearBar_ = new Bar();
+	clearBar_->Initialize(modelClearBar_, &viewProjection_);
+
+	modelExplainBar_ = Model::CreateFromOBJ("ExplainText", true);
+	explainBar_ = new ExplainBar();
+	explainBar_->Initialize(modelExplainBar_, &viewProjection_);
+
+#pragma region カメラコントローラ
+
 	// カメラコントローラのインスタンス作成
 	cameraController_ = new CameraController();
 	// 初期化処理
@@ -139,6 +161,8 @@ void GameScene::Initialize() {
 	cameraController_->Reset();
 
 	cameraController_->SetMovableArea({21, 175, 0, 50});
+
+#pragma endregion
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
@@ -153,14 +177,12 @@ void GameScene::Initialize() {
 	phase_ = GamePhase::kFadeIn;
 	
 	fade_.Initialize();
-	fade_.Start(Fade::Status::FadeIn, 2.0f);
+	fade_.Start(Fade::Status::FadeIn, 3.0f);
 
 #pragma endregion
 }
 
-/// <summary>
 /// 全ての当たり判定を行う
-/// </summary>
 void GameScene::CheckAllCollision() {
 
 #pragma region 自キャラと敵キャラの当たり判定
@@ -172,14 +194,31 @@ void GameScene::CheckAllCollision() {
 	// 自キャラの座標
 	aabb1 = player_->GetAABB();
 	// 自キャラと敵弾の当たり判定
-	aabb2 = enemy_->GetAABB();
 
-	// AABB同士の交差判定
-	if (IsCollision(aabb1, aabb2)) {
-		// 自キャラの衝突時コールバック関数を呼び出す
-		player_->OnCollision(enemy_);
+	for (auto* enemy : enemys_) {
 
-		enemy_->OnCollision(player_);
+		aabb2 = enemy->GetAABB();
+
+		if (!player_->GetIsJump()) {
+			if (IsCollision(aabb1, aabb2)) {
+
+				player_->OnCollision(enemy);
+			}
+		} else if(player_->GetIsJump()){
+
+			if (IsCollision(aabb1, aabb2)) {
+
+				enemy->SetMoveTranslate(true);
+
+			}
+
+		}
+
+		if (enemy->GetMoveTranslate()) {
+
+			enemy->OnCollision(player_);
+		}
+
 	}
 
 	// 自キャラがデス状態
@@ -208,7 +247,10 @@ void GameScene::CheckAllCollision() {
 	}
 
 	if (goal_->IsGet()) {
-		fade_.Start(Fade::Status::FadeOut, 3.0f);
+
+		
+
+		fade_.Start(Fade::Status::FadeOut, 2.0f);
 		phase_ = GamePhase::kClearFadeOut;
 	}
 
@@ -226,6 +268,8 @@ void GameScene::UpdateFadeIn() {
 	skyDome_->Update();
 
 	goal_->Update();
+
+	explainBar_->Update();
 
 	// デバッグカメラが無効になっている時に
 	if (isDebugCameraActive_ == false) {
@@ -270,7 +314,11 @@ void GameScene::UpdatekPlay(){
 	goal_->Update();
 
 	// エネミーの更新処理
-	enemy_->Update();
+	for (auto* enemy : enemys_) {
+
+		enemy->Update();
+
+	}
 
 	// デバッグカメラが無効になっている時に
 	if (isDebugCameraActive_ == false) {
@@ -345,7 +393,10 @@ void GameScene::UpdateKDeath() {
 	goal_->Update();
 
 	// エネミーの更新処理
-	enemy_->Update();
+	for (auto* enemy : enemys_) {
+
+		enemy->Update();
+	}
 
 	// デス演出用パーティクルの更新処理
 	if (deathParticles_ != nullptr) {
@@ -395,7 +446,7 @@ void GameScene::UpdateKDeath() {
 	}
 
 	if (deathParticles_ && deathParticles_->GetIsFinished()) {
-		fade_.Start(Fade::Status::FadeOut, 3.0f);
+		fade_.Start(Fade::Status::FadeOut, 2.0f);
 		phase_ = GamePhase::kDeathFadeOut;
 	}
 
@@ -411,7 +462,10 @@ void GameScene::UpdateKClearFadeOut() {
 	player_->Update();
 
 	// エネミーの更新処理
-	enemy_->Update();
+	for (auto* enemy : enemys_) {
+
+		enemy->Update();
+	}
 
 	// デバッグカメラが無効になっている時に
 	if (isDebugCameraActive_ == false) {
@@ -472,6 +526,8 @@ void GameScene::UpdateKClearFadeOut() {
 		isFinished_ = true;
 	}
 
+	clearBar_->Update();
+
 }
 
 ///フェーズデス演出フェードアウトの処理
@@ -485,7 +541,10 @@ void GameScene::UpdatekDeathFadeOut() {
 	skyDome_->Update();
 
 	// エネミーの更新処理
-	enemy_->Update();
+	for (auto* enemy : enemys_) {
+
+		enemy->Update();
+	}
 
 	// ブロックの更新処理
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -581,6 +640,8 @@ void GameScene::Draw() {
 
 		goal_->Draw();
 
+		explainBar_->Draw();
+
 		// ブロックの描画
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -596,7 +657,10 @@ void GameScene::Draw() {
 		player_->Draw();
 	
 		// 敵キャラの描画
-		enemy_->Draw();
+		for (auto* enemy : enemys_) {
+
+			enemy->Draw();
+		}
 
 		fade_.Draw(commandList);
 
@@ -623,7 +687,11 @@ void GameScene::Draw() {
 		player_->Draw();
 
 		// 敵キャラの描画
-		enemy_->Draw();
+		for (auto* enemy : enemys_) {
+
+			enemy->Draw();
+
+		}
 
 		break;
 
@@ -645,7 +713,10 @@ void GameScene::Draw() {
 		}
 
 		// 敵キャラの描画
-		enemy_->Draw();
+		for (auto* enemy : enemys_) {
+
+			enemy->Draw();
+		}
 
 		// デス演出用パーティクルの描画
 		if (deathParticles_ != nullptr) {
@@ -674,7 +745,14 @@ void GameScene::Draw() {
 		player_->Draw();
 
 		// 敵キャラの描画
-		enemy_->Draw();
+		for (auto* enemy : enemys_) {
+
+			enemy->Draw();
+		}
+
+		if (goal_->IsGet()) {
+			clearBar_->Draw();
+		}
 
 		fade_.Draw(commandList);
 
@@ -698,7 +776,10 @@ void GameScene::Draw() {
 		}
 
 		// 敵キャラの描画
-		enemy_->Draw();
+		for (auto* enemy : enemys_) {
+
+			enemy->Draw();
+		}
 
 		fade_.Draw(commandList);
 

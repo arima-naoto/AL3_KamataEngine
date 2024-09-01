@@ -95,7 +95,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
-	win->CreateGameWindow(L"GC2A_02_アリマ_ナオト_AL3");
+	win->CreateGameWindow(L"GC2A_02_2D_MapChip_Action");
 
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();

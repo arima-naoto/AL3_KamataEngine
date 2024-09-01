@@ -7,18 +7,25 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "Player.h"
-#include "DebugCamera.h"
-#include "SkyDome.h"
-#include "MapChipField.h"
-#include "Block.h"
-#include "CameraController.h"
-#include "Enemy.h"
 #include "Rendering.h"
-#include "DeathParticles.h"
 #include "Fade.h"
-#include "Goal.h"
 #include "vector"
+
+#pragma region 各クラスの前方宣言
+
+class Player;
+class DebugCamera;
+class SkyDome;
+class MapChipField;
+class Block;
+class CameraController;
+class Enemy;
+class DeathParticles;
+class Goal;
+class Bar;
+class ExplainBar;
+
+#pragma endregion
 
 /// ゲームのフェーズ
 enum class GamePhase {
@@ -119,7 +126,7 @@ private: // メンバ変数
 
     //3Dモデルデータ(敵機)
 	Model* modelEnemy_ = nullptr;
-	std::vector<Enemy*> enemy_;
+	std::vector<Enemy*> enemys_;
 
 	Model* modelGoal_ = nullptr;
 	Goal* goal_ = nullptr;
@@ -131,6 +138,13 @@ private: // メンバ変数
 	//3Dモデルデータ(スカイドーム)
 	Model* modelSkyDome_ = nullptr;
 	SkyDome* skyDome_ = nullptr;
+
+	//クリアテキスト
+	Model* modelClearBar_ = nullptr;
+	Bar* clearBar_ = nullptr;
+
+	Model* modelExplainBar_ = nullptr;
+	ExplainBar* explainBar_ = nullptr;
 
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr; 
