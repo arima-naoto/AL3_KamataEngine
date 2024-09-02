@@ -248,8 +248,6 @@ void GameScene::CheckAllCollision() {
 
 	if (goal_->IsGet()) {
 
-		
-
 		fade_.Start(Fade::Status::FadeOut, 2.0f);
 		phase_ = GamePhase::kClearFadeOut;
 	}
