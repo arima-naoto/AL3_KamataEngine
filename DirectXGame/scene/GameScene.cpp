@@ -3,6 +3,7 @@
 #include <cassert>
 #include "Player.h"
 #include "DebugCamera.h"
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
@@ -25,24 +26,21 @@ void GameScene::Initialize() {
 
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 
+#ifdef _DEBUG
+
+	//軸方向表示の表示を有効にする
+	AxisIndicator::GetInstance()->SetVisible(true);
+	//軸方向表示が参照するビュープロジェクションを指定する
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+
+#endif // _DEBUG
 }
 
 void GameScene::Update() 
 { 
 	player_->Update(); 
 
-#ifdef _DEBUG
-
-	if (input_->IsTriggerMouse(DIK_SPACE)) {
-		isDebugCameraActive_ = true;
-	}
-
-#endif // _DEBUG
-
-	if (isDebugCameraActive_) {
-
-	}
-
+	MoveDebugCamera();
 
 }
 
@@ -90,4 +88,30 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::MoveDebugCamera() {
+
+	#ifdef _DEBUG
+
+	if (input_->TriggerKey(DIK_SPACE)) {
+		if (!isDebugCameraActive_) {
+			isDebugCameraActive_ = true;
+		} else if (isDebugCameraActive_) {
+			isDebugCameraActive_ = false;
+		}
+	}
+
+#endif // _DEBUG
+
+	if (isDebugCameraActive_) {
+
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
+
 }
