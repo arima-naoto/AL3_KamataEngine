@@ -10,7 +10,7 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
-	delete model_,player_; 
+	delete model_; 
 }
 
 void GameScene::Initialize() {
@@ -27,10 +27,20 @@ void GameScene::Initialize() {
 	player_->Initialize(model_, &viewProjection_, textureHandle_);
 
 	inputHandler_ = make_unique<InputHandler>();
-	inputHandler_->AssignMoveRightCommand2PressKeyRight();
-	inputHandler_->AssignMoveLeftCommand2PressKeyLeft();
-	inputHandler_->AssignMoveUpCommand2PressKeyUp();
-	inputHandler_->AssignMoveDownCommand2PressKeyDown();
+             
+#pragma region 各コマンドに対応するキーに割り当て
+
+	//移動コマンド
+	inputHandler_->Assign_MoveRight_Command2_PressKeyRightArrow();
+	inputHandler_->Assign_MoveLeft_Command2_PressKeyLeftArrow();
+	inputHandler_->Assign_MoveUp_Command2_PressKeyUpArrow();
+	inputHandler_->Assign_MoveDown_Command2_PressKeyDownArrow();
+
+	//回転コマンド
+	inputHandler_->Assign_RotateLeft_Command2_PressKeyA();
+	inputHandler_->Assign_RotateRight_Command2_PressKeyD();
+
+#pragma endregion
 
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 

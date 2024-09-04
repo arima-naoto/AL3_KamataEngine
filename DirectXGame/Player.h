@@ -1,10 +1,13 @@
 #pragma once
 #include "WorldTransform.h"
 #include "cassert"
+#include <memory>
+using namespace std;
 
 class Model;
 class ViewProjection;
 class Input;
+class PlayerBullet;
 
 /// <summary>
 /// 自キャラ
@@ -12,43 +15,43 @@ class Input;
 class Player {
 public://メンバ関数
 
-	/// <summary>
+	
 	/// 初期化
-	/// </summary>
-	/// <param name="model">モデル</param>
-	/// <param name="textureHandle">テクスチャハンドル</param>
-	/// <param name="viewProjection">ビュープロジェクション</param>
 	void Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle);
-
-	/// <summary>
+	
 	/// 更新
-	/// </summary>
 	void Update();
-
-	/// <summary>
+	
 	/// 描画
-	/// </summary>
 	void Draw();
 
-	/// <summary>
+#pragma region 移動処理メンバ関数
+
 	/// 右方向移動
-	/// </summary>
 	void MoveRight();
 
-	/// <summary>
 	/// 左方向移動
-	/// </summary>
 	void MoveLeft();
 
-	/// <summary>
 	/// 上方向移動
-	/// </summary>
 	void MoveUp();
 
-	/// <summary>
 	/// 下方向移動
-	/// </summary>
 	void MoveDown();
+
+#pragma endregion
+
+#pragma region 回転処理メンバ関数
+
+	/// 右回転処理
+	void RotateRight();
+
+	/// 左回転処理
+	void RotateLeft();
+
+#pragma endregion
+
+	void Attack();
 
 private://メンバ変数
 
@@ -68,6 +71,9 @@ private://メンバ変数
 
 	/// キャラクターの移動速度
 	static inline const float kCharacterSpeed = 0.2f;
+	static inline const float kRotSpeed = 0.02f;
 
+	Model* modelBullet_ = nullptr;
+	PlayerBullet* bullet_ = nullptr;
 };
 

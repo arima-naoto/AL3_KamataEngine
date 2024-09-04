@@ -1,32 +1,15 @@
 #include "ICommand.h"
 
-///仮想デストラクタの定義
 ICommand::~ICommand(){}
 
-///MoveRightCommandクラスのメンバ関数Execを定義する
-void MoveRightCommand::Exec(Player &player) {
+void MoveRightCommand::Exec(Player &player) { player.MoveRight(); }
 
-	//playerクラスからメンバ関数MoveRightを呼び出す
-	player.MoveRight();
-}
+void MoveLeftCommand::Exec(Player& player) { player.MoveLeft(); }
 
-//MoveLeftCommandクラスのメンバ関数Execを定義する
-void MoveLeftCommand::Exec(Player& player) {
-	
-	//Playerクラスからメンバ関数MoveLeftを呼び出す
-	player.MoveLeft();
-}
+void MoveUpCommand::Exec(Player& player) { player.MoveUp(); }
 
-///MoveUpCommandクラスのメンバ関数Execを定義する
-void MoveUpCommand::Exec(Player& player) {
+void MoveDownCommand::Exec(Player& player) { player.MoveDown(); }
 
-	//Playerクラスからメンバ関数MoveUpを呼び出す
-	player.MoveUp();
-}
+void RotateRightCommand::Exec(Player& player) { player.RotateRight(); }
 
-///MoveDownCommandクラスのメンバ関数Execを定義する
-void MoveDownCommand::Exec(Player& player) {
-
-	//Playerクラスからメンバ関数MoveDownを呼び出す
-	player.MoveDown();
-}
+void RotateLeftCommand::Exec(Player& player) { player.RotateLeft(); }
