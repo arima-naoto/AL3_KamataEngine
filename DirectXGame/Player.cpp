@@ -1,6 +1,8 @@
 #include "Player.h"
+#include "Model.h"
+#include "ViewProjection.h"
 
-void Player::Initialize(Model* model, uint32_t textureHandle,ViewProjection * viewProjection) {
+void Player::Initialize(Model* model, ViewProjection * viewProjection,uint32_t textureHandle) {
 
 	//NULLポインタチェック
 	assert(model);
@@ -9,11 +11,11 @@ void Player::Initialize(Model* model, uint32_t textureHandle,ViewProjection * vi
 	model_ = model;//モデル
 	textureHandle_ = textureHandle;//テクスチャハンドル
 
+	//引数の内容をメンバ変数に記録
+	viewProjection_ = viewProjection;
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
 
-	//引数の内容をメンバ変数に記録
-	viewProjection_ = viewProjection;
 	
 }
 

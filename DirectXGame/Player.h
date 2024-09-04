@@ -1,8 +1,9 @@
 #pragma once
-#include "Model.h"
 #include "WorldTransform.h"
 #include "cassert"
-#include "ViewProjection.h"
+
+class Model;
+class ViewProjection;
 
 /// <summary>
 /// 自キャラ
@@ -16,7 +17,7 @@ public://メンバ関数
 	/// <param name="model">モデル</param>
 	/// <param name="textureHandle">テクスチャハンドル</param>
 	/// <param name="viewProjection">ビュープロジェクション</param>
-	void Initialize(Model* model, uint32_t textureHandle, ViewProjection* viewProjection);
+	void Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle);
 
 	/// <summary>
 	/// 更新
