@@ -27,10 +27,10 @@ void GameScene::Initialize() {
 	player_->Initialize(model_, &viewProjection_, textureHandle_);
 
 	inputHandler_ = make_unique<InputHandler>();
-	inputHandler_->AssignMoveRightCommand2PressKeyD();
-	inputHandler_->AssignMoveLeftCommand2PressKeyA();
-	inputHandler_->AssignMoveUpCommand2PressKeyW();
-	inputHandler_->AssignMoveDownCommand2PressKeyS();
+	inputHandler_->AssignMoveRightCommand2PressKeyRight();
+	inputHandler_->AssignMoveLeftCommand2PressKeyLeft();
+	inputHandler_->AssignMoveUpCommand2PressKeyUp();
+	inputHandler_->AssignMoveDownCommand2PressKeyDown();
 
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 

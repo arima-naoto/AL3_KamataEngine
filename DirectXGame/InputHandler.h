@@ -10,30 +10,30 @@ public:
 	// 入力を処理するための関数
 	ICommand* HandleInput();
 
-	// "D"キーに右移動コマンドを割り当てる関数
-	void AssignMoveRightCommand2PressKeyD();
+	// "Right"キーに右移動コマンドを割り当てる関数
+	void AssignMoveRightCommand2PressKeyRight();
 
-	// "A"キーに左移動コマンドを割り当てる関数
-	void AssignMoveLeftCommand2PressKeyA();
+	// "Left"キーに左移動コマンドを割り当てる関数
+	void AssignMoveLeftCommand2PressKeyLeft();
 
-	// "W"キーに上移動コマンドを割り当てる関数
-	void AssignMoveUpCommand2PressKeyW();
+	// "Up"キーに上移動コマンドを割り当てる関数
+	void AssignMoveUpCommand2PressKeyUp();
 
-	// "S"キーに下移動コマンドを割り当てる関数
-	void AssignMoveDownCommand2PressKeyS();
+	// "Down"キーに下移動コマンドを割り当てる関数
+	void AssignMoveDownCommand2PressKeyDown();
 
 private:
 
-	// "D"キーが押されたときのコマンド
-	ICommand* pressKeyD_;
+	// "Right"キーが押されたときのコマンド
+	ICommand* pressKeyRight_;
 
-	// "A"キーが押されたときのコマンド
-	ICommand* pressKeyA_;
+	// "Left"キーが押されたときのコマンド
+	ICommand* pressKeyLeft_;
 
-	// "W"キーが押されたときのコマンド
-	ICommand* pressKeyW_;
+	// "Up"キーが押されたときのコマンド
+	ICommand* pressKeyUp_;
 
-	// "S"キーが押されたときのコマンド
-	ICommand* pressKeyS_;
+	// "Down"キーが押されたときのコマンド
+	ICommand* pressKeyDown_;
 };
 

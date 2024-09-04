@@ -1,35 +1,35 @@
 #include "InputHandler.h"
 #include "Input.h"
 
-void InputHandler::AssignMoveRightCommand2PressKeyD() {
+void InputHandler::AssignMoveRightCommand2PressKeyRight() {
 
 	ICommand* command = new MoveRightCommand();
 
-	this->pressKeyD_ = command;
+	this->pressKeyRight_ = command;
 
 }
 
-void InputHandler::AssignMoveLeftCommand2PressKeyA() {
+void InputHandler::AssignMoveLeftCommand2PressKeyLeft() {
 
 	ICommand* command = new MoveLeftCommand();
 
-	this->pressKeyA_ = command;
+	this->pressKeyLeft_ = command;
 
 }
 
-void InputHandler::AssignMoveUpCommand2PressKeyW() {
+void InputHandler::AssignMoveUpCommand2PressKeyUp() {
 
 	ICommand* command = new MoveUpCommand();
 
-	this->pressKeyW_ = command;
+	this->pressKeyUp_ = command;
 
 }
 
-void InputHandler::AssignMoveDownCommand2PressKeyS() {
+void InputHandler::AssignMoveDownCommand2PressKeyDown() {
 
 	ICommand* command = new MoveDownCommand();
 
-	this->pressKeyS_ = command;
+	this->pressKeyDown_ = command;
 
 }
 
@@ -37,17 +37,17 @@ ICommand* InputHandler::HandleInput() {
 
 	Input* input = Input::GetInstance();
 
-	if (input->PushKey(DIK_D)) {
-		return pressKeyD_;
+	if (input->PushKey(DIK_RIGHT)) {
+		return pressKeyRight_;
 	}
-	if (input->PushKey(DIK_A)) {
-		return pressKeyA_;
+	if (input->PushKey(DIK_LEFT)) {
+		return pressKeyLeft_;
 	}
-	if (input->PushKey(DIK_W)) {
-		return pressKeyW_;
+	if (input->PushKey(DIK_UP)) {
+		return pressKeyUp_;
 	}
-	if (input->PushKey(DIK_S)) {
-		return pressKeyS_;
+	if (input->PushKey(DIK_DOWN)) {
+		return pressKeyDown_;
 	}
 
 	return nullptr;
