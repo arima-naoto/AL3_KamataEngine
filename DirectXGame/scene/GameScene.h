@@ -7,7 +7,12 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "Player.h"
+
+#include "memory"
+using namespace std;
+
+class Player;
+class DebugCamera;
 
 /// <summary>
 /// ゲームシーン
@@ -44,12 +49,8 @@ private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
-
-	//3Dモデルデータ
 	Model* model_ = nullptr;
-
-	//自キャラ
-	Player* player_ = nullptr;
+	ViewProjection viewProjection_;
 
 	/// <summary>
 	/// ゲームシーン用
@@ -58,6 +59,9 @@ private: // メンバ変数
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 
-	//ビュープロジェクション
-	ViewProjection viewProjection_;
+	unique_ptr<Player> player_ = nullptr;
+	unique_ptr<DebugCamera> debugCamera_ = nullptr;
+
+	bool isDebugCameraActive_ = false;
+
 };

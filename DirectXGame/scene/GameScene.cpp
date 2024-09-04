@@ -1,6 +1,8 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "Player.h"
+#include "DebugCamera.h"
 
 GameScene::GameScene() {}
 
@@ -13,24 +15,35 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
-
-	//3Dモデルデータの生成
 	model_ = Model::Create();
+	viewProjection_.Initialize();
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
 
-	//ビュープロジェクションの初期化
-	viewProjection_.Initialize();
-
-	//自キャラの生成
-	player_ = new Player();
-
-	//自キャラの初期化
+	player_ = make_unique<Player>();
 	player_->Initialize(model_, &viewProjection_, textureHandle_);
+
+	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
+
 }
 
-void GameScene::Update() { 
+void GameScene::Update() 
+{ 
 	player_->Update(); 
+
+#ifdef _DEBUG
+
+	if (input_->IsTriggerMouse(DIK_SPACE)) {
+		isDebugCameraActive_ = true;
+	}
+
+#endif // _DEBUG
+
+	if (isDebugCameraActive_) {
+
+	}
+
+
 }
 
 void GameScene::Draw() {

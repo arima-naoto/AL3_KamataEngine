@@ -32,7 +32,11 @@ void Player::Update()
 	//プレイヤーの移動
 	MoveTranslate();
 
-	worldTransform_.translation_ = 
+	const float kLimitMoveX = 33;
+	const float kLimitMoveY = 18;
+
+	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kLimitMoveX, kLimitMoveX);
+	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kLimitMoveY, kLimitMoveY);
 
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
