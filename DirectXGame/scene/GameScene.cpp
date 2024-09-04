@@ -2,6 +2,8 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "Player.h"
+#include "ICommand.h"
+#include "InputHandler.h"
 #include "DebugCamera.h"
 #include "AxisIndicator.h"
 
@@ -24,6 +26,12 @@ void GameScene::Initialize() {
 	player_ = make_unique<Player>();
 	player_->Initialize(model_, &viewProjection_, textureHandle_);
 
+	inputHandler_ = make_unique<InputHandler>();
+	inputHandler_->AssignMoveRightCommand2PressKeyD();
+	inputHandler_->AssignMoveLeftCommand2PressKeyA();
+	inputHandler_->AssignMoveUpCommand2PressKeyW();
+	inputHandler_->AssignMoveDownCommand2PressKeyS();
+
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 
 #ifdef _DEBUG
@@ -38,6 +46,12 @@ void GameScene::Initialize() {
 
 void GameScene::Update() 
 { 
+	command_ = inputHandler_->HandleInput();
+
+	if (this->command_) {
+		command_->Exec(*player_);
+	}
+
 	player_->Update(); 
 
 	MoveDebugCamera();

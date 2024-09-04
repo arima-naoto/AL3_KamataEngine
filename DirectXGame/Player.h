@@ -30,8 +30,25 @@ public://メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 右方向移動
+	/// </summary>
+	void MoveRight();
 
-	void MoveTranslate();
+	/// <summary>
+	/// 左方向移動
+	/// </summary>
+	void MoveLeft();
+
+	/// <summary>
+	/// 上方向移動
+	/// </summary>
+	void MoveUp();
+
+	/// <summary>
+	/// 下方向移動
+	/// </summary>
+	void MoveDown();
 
 private://メンバ変数
 
@@ -48,6 +65,9 @@ private://メンバ変数
 	uint32_t textureHandle_ = 0u;
 
 	Input* input_ = nullptr;
+
+	/// キャラクターの移動速度
+	static inline const float kCharacterSpeed = 0.2f;
 
 };
 

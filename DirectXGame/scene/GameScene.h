@@ -12,6 +12,8 @@
 using namespace std;
 
 class Player;
+class ICommand;
+class InputHandler;
 class DebugCamera;
 
 /// <summary>
@@ -63,6 +65,11 @@ private: // メンバ変数
 	uint32_t textureHandle_ = 0;
 
 	unique_ptr<Player> player_ = nullptr;
+
+	ICommand* command_ = nullptr;
+
+	unique_ptr<InputHandler> inputHandler_ = nullptr;
+
 	unique_ptr<DebugCamera> debugCamera_ = nullptr;
 
 	bool isDebugCameraActive_ = false;

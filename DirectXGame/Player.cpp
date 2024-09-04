@@ -29,9 +29,6 @@ void Player::Initialize(Model* model, ViewProjection * viewProjection,uint32_t t
 void Player::Update() 
 {
 
-	//プレイヤーの移動
-	MoveTranslate();
-
 	const float kLimitMoveX = 33;
 	const float kLimitMoveY = 18;
 
@@ -49,29 +46,24 @@ void Player::Draw()
 
 }
 
-void Player::MoveTranslate() {
+void Player::MoveRight() {
+	worldTransform_.translation_ += Vector3(kCharacterSpeed, 0, 0);
+}
 
-	Vector3 move = {0, 0, 0};
+void Player::MoveLeft() {
+	worldTransform_.translation_ -= Vector3(kCharacterSpeed, 0, 0);
+}
 
-	const float kCharacterSpeed = 0.2f;
+void Player::MoveUp() { 
+	worldTransform_.translation_ += Vector3(0, kCharacterSpeed, 0); 
+}
 
-	if (input_->PushKey(DIK_LEFT)) 
-	{
-		move += Vector3(-kCharacterSpeed,0,0);
-	} 
-	else if (input_->PushKey(DIK_RIGHT)) 
-	{
-		move += Vector3(kCharacterSpeed, 0, 0);
-	} 
-	else if (input_->PushKey(DIK_UP)) 
-	{
-		move += Vector3(0,kCharacterSpeed, 0);
-	} 
-	else if (input_->PushKey(DIK_DOWN)) 
-	{
-		move += Vector3(0, -kCharacterSpeed, 0);
-	}
+void Player::MoveDown() { 
+	worldTransform_.translation_ -= Vector3(0, kCharacterSpeed, 0); 
+}
 
-	worldTransform_.translation_ += move;
+void Player::Rotate() {
+
+	const float 
 
 }
