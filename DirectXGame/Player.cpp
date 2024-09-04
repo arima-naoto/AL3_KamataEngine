@@ -61,9 +61,3 @@ void Player::MoveUp() {
 void Player::MoveDown() { 
 	worldTransform_.translation_ -= Vector3(0, kCharacterSpeed, 0); 
 }
-
-void Player::Rotate() {
-
-	const float 
-
-}
