@@ -1,30 +1,6 @@
 #pragma once
-
-struct Vector3 {
-	float x;
-	float y;
-	float z;
-
-	Vector3& operator+=(const Vector3& obj) {
-		x += obj.x;
-		y += obj.y;
-		z += obj.z;
-		return *this;
-	}
-
-	Vector3& operator-=(const Vector3& obj) {
-		x -= obj.x;
-		y -= obj.y;
-		z -= obj.z;
-		return *this;
-	}
-};
-
-struct Matrix4x4 {
-
-	float m[4][4];
-
-};
+#include "Vector3.h"
+#include "Matrix4x4.h"
 
 class Calculation {
 

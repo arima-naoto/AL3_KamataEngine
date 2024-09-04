@@ -4,6 +4,7 @@
 
 class Model;
 class ViewProjection;
+class Input;
 
 /// <summary>
 /// 自キャラ
@@ -29,17 +30,24 @@ public://メンバ関数
 	/// </summary>
 	void Draw();
 
-private://メンバ変数
 
-	//ワールド変換データ
-	WorldTransform worldTransform_;
+	void MoveTranslate();
+
+private://メンバ変数
 
 	//モデル
 	Model* model_ = nullptr;
 
-	//テクスチャハンドル
-	uint32_t textureHandle_ = 0u;
-
 	//ビュープロジェクション
 	ViewProjection *viewProjection_ = nullptr;
+
+	// ワールド変換データ
+	WorldTransform worldTransform_;
+
+	// テクスチャハンドル
+	uint32_t textureHandle_ = 0u;
+
+	Input* input_ = nullptr;
+
 };
+

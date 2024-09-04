@@ -17,7 +17,7 @@ void GameScene::Initialize() {
 	//3Dモデルデータの生成
 	model_ = Model::Create();
 
-	textureHandle_ = TextureManager::Load("uvChecker.png");
+	textureHandle_ = TextureManager::Load("mario.jpg");
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
