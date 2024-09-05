@@ -1,11 +1,17 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
-#include "Player.h"
-#include "ICommand.h"
-#include "InputHandler.h"
-#include "DebugCamera.h"
 #include "AxisIndicator.h"
+
+#pragma region 前方宣言したクラスのインクルード
+
+#include "Player.h"
+#include "InputHandler.h"
+#include "ICommand.h"
+#include "Enemy.h"
+#include "DebugCamera.h"
+
+#pragma endregion
 
 GameScene::GameScene() {}
 
@@ -22,12 +28,16 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
+	enemyTextureHandle_ = TextureManager::Load("kuppa.jpg");
 
 	player_ = make_unique<Player>();
 	player_->Initialize(model_, &viewProjection_, textureHandle_);
 
 	inputHandler_ = make_unique<InputHandler>();
 	GameScene::Command_Declaration();
+
+	enemy_ = make_unique<Enemy>();
+	enemy_->Initialize(model_, &viewProjection_, enemyTextureHandle_);
 
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 
@@ -46,6 +56,8 @@ void GameScene::Update()
 	UpdateCommand();
 
 	player_->Update(); 
+
+	enemy_->Update();
 
 	MoveDebugCamera();
 
@@ -78,6 +90,8 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	player_->Draw();
+
+	enemy_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

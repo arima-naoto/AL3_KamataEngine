@@ -12,8 +12,9 @@
 using namespace std;
 
 class Player;
-class ICommand;
 class InputHandler;
+class ICommand;
+class Enemy;
 class DebugCamera;
 
 /// <summary>
@@ -66,16 +67,17 @@ private: // メンバ変数
 	/// </summary>
 	
 	//テクスチャハンドル
-	uint32_t textureHandle_ = 0;
+	uint32_t textureHandle_ = 0u;
+	uint32_t enemyTextureHandle_ = 0u;
 
 	unique_ptr<Player> player_ = nullptr;
+	unique_ptr<InputHandler> inputHandler_ = nullptr;
 
 	ICommand* virticalCommand_ = nullptr;
 	ICommand* horizotalCommand_ = nullptr;
 	ICommand* rotateMentCommand_ = nullptr;
 
-	unique_ptr<InputHandler> inputHandler_ = nullptr;
-
+	unique_ptr<Enemy> enemy_ = nullptr;
 	unique_ptr<DebugCamera> debugCamera_ = nullptr;
 
 	bool isDebugCameraActive_ = false;
