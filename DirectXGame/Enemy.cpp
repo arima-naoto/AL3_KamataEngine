@@ -64,6 +64,6 @@ void Enemy::UpdateLeave() {
 	
 }
 
-void Enemy::ChangeState(std::unique_ptr<BaseEnemyState> stateApproach) {
-	state_ = std::move(stateApproach);
+void Enemy::ChangeState(std::unique_ptr<BaseEnemyState> state) {
+	state_ = std::move(state);
 }
