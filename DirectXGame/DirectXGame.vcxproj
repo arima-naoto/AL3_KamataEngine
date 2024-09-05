@@ -108,10 +108,12 @@
   <ItemGroup>
     <ClCompile Include="2d\ImGuiManager.cpp" />
     <ClCompile Include="Arithmetic.cpp" />
+    <ClCompile Include="BaseEnemyState.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="Calculation.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyState.cpp" />
     <ClCompile Include="ICommand.cpp" />
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="main.cpp" />
@@ -142,12 +144,14 @@
     <ClInclude Include="3d\WorldTransform.h" />
     <ClInclude Include="Arithmetic.h" />
     <ClInclude Include="audio\Audio.h" />
+    <ClInclude Include="BaseEnemyState.h" />
     <ClInclude Include="base\DirectXCommon.h" />
     <ClInclude Include="base\StringUtility.h" />
     <ClInclude Include="base\TextureManager.h" />
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="Calculation.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyState.h" />
     <ClInclude Include="ICommand.h" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="input\Input.h" />

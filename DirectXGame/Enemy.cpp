@@ -3,6 +3,7 @@
 #include "ViewProjection.h"
 #include "cassert"
 
+
 #ifdef _DEBUG
 #include "imgui.h"
 using namespace ImGui;
@@ -21,15 +22,18 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 
 	textureHandle_ = textureHandle;
 
+	ChangeState(std::make_unique<EnemyStateApproach>(this));
+
 }
 
-
-
 void Enemy::Update() {
-	
-	//現在フェーズの関数を実行する
-	(this->*spFuncTable[static_cast<size_t>(phase_)])();
 
+	state_->Update();
+
+	if (phase_ == Phase::Leave && dynamic_cast<EnemyStateLeave*>(state_.get()) == nullptr) {
+		ChangeState(std::make_unique<EnemyStateLeave>(this));
+	}
+	
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
 
@@ -60,9 +64,6 @@ void Enemy::UpdateLeave() {
 	
 }
 
-void (Enemy::*Enemy::spFuncTable[])(){
-
-    &Enemy::UpdateApproach,
-	&Enemy::UpdateLeave
-
-};
+void Enemy::ChangeState(std::unique_ptr<BaseEnemyState> stateApproach) {
+	state_ = std::move(stateApproach);
+}

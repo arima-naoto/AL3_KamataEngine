@@ -1,5 +1,7 @@
 #pragma once
 #include "WorldTransform.h"
+#include "EnemyState.h"
+#include "memory"
 
 class Model;
 class ViewProjection;
@@ -19,11 +21,11 @@ public:
 
 	void Draw();
 
-private:
-
 	void UpdateApproach();
 
 	void UpdateLeave();
+
+	void ChangeState(std::unique_ptr<BaseEnemyState> state);
 
 private:
 
@@ -36,6 +38,7 @@ private:
 	uint32_t textureHandle_ = 0u;
 
 	Phase phase_ = Phase::Approach;
-	static void (Enemy::*spFuncTable[])();
+
+	std::unique_ptr<BaseEnemyState> state_;
 
 };
