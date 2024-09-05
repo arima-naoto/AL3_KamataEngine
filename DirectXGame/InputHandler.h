@@ -7,8 +7,7 @@
 class InputHandler
 {
 public:
-	// 入力を処理するための関数
-	ICommand* HandleInput();
+	
 
 	// "Right"キーに右移動コマンドを割り当てる関数
 	void Assign_MoveRight_Command2_PressKeyRightArrow();
@@ -27,6 +26,12 @@ public:
 	
 	// "A"キーに下移動コマンドを割り当てる関数
 	void Assign_RotateLeft_Command2_PressKeyA();
+
+	ICommand* InputVirtical();
+
+	ICommand* InputHorizontal();
+
+	ICommand* InputRotateVirtical();
 
 private:
 

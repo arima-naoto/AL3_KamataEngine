@@ -77,5 +77,7 @@ private://メンバ変数
 
 	Model* modelBullet_ = nullptr;
 	list<PlayerBullet*> bullets_;
+
+
 };
 

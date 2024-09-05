@@ -31,21 +31,47 @@ void InputHandler::Assign_RotateLeft_Command2_PressKeyA() {
 	this->pressKeyA_ = command;
 }
 
-ICommand* InputHandler::HandleInput() {
+ICommand* InputHandler::InputVirtical() {
 
 	Input* input = Input::GetInstance();
 
-	if (input->PushKey(DIK_RIGHT)) { return pressKeyRight_; }
+	if (input->PushKey(DIK_RIGHT)) {
+		return pressKeyRight_;
+	}
+
+	if (input->PushKey(DIK_LEFT)) {
+		return pressKeyLeft_;
+	}
+
+	return nullptr;
+}
+
+ICommand* InputHandler::InputHorizontal() {
+
+	Input* input = Input::GetInstance();
 	
-	if (input->PushKey(DIK_LEFT)) { return pressKeyLeft_; }
+	if (input->PushKey(DIK_UP)) {
+		return pressKeyUp_;
+	}
+
+	if (input->PushKey(DIK_DOWN)) {
+		return pressKeyDown_;
+	}
+
+	return nullptr;
+}
+
+ICommand* InputHandler::InputRotateVirtical() {
+
+	Input* input = Input::GetInstance();
 	
-	if (input->PushKey(DIK_UP)) { return pressKeyUp_; }
+	if (input->PushKey(DIK_D)) { 
+		return pressKeyD_; 
+	}
 	
-	if (input->PushKey(DIK_DOWN)) { return pressKeyDown_; }
-	
-	if (input->PushKey(DIK_D)) { return pressKeyD_; }
-	
-	if (input->PushKey(DIK_A)) { return pressKeyA_; }
+	if (input->PushKey(DIK_A)) { 
+		return pressKeyA_; 
+	}
 	
 	return nullptr;
 }

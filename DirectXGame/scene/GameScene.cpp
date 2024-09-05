@@ -43,11 +43,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() 
 { 
-	command_ = inputHandler_->HandleInput();
-
-	if (this->command_) {
-		command_->Exec(*player_);
-	}
+	UpdateCommand();
 
 	player_->Update(); 
 
@@ -113,6 +109,25 @@ void GameScene::Command_Declaration() {
 	// 回転コマンド
 	inputHandler_->Assign_RotateLeft_Command2_PressKeyA();
 	inputHandler_->Assign_RotateRight_Command2_PressKeyD();
+
+}
+
+void GameScene::UpdateCommand() {
+
+	virticalCommand_ = inputHandler_->InputVirtical();
+	if (this->virticalCommand_) {
+		virticalCommand_->Exec(*player_);
+	}
+
+	horizotalCommand_ = inputHandler_->InputHorizontal();
+	if (this->horizotalCommand_) {
+		horizotalCommand_->Exec(*player_);
+	}
+
+	rotateMentCommand_ = inputHandler_->InputRotateVirtical();
+	if (this->rotateMentCommand_) {
+		rotateMentCommand_->Exec(*player_);
+	}
 
 }
 

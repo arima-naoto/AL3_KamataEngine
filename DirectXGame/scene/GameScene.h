@@ -50,6 +50,8 @@ public: // メンバ関数
 	///コマンド宣言
 	void Command_Declaration();
 	
+	void UpdateCommand();
+
 	void MoveDebugCamera();
 
 private: // メンバ変数
@@ -68,7 +70,9 @@ private: // メンバ変数
 
 	unique_ptr<Player> player_ = nullptr;
 
-	ICommand* command_ = nullptr;
+	ICommand* virticalCommand_ = nullptr;
+	ICommand* horizotalCommand_ = nullptr;
+	ICommand* rotateMentCommand_ = nullptr;
 
 	unique_ptr<InputHandler> inputHandler_ = nullptr;
 

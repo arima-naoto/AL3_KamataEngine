@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "algorithm"
 #include "PlayerBullet.h"
+#include "Rendering.h"
 
 Player::~Player() {
 	for (auto* bullet : bullets_) {
@@ -57,6 +58,13 @@ void Player::Update()
 
 void Player::Draw() 
 { 
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->GetIsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 
 	for (auto *bullet : bullets_) {
 		bullet->Draw(*viewProjection_);
@@ -103,8 +111,13 @@ void Player::Attack() {
 
 	if (input_->TriggerKey(DIK_SPACE)) {
 
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+
+		velocity = Rendering::TransformNormal(velocity, worldTransform_.matWorld_);
+
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(modelBullet_, worldTransform_.translation_);
+		newBullet->Initialize(modelBullet_, worldTransform_.translation_, velocity);
 
 		bullets_.push_back(newBullet);
 	}
