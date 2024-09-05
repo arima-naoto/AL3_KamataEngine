@@ -4,6 +4,11 @@
 class Model;
 class ViewProjection;
 
+enum class Phase {
+	Approach,
+	Leave,
+};
+
 class Enemy {
 
 public:
@@ -23,5 +28,7 @@ private:
 	WorldTransform worldTransform_;
 
 	uint32_t textureHandle_ = 0u;
+
+	Phase phase_ = Phase::Approach;
 
 };

@@ -25,14 +25,28 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 
 void Enemy::Update() {
 
+	switch (phase_) {
+	case Phase::Approach:
+		
+     	worldTransform_.translation_ -= Vector3(0, 0, 0.2f);
+
+		if (worldTransform_.translation_.z < 0.f) {
+			phase_ = Phase::Leave;
+		}
+		
+		break;
+	case Phase::Leave:
+
+		worldTransform_.translation_ += Vector3(-0.1f, 0.1f, 0);
+
+		break;
+	}
+
+
 	Begin("enemy");
 	DragFloat3("enemy.translate", &worldTransform_.translation_.x, 0.01f);
 	End();
 
-	debugText_->SetPos(0, 10);
-	debugText_->Printf("enemy.Pos(%d)", worldTransform_.translation_.x);
-
-	worldTransform_.translation_ -= Vector3(0, 0, 0.2f);
 
 	worldTransform_.UpdateMatrix();
 
