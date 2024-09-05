@@ -27,20 +27,7 @@ void GameScene::Initialize() {
 	player_->Initialize(model_, &viewProjection_, textureHandle_);
 
 	inputHandler_ = make_unique<InputHandler>();
-             
-#pragma region 各コマンドに対応するキーに割り当て
-
-	//移動コマンド
-	inputHandler_->Assign_MoveRight_Command2_PressKeyRightArrow();
-	inputHandler_->Assign_MoveLeft_Command2_PressKeyLeftArrow();
-	inputHandler_->Assign_MoveUp_Command2_PressKeyUpArrow();
-	inputHandler_->Assign_MoveDown_Command2_PressKeyDownArrow();
-
-	//回転コマンド
-	inputHandler_->Assign_RotateLeft_Command2_PressKeyA();
-	inputHandler_->Assign_RotateRight_Command2_PressKeyD();
-
-#pragma endregion
+	GameScene::Command_Declaration();
 
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 
@@ -112,6 +99,21 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+//各コマンドに対応するキーに割り当て
+void GameScene::Command_Declaration() {
+
+	// 移動コマンド
+	inputHandler_->Assign_MoveRight_Command2_PressKeyRightArrow();
+	inputHandler_->Assign_MoveLeft_Command2_PressKeyLeftArrow();
+	inputHandler_->Assign_MoveUp_Command2_PressKeyUpArrow();
+	inputHandler_->Assign_MoveDown_Command2_PressKeyDownArrow();
+
+	// 回転コマンド
+	inputHandler_->Assign_RotateLeft_Command2_PressKeyA();
+	inputHandler_->Assign_RotateRight_Command2_PressKeyD();
+
 }
 
 void GameScene::MoveDebugCamera() {

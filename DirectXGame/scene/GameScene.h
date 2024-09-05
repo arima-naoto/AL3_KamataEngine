@@ -47,6 +47,8 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	///コマンド宣言
+	void Command_Declaration();
 	
 	void MoveDebugCamera();
 
