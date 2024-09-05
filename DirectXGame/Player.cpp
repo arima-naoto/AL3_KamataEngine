@@ -7,6 +7,12 @@
 #include "algorithm"
 #include "PlayerBullet.h"
 
+Player::~Player() {
+	for (auto* bullet : bullets_) {
+		delete bullet;
+	}
+}
+
 void Player::Initialize(Model* model, ViewProjection * viewProjection,uint32_t textureHandle) {
 
 	//NULLポインタチェック
@@ -41,8 +47,8 @@ void Player::Update()
 
 	Player::Attack();
 
-	if (bullet_) {
-		bullet_->Update();
+	for (auto* bullet : bullets_) {
+		bullet->Update();
 	}
 
 	//行列を更新する
@@ -52,8 +58,8 @@ void Player::Update()
 void Player::Draw() 
 { 
 
-	if (bullet_) {
-		bullet_->Draw(*viewProjection_);
+	for (auto *bullet : bullets_) {
+		bullet->Draw(*viewProjection_);
 	}
 
 	//3Dモデルを描画
@@ -100,6 +106,6 @@ void Player::Attack() {
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(modelBullet_, worldTransform_.translation_);
 
-		bullet_ = newBullet;
+		bullets_.push_back(newBullet);
 	}
 }

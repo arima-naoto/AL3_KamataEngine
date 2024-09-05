@@ -2,6 +2,7 @@
 #include "WorldTransform.h"
 #include "cassert"
 #include <memory>
+#include "list"
 using namespace std;
 
 class Model;
@@ -15,6 +16,7 @@ class PlayerBullet;
 class Player {
 public://メンバ関数
 
+	~Player();
 	
 	/// 初期化
 	void Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle);
@@ -74,6 +76,6 @@ private://メンバ変数
 	static inline const float kRotSpeed = 0.02f;
 
 	Model* modelBullet_ = nullptr;
-	PlayerBullet* bullet_ = nullptr;
+	list<PlayerBullet*> bullets_;
 };
 
