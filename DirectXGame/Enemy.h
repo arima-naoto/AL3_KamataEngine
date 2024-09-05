@@ -21,6 +21,12 @@ public:
 
 private:
 
+	void UpdateApproach();
+
+	void UpdateLeave();
+
+private:
+
 	Model* model_ = nullptr;
 
 	ViewProjection* viewProjection_ = nullptr;
@@ -30,5 +36,6 @@ private:
 	uint32_t textureHandle_ = 0u;
 
 	Phase phase_ = Phase::Approach;
+	static void (Enemy::*spFuncTable[])();
 
 };

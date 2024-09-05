@@ -23,32 +23,19 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 
 }
 
+
+
 void Enemy::Update() {
+	
+	//現在フェーズの関数を実行する
+	(this->*spFuncTable[static_cast<size_t>(phase_)])();
 
-	switch (phase_) {
-	case Phase::Approach:
-		
-     	worldTransform_.translation_ -= Vector3(0, 0, 0.2f);
-
-		if (worldTransform_.translation_.z < 0.f) {
-			phase_ = Phase::Leave;
-		}
-		
-		break;
-	case Phase::Leave:
-
-		worldTransform_.translation_ += Vector3(-0.1f, 0.1f, 0);
-
-		break;
-	}
-
+	//行列を更新する
+	worldTransform_.UpdateMatrix();
 
 	Begin("enemy");
 	DragFloat3("enemy.translate", &worldTransform_.translation_.x, 0.01f);
 	End();
-
-
-	worldTransform_.UpdateMatrix();
 
 }
 
@@ -57,3 +44,25 @@ void Enemy::Draw() {
 	model_->Draw(worldTransform_, *viewProjection_, textureHandle_);
 
 }
+
+void Enemy::UpdateApproach() {
+
+	worldTransform_.translation_ -= Vector3(0, 0, 0.2f);
+
+	if (worldTransform_.translation_.z < 0.f) {
+		phase_ = Phase::Leave;
+	}
+}
+
+void Enemy::UpdateLeave() {
+	
+	worldTransform_.translation_ += Vector3(-0.1f, 0.1f, 0);
+	
+}
+
+void (Enemy::*Enemy::spFuncTable[])(){
+
+    &Enemy::UpdateApproach,
+	&Enemy::UpdateLeave
+
+};
