@@ -3,7 +3,6 @@
 
 class Model;
 class ViewProjection;
-class DebugText;
 
 class Enemy {
 
@@ -24,7 +23,5 @@ private:
 	WorldTransform worldTransform_;
 
 	uint32_t textureHandle_ = 0u;
-
-	DebugText* debugText_ = nullptr;
 
 };

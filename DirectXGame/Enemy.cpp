@@ -21,8 +21,6 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 
 	textureHandle_ = textureHandle;
 
-	debugText_ = DebugText::GetInstance();
-
 }
 
 void Enemy::Update() {
