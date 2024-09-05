@@ -29,9 +29,6 @@ void Enemy::Update() {
 	DragFloat3("enemy.translate", &worldTransform_.translation_.x, 0.01f);
 	End();
 
-	debugText_->SetPos(0, 10);
-	debugText_->Printf("enemy.Pos(%d)", worldTransform_.translation_.x);
-
 	worldTransform_.translation_ -= Vector3(0, 0, 0.2f);
 
 	worldTransform_.UpdateMatrix();
