@@ -67,3 +67,10 @@ void Enemy::UpdateLeave() {
 void Enemy::ChangeState(std::unique_ptr<BaseEnemyState> state) {
 	state_ = std::move(state);
 }
+
+void Enemy::Fire() {
+
+
+
+
+}

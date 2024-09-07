@@ -113,6 +113,7 @@
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="Calculation.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyBullet.cpp" />
     <ClCompile Include="EnemyState.cpp" />
     <ClCompile Include="ICommand.cpp" />
     <ClCompile Include="InputHandler.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="Calculation.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="EnemyState.h" />
     <ClInclude Include="ICommand.h" />
     <ClInclude Include="InputHandler.h" />

@@ -5,6 +5,7 @@
 
 class Model;
 class ViewProjection;
+class EnemyBullet;
 
 enum class Phase {
 	Approach,
@@ -27,6 +28,8 @@ public:
 
 	void ChangeState(std::unique_ptr<BaseEnemyState> state);
 
+	void Fire();
+
 private:
 
 	Model* model_ = nullptr;
@@ -40,5 +43,7 @@ private:
 	Phase phase_ = Phase::Approach;
 
 	std::unique_ptr<BaseEnemyState> state_;
+
+	std::list<EnemyBullet*> bullets_;
 
 };
