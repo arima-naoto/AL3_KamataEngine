@@ -28,6 +28,8 @@ public:
 
 	Vector3 GetWorldPosition(); 
 
+	static inline const float kBulletSpeed = 1.0f;
+
 private:
 
 	void UpdateApproach();

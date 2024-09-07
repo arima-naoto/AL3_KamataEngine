@@ -39,6 +39,14 @@ void Player::Initialize(Model* model, ViewProjection * viewProjection,uint32_t t
 void Player::Update() 
 {
 
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->GetIsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
 	// プレイヤーの移動範囲を設定する
 	const float kLimitMoveX = 33;
 	const float kLimitMoveY = 18;
@@ -58,13 +66,6 @@ void Player::Update()
 
 void Player::Draw() 
 { 
-	bullets_.remove_if([](PlayerBullet* bullet) {
-		if (bullet->GetIsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
 
 	for (auto *bullet : bullets_) {
 		bullet->Draw(*viewProjection_);

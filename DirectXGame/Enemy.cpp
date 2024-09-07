@@ -35,6 +35,7 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 	bulletModel_ = Model::CreateFromOBJ("enemyBullet");
 
 	InitalizeApproach();
+	
 
 }
 
@@ -42,6 +43,15 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 
 void Enemy::Update() {
 	
+
+	bullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->GetIsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
 	//現在フェーズの関数を実行する
 	(this->*spFuncTable[static_cast<size_t>(phase_)])();
 
@@ -101,8 +111,6 @@ void Enemy::Fire() {
 
 	assert(player_);
 
-	const float kBulletSpeed = 1.0f;
-
 	Vector3 playerPos = player_->GetWorldPosition();
 	Vector3 enemyPos = GetWorldPosition();
 	Vector3 SubtractVector = playerPos - enemyPos;
@@ -111,6 +119,7 @@ void Enemy::Fire() {
 
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(bulletModel_, worldTransform_.translation_, velocity);
+	newBullet->SetPlayer(player_);
 
 	bullets_.push_back(newBullet);
 
