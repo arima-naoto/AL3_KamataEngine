@@ -3,6 +3,7 @@
 #include "ViewProjection.h"
 #include "cassert"
 #include "EnemyBullet.h"
+#include "TimedCall.h"
 
 #ifdef _DEBUG
 #include "imgui.h"
@@ -13,6 +14,10 @@ Enemy::~Enemy() {
 
 	for (auto* bullet : bullets_) {
 		delete bullet;
+	}
+
+	for (auto* timedCall : timedCalls_) {
+		delete timedCall;
 	}
 }
 
@@ -38,6 +43,8 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 
 void Enemy::Update() {
 
+	
+
 	state_->Update();
 
 	if (phase_ == Phase::Leave && dynamic_cast<EnemyStateLeave*>(state_.get()) == nullptr) {
@@ -46,6 +53,10 @@ void Enemy::Update() {
 	
 	for (auto* bullet : bullets_) {
 		bullet->Update();
+	}
+
+	for (auto* timedCall : timedCalls_) {
+		timedCall->Update();
 	}
 
 	//行列を更新する
@@ -84,6 +95,8 @@ void Enemy::UpdateApproach() {
 void Enemy::UpdateLeave() {
 	
 	worldTransform_.translation_ += Vector3(-0.1f, 0.1f, 0);
+
+	timedCalls_.clear();
 	
 }
 
@@ -106,5 +119,16 @@ void Enemy::Fire() {
 void Enemy::InitalizeApproach() {
 
 	fireTimer = kFireInterval;
+
+	Launch_And_Reset();
+
+}
+
+void Enemy::Launch_And_Reset() {
+
+	Fire();
+
+	timedCalls_.push_back(
+		new TimedCall(std::bind(&Enemy::Launch_And_Reset, this), kFireInterval));
 
 }

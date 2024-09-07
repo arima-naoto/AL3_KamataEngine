@@ -7,6 +7,7 @@
 class Model;
 class ViewProjection;
 class EnemyBullet;
+class TimedCall;
 
 enum class Phase {
 	Approach,
@@ -28,6 +29,8 @@ public:
 	void UpdateApproach();
 
 	void UpdateLeave();
+
+	void Launch_And_Reset();
 
 private:
 
@@ -56,5 +59,7 @@ private:
 
 	static const int kFireInterval = 60;
 	int32_t fireTimer = 0;
+
+	std::list<TimedCall*> timedCalls_;
 
 };
