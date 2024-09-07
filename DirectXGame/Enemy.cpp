@@ -118,9 +118,9 @@ void Enemy::Fire() {
 
 void Enemy::InitalizeApproach() {
 
-	fireTimer = kFireInterval;
-
 	Launch_And_Reset();
+
+	fireTimer = kFireInterval;
 
 }
 
