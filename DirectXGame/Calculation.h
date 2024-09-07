@@ -14,4 +14,6 @@ public:
 
 	static Matrix4x4 MultiplyMatrix(const Matrix4x4 &m1,const Matrix4x4 &m2);
 
+	static Vector3 Normalize(const Vector3& v);
+
 };

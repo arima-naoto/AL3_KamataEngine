@@ -1,4 +1,6 @@
 #include "Calculation.h"
+#define _USE_MATH_DEFINES
+#include "cmath"
 
 Vector3 Calculation::Add(const Vector3& v1, const Vector3& v2) 
 {
@@ -29,4 +31,15 @@ Matrix4x4 Calculation::MultiplyMatrix(const Matrix4x4& m1, const Matrix4x4& m2)
 	}
 
 	return multiply;
+}
+
+Vector3 Calculation::Normalize(const Vector3& v) {
+	// 正規化を使用して計算結果を求める
+	float length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+	Vector3 resultNormalize = {v.x, v.y, v.z};
+
+	if (length != 0.0f) {
+		resultNormalize = {v.x / length, v.y / length, v.z / length};
+	}
+	return resultNormalize;
 }

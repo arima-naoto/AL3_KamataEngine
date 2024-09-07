@@ -10,3 +10,10 @@ Vector3 operator*(float s, const Vector3& v) { return Calculation::MultiplyVecto
 Vector3 operator*(const Vector3& v, float s) { return s * v; }
 
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Calculation::MultiplyMatrix(m1, m2); }
+
+Vector3 operator*=(Vector3& v, float s) {
+	v.x *= s;
+	v.y *= s;
+	v.z *= s;
+	return v;
+}

@@ -3,6 +3,8 @@
 #include "ViewProjection.h"
 #include "cassert"
 #include "EnemyBullet.h"
+#include "Player.h"
+#include "Arithmetic.h"
 
 #ifdef _DEBUG
 #include "imgui.h"
@@ -97,8 +99,15 @@ void (Enemy::*Enemy::spFuncTable[])(){
 
 void Enemy::Fire() {
 
+	assert(player_);
+
 	const float kBulletSpeed = 1.0f;
-	Vector3 velocity(0, 0, -kBulletSpeed);
+
+	Vector3 playerPos = player_->GetWorldPosition();
+	Vector3 enemyPos = GetWorldPosition();
+	Vector3 SubtractVector = playerPos - enemyPos;
+	Vector3 NomalizeVector = Calculation::Normalize(SubtractVector);
+	Vector3 velocity(NomalizeVector * kBulletSpeed);
 
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(bulletModel_, worldTransform_.translation_, velocity);
@@ -113,3 +122,16 @@ void Enemy::InitalizeApproach() {
 
 }
 
+Vector3 Enemy::GetWorldPosition() {
+
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+
+	// ワールド行列の平行移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform_.matWorld_.m[3][0]; // ワールド行列のTx
+	worldPos.y = worldTransform_.matWorld_.m[3][1]; // ワールド行列のTy
+	worldPos.z = worldTransform_.matWorld_.m[3][2]; // ワールド行列のTz
+
+	return worldPos;
+
+}
