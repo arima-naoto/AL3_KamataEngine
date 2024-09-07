@@ -38,6 +38,7 @@ void GameScene::Initialize() {
 
 	enemy_ = make_unique<Enemy>();
 	enemy_->Initialize(model_, &viewProjection_, enemyTextureHandle_);
+	enemy_->SetPlayer(player_.get());
 
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 

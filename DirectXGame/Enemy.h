@@ -5,6 +5,7 @@
 class Model;
 class ViewProjection;
 class EnemyBullet;
+class Player;
 
 enum class Phase {
 	Approach,
@@ -22,6 +23,8 @@ public:
 	void Update();
 
 	void Draw();
+
+	void SetPlayer(Player* player) { player_ = player; }
 
 private:
 
@@ -51,5 +54,7 @@ private:
 
 	static const int kFireInterval = 60;
 	int32_t fireTimer = 0;
+
+	Player* player_ = nullptr;
 
 };

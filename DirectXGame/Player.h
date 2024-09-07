@@ -55,6 +55,8 @@ public://メンバ関数
 
 	void Attack();
 
+	Vector3 GetWorldPosition();
+
 private://メンバ変数
 
 	//モデル

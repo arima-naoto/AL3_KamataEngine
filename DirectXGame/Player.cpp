@@ -122,3 +122,9 @@ void Player::Attack() {
 		bullets_.push_back(newBullet);
 	}
 }
+
+Vector3 Player::GetWorldPosition() {
+
+	
+
+}
