@@ -17,6 +17,12 @@ Vector3 Calculation::MultiplyVector(float scalar, const Vector3& v)
 	return Vector3(scalar * v.x, scalar * v.y, scalar * v.z);
 }
 
+float Calculation::Length(const Vector3& v) {
+	// 長さを求める
+	float result = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+	return result;
+}
+
 Matrix4x4 Calculation::MultiplyMatrix(const Matrix4x4& m1, const Matrix4x4& m2) 
 {
 	Matrix4x4 multiply{};
@@ -32,6 +38,8 @@ Matrix4x4 Calculation::MultiplyMatrix(const Matrix4x4& m1, const Matrix4x4& m2)
 
 	return multiply;
 }
+
+
 
 Vector3 Calculation::Normalize(const Vector3& v) {
 	// 正規化を使用して計算結果を求める
