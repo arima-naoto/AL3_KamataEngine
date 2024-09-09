@@ -75,6 +75,8 @@ void Player::Draw()
 
 }
 
+void Player::OnCollision() {}
+
 #pragma region 移動処理メンバ関数の定義
 
 void Player::MoveRight() {

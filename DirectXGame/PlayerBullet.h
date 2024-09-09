@@ -14,6 +14,8 @@ public:
 
 	void Draw(const ViewProjection &viewProjection);
 
+	void OnCollision();
+
 	bool GetIsDead() const { return this->isDead_; }
 
 

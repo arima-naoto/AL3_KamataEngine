@@ -27,6 +27,9 @@ public://メンバ関数
 	/// 描画
 	void Draw();
 
+	/// 衝突時処理
+	void OnCollision();
+
 #pragma region 移動処理メンバ関数
 
 	/// 右方向移動

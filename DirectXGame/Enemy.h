@@ -24,6 +24,8 @@ public:
 
 	void Draw();
 
+	void OnCollision();
+
 	void SetPlayer(Player* player) { player_ = player; }
 
 	Vector3 GetWorldPosition(); 

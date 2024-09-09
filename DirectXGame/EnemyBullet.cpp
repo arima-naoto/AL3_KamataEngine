@@ -18,6 +18,10 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 
 void EnemyBullet::Update() {
 
+	if (--deathTimer_ <= 0) {
+		isDead_ = true;
+	}
+
 	worldTransform_.translation_ += velocity_;
 
 	worldTransform_.UpdateMatrix();
@@ -26,11 +30,10 @@ void EnemyBullet::Update() {
 
 void EnemyBullet::Draw(const ViewProjection &viewProjection) {
 
-
-	if (--deathTimer_ <= 0) {
-		isDead_ = true;
-	}
-
 	model_->Draw(worldTransform_, viewProjection);
 
+}
+
+void EnemyBullet::OnCollision() {
+	isDead_ = true;
 }

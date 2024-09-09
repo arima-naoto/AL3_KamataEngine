@@ -2,6 +2,11 @@
 #include "Vector3.h"
 #include "Matrix4x4.h"
 
+struct AABB {
+	Vector3 min;
+	Vector3 max;
+};
+
 class Calculation {
 
 public:
@@ -15,5 +20,7 @@ public:
 	static Matrix4x4 MultiplyMatrix(const Matrix4x4 &m1,const Matrix4x4 &m2);
 
 	static Vector3 Normalize(const Vector3& v);
+
+	static bool AABBCollision(const AABB& aabb1, const AABB& aabb2);
 
 };

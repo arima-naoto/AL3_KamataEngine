@@ -68,6 +68,8 @@ void Enemy::Draw() {
 
 }
 
+void Enemy::OnCollision() {}
+
 void Enemy::UpdateApproach() {
 
 	worldTransform_.translation_ -= Vector3(0, 0, 0.2f);

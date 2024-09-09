@@ -18,6 +18,10 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position,const Vector
 
 void PlayerBullet::Update() {
 
+	if (--deathTimer_ <= 0) {
+		isDead_ = true;
+	}
+
 	worldTransform_.translation_ += velocity_;
 
 	worldTransform_.UpdateMatrix();
@@ -26,11 +30,10 @@ void PlayerBullet::Update() {
 
 void PlayerBullet::Draw(const ViewProjection &viewProjection) {
 
-	
-	if (--deathTimer_ <= 0) {
-		isDead_ = true;
-	}
-
 	model_->Draw(worldTransform_, viewProjection);
+}
+
+void PlayerBullet::OnCollision() {
+	isDead_ = true;
 }
 
