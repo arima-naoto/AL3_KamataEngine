@@ -137,3 +137,5 @@ Vector3 Enemy::GetWorldPosition() {
 	return worldPos;
 
 }
+
+const std::list<EnemyBullet*>& Enemy::GetBullets() const { return bullets_; }

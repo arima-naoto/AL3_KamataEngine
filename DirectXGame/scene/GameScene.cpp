@@ -2,6 +2,8 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
+#include "PlayerBullet.h"
+#include "EnemyBullet.h"
 
 #pragma region 前方宣言したクラスのインクルード
 
@@ -169,5 +171,20 @@ void GameScene::MoveDebugCamera() {
 	} else {
 		viewProjection_.UpdateMatrix();
 	}
+
+}
+
+void GameScene::CheckAllCollision() {
+
+	Vector3 posA, posB;
+
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+
+	#pragma region 自キャラと敵弾の当たり判定
+
+	posA = player_->
+
+	#pragma endregion
 
 }

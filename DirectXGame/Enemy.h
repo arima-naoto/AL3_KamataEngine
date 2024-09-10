@@ -30,6 +30,8 @@ public:
 
 	Vector3 GetWorldPosition(); 
 
+	const std::list<EnemyBullet*>& GetBullets() const;
+ 
 private:
 
 	void UpdateApproach();

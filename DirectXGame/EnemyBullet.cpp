@@ -37,3 +37,4 @@ void EnemyBullet::Draw(const ViewProjection &viewProjection) {
 void EnemyBullet::OnCollision() {
 	isDead_ = true;
 }
+

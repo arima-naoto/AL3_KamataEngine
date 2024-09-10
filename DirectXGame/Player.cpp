@@ -138,3 +138,6 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 
 }
+
+const std::list<PlayerBullet*>& Player::GetBullets() const { return bullets_; }
+

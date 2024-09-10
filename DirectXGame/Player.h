@@ -3,7 +3,6 @@
 #include "cassert"
 #include <memory>
 #include "list"
-using namespace std;
 
 class Model;
 class ViewProjection;
@@ -60,6 +59,8 @@ public://メンバ関数
 
 	Vector3 GetWorldPosition();
 
+	const std::list<PlayerBullet*>& GetBullets() const;
+
 private://メンバ変数
 
 	//モデル
@@ -81,7 +82,7 @@ private://メンバ変数
 	static inline const float kRotSpeed = 0.02f;
 
 	Model* modelBullet_ = nullptr;
-	list<PlayerBullet*> bullets_;
+	std::list<PlayerBullet*> bullets_;
 
 
 };

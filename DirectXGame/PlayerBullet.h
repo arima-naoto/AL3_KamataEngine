@@ -18,6 +18,8 @@ public:
 
 	bool GetIsDead() const { return this->isDead_; }
 
+	Vector3 GetWorldTransform();
+
 
 private:
 
