@@ -21,6 +21,6 @@ public:
 
 	static Vector3 Normalize(const Vector3& v);
 
-	static bool AABBCollision(const AABB& aabb1, const AABB& aabb2);
+	static bool IsCollision(const AABB& aabb1, const AABB& aabb2);
 
 };

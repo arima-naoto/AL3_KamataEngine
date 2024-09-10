@@ -12,6 +12,7 @@ Player::~Player() {
 	for (auto* bullet : bullets_) {
 		delete bullet;
 	}
+	
 }
 
 void Player::Initialize(Model* model, ViewProjection * viewProjection,uint32_t textureHandle) {
@@ -38,13 +39,15 @@ void Player::Initialize(Model* model, ViewProjection * viewProjection,uint32_t t
 
 void Player::Update() 
 {
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->GetIsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 
-	// プレイヤーの移動範囲を設定する
-	const float kLimitMoveX = 33;
-	const float kLimitMoveY = 18;
-
-	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kLimitMoveX, kLimitMoveX);
-	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kLimitMoveY, kLimitMoveY);
+	Player::MoveLimit();
 
 	Player::Attack();
 
@@ -58,15 +61,9 @@ void Player::Update()
 
 void Player::Draw() 
 { 
-	bullets_.remove_if([](PlayerBullet* bullet) {
-		if (bullet->GetIsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
 
-	for (auto *bullet : bullets_) {
+
+	for (auto* bullet : bullets_) {
 		bullet->Draw(*viewProjection_);
 	}
 
@@ -76,6 +73,17 @@ void Player::Draw()
 }
 
 void Player::OnCollision() {}
+
+void Player::MoveLimit() {
+
+	// プレイヤーの移動範囲を設定する
+	const float kLimitMoveX = 33;
+	const float kLimitMoveY = 18;
+
+	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kLimitMoveX, kLimitMoveX);
+	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kLimitMoveY, kLimitMoveY);
+
+}
 
 #pragma region 移動処理メンバ関数の定義
 
@@ -146,7 +154,7 @@ AABB Player::GetAABB() {
 	AABB aabb;
 
 	aabb.min = {worldPos.x - kWidth_ / 2.0f, worldPos.y - kWidth_ / 2.0f, worldPos.z - kWidth_ / 2.0f};
-	aabb.min = {worldPos.x + kHeight_ / 2.0f, worldPos.y + kHeight_ / 2.0f, worldPos.z + kHeight_ / 2.0f};
+	aabb.max = {worldPos.x + kHeight_ / 2.0f, worldPos.y + kHeight_ / 2.0f, worldPos.z + kHeight_ / 2.0f};
 
 	return aabb;
 }

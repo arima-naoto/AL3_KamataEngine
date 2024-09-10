@@ -66,6 +66,6 @@ private:
 
 	Player* player_ = nullptr;
 
-	static inline const float kWidth_ = 1.0f;
-	static inline const float kHeight_ = 1.0f;
+	static inline const float kWidth_ = 2.0f;
+	static inline const float kHeight_ = 2.0f;
 };

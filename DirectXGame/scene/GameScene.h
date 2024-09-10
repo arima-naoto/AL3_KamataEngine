@@ -7,6 +7,9 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "Calculation.h"
+#include "PlayerBullet.h"
+#include "EnemyBullet.h"
 
 #include "memory"
 using namespace std;
@@ -20,7 +23,7 @@ class DebugCamera;
 /// <summary>
 /// ゲームシーン
 /// </summary>
-class GameScene {
+class GameScene : public Calculation{
 
 public: // メンバ関数
 	/// <summary>
@@ -53,8 +56,18 @@ public: // メンバ関数
 	
 	void UpdateCommand();
 
+	///各オブジェクトの更新処理
+	void ObjectUpdate();
+
 	void MoveDebugCamera();
 
+	void PlayerCollision(AABB aabb1, AABB aabb2,const std::list<EnemyBullet*>& enemyBullets);
+
+	void EnemyCollision(AABB aabb1, AABB aabb2, const std::list<PlayerBullet*>& playerBullets);
+	
+	void BulletCollision(AABB aabb1, AABB aabb2, const std::list<PlayerBullet*>& playerBullets, const std::list<EnemyBullet*>& enemyBullets);
+
+	// 全ての衝突判定
 	void CheckAllCollision();
 
 private: // メンバ変数

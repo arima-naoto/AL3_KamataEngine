@@ -28,7 +28,7 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 	viewProjection_ = viewProjection;
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = Vector3(10, 0, 50);
+	worldTransform_.translation_ = Vector3(10, 0, 80);
 
 	textureHandle_ = textureHandle;
 
@@ -41,6 +41,14 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 
 
 void Enemy::Update() {
+
+	bullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->GetIsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 	
 	//現在フェーズの関数を実行する
 	(this->*spFuncTable[static_cast<size_t>(phase_)])();
@@ -74,7 +82,7 @@ void Enemy::UpdateApproach() {
 
 	worldTransform_.translation_ -= Vector3(0, 0, 0.2f);
 
-	if (worldTransform_.translation_.z < 0.f) {
+	if (worldTransform_.translation_.z < 6.f) {
 		phase_ = Phase::Leave;
 	}
 
@@ -145,7 +153,7 @@ AABB Enemy::GetAABB() {
 	AABB aabb;
 
 	aabb.min = {worldPos.x - kWidth_ / 2.0f, worldPos.y - kWidth_ / 2.0f, worldPos.z - kWidth_ / 2.0f};
-	aabb.min = {worldPos.x + kHeight_ / 2.0f, worldPos.y + kHeight_ / 2.0f, worldPos.z + kHeight_ / 2.0f};
+	aabb.max = {worldPos.x + kHeight_ / 2.0f, worldPos.y + kHeight_ / 2.0f, worldPos.z + kHeight_ / 2.0f};
 
 	return aabb;
 }

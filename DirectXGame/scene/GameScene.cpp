@@ -2,8 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
-#include "PlayerBullet.h"
-#include "EnemyBullet.h"
+
 
 #pragma region 前方宣言したクラスのインクルード
 
@@ -58,11 +57,11 @@ void GameScene::Update()
 { 
 	UpdateCommand();
 
-	player_->Update(); 
-
-	enemy_->Update();
+	ObjectUpdate();
 
 	MoveDebugCamera();
+
+	CheckAllCollision();
 
 }
 
@@ -148,6 +147,14 @@ void GameScene::UpdateCommand() {
 
 }
 
+void GameScene::ObjectUpdate(){
+
+	player_->Update();
+
+	enemy_->Update();
+
+}
+
 void GameScene::MoveDebugCamera() {
 
 	#ifdef _DEBUG
@@ -174,17 +181,71 @@ void GameScene::MoveDebugCamera() {
 
 }
 
+void GameScene::PlayerCollision(AABB aabb1, AABB aabb2, const std::list<EnemyBullet*>& enemyBullets) {
+
+	aabb1 = player_->GetAABB();
+
+	for (auto* bullet : enemyBullets) {
+		aabb2 = bullet->GetAABB();
+
+		if (IsCollision(aabb1, aabb2)) {
+
+			player_->OnCollision();
+
+			bullet->OnCollision();
+		}
+	}
+
+}
+
+void GameScene::EnemyCollision(AABB aabb1, AABB aabb2, const std::list<PlayerBullet*>& playerBullets) {
+
+	aabb2 = enemy_->GetAABB();
+
+	for (auto* bullet : playerBullets) {
+		aabb1 = bullet->GetAABB();
+
+		if (IsCollision(aabb1, aabb2)) {
+
+			enemy_->OnCollision();
+
+			bullet->OnCollision();
+		}
+	}
+
+}
+
+void GameScene::BulletCollision(AABB aabb1, AABB aabb2, 
+	const std::list<PlayerBullet*>& playerBullets, const std::list<EnemyBullet*>& enemyBullets) {
+
+	for (auto* playerBullet : playerBullets) {
+		for (auto* enemyBullet : enemyBullets) {
+
+			aabb1 = playerBullet->GetAABB();
+			aabb2 = enemyBullet->GetAABB();
+
+			if (IsCollision(aabb1, aabb2)) {
+
+				playerBullet->OnCollision();
+
+				enemyBullet->OnCollision();
+			}
+		}
+	}
+
+}
+
 void GameScene::CheckAllCollision() {
 
-	AABB posA, posB;
+	AABB aabb1 = {}, aabb2 = {};
 
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
 	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
 
-	#pragma region 自キャラと敵弾の当たり判定
+	PlayerCollision(aabb1, aabb2, enemyBullets);
 
-	posA = player_->GetAABB();
+	EnemyCollision(aabb1, aabb2, playerBullets);
 
-	#pragma endregion
+	BulletCollision(aabb1, aabb2, playerBullets, enemyBullets);
 
 }

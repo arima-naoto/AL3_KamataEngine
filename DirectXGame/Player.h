@@ -30,6 +30,8 @@ public://メンバ関数
 	/// 衝突時処理
 	void OnCollision();
 
+	void MoveLimit();
+
 #pragma region 移動処理メンバ関数
 
 	/// 右方向移動
@@ -87,8 +89,8 @@ private://メンバ変数
 	Model* modelBullet_ = nullptr;
 	std::list<PlayerBullet*> bullets_;
 
-	static inline const float kWidth_ = 1.0f;
-	static inline const float kHeight_ = 1.0f;
+	static inline const float kWidth_ = 2.0f;
+	static inline const float kHeight_ = 2.0f;
 
 
 };
