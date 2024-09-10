@@ -1,5 +1,6 @@
 #pragma once
 #include "WorldTransform.h"
+#include "Calculation.h"
 #include "cassert"
 #include <memory>
 #include "list"
@@ -59,6 +60,8 @@ public://メンバ関数
 
 	Vector3 GetWorldPosition();
 
+	AABB GetAABB();
+
 	const std::list<PlayerBullet*>& GetBullets() const;
 
 private://メンバ変数
@@ -83,6 +86,9 @@ private://メンバ変数
 
 	Model* modelBullet_ = nullptr;
 	std::list<PlayerBullet*> bullets_;
+
+	static inline const float kWidth_ = 1.0f;
+	static inline const float kHeight_ = 1.0f;
 
 
 };

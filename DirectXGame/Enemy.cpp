@@ -138,4 +138,17 @@ Vector3 Enemy::GetWorldPosition() {
 
 }
 
+AABB Enemy::GetAABB() {
+
+	Vector3 worldPos = GetWorldPosition();
+
+	AABB aabb;
+
+	aabb.min = {worldPos.x - kWidth_ / 2.0f, worldPos.y - kWidth_ / 2.0f, worldPos.z - kWidth_ / 2.0f};
+	aabb.min = {worldPos.x + kHeight_ / 2.0f, worldPos.y + kHeight_ / 2.0f, worldPos.z + kHeight_ / 2.0f};
+
+	return aabb;
+}
+
+
 const std::list<EnemyBullet*>& Enemy::GetBullets() const { return bullets_; }

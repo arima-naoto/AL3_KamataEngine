@@ -176,14 +176,14 @@ void GameScene::MoveDebugCamera() {
 
 void GameScene::CheckAllCollision() {
 
-	Vector3 posA, posB;
+	AABB posA, posB;
 
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
 	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
 
 	#pragma region 自キャラと敵弾の当たり判定
 
-	posA = player_->
+	posA = player_->GetAABB();
 
 	#pragma endregion
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "WorldTransform.h"
+#include "Calculation.h"
 
 class Model;
 class ViewProjection;
@@ -18,8 +19,9 @@ public:
 
 	bool GetIsDead() const { return this->isDead_; }
 
-	Vector3 GetWorldTransform();
+	Vector3 GetWorldPosition();
 
+	AABB GetAABB();
 
 private:
 
@@ -34,5 +36,8 @@ private:
 	int32_t deathTimer_ = kLifeTime;
 
 	bool isDead_ = false;
+
+	static inline const float kWidth_ = 1.0f;
+	static inline const float kHeight_ = 1.0f;
 
 };

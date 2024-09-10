@@ -1,5 +1,6 @@
 #pragma once
 #include "WorldTransform.h"
+#include "Calculation.h"
 #include "list"
 
 class Model;
@@ -29,6 +30,8 @@ public:
 	void SetPlayer(Player* player) { player_ = player; }
 
 	Vector3 GetWorldPosition(); 
+
+	AABB GetAABB();
 
 	const std::list<EnemyBullet*>& GetBullets() const;
  
@@ -63,4 +66,6 @@ private:
 
 	Player* player_ = nullptr;
 
+	static inline const float kWidth_ = 1.0f;
+	static inline const float kHeight_ = 1.0f;
 };
