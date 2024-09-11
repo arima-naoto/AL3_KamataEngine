@@ -76,6 +76,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		gameScene->Update();
 		// 軸表示の更新
 		axisIndicator->Update();
+
+		if(input->TriggerKey(DIK_F10)) {
+			win->SetFullscreen(true);
+		} else if (input->TriggerKey(DIK_F11)) {
+			win->SetFullscreen(false);
+		}
+
 		// ImGui受付終了
 		imguiManager->End();
 
