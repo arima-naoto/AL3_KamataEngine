@@ -10,6 +10,7 @@
 #include "InputHandler.h"
 #include "ICommand.h"
 #include "Enemy.h"
+#include "SkyDome.h"
 #include "DebugCamera.h"
 
 #pragma endregion
@@ -40,6 +41,10 @@ void GameScene::Initialize() {
 	enemy_ = make_unique<Enemy>();
 	enemy_->Initialize(model_, &viewProjection_, enemyTextureHandle_);
 	enemy_->SetPlayer(player_.get());
+
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true); 
+	skyDome_ = make_unique<SkyDome>();
+	skyDome_->Initialize(modelSkydome_,&viewProjection_);
 
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 
@@ -94,6 +99,8 @@ void GameScene::Draw() {
 	player_->Draw();
 
 	enemy_->Draw();
+
+	skyDome_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -152,6 +159,8 @@ void GameScene::ObjectUpdate(){
 	player_->Update();
 
 	enemy_->Update();
+
+	skyDome_->Update();
 
 }
 
