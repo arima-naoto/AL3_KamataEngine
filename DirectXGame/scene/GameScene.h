@@ -19,6 +19,7 @@ class InputHandler;
 class ICommand;
 class Enemy;
 class SkyDome;
+class RailCamera;
 class DebugCamera;
 
 /// <summary>
@@ -96,8 +97,10 @@ private: // メンバ変数
 
 	unique_ptr<Enemy> enemy_ = nullptr;
 	unique_ptr<SkyDome> skyDome_ = nullptr;
+	unique_ptr<RailCamera> railCamera_ = nullptr;
 	unique_ptr<DebugCamera> debugCamera_ = nullptr;
 
 	bool isDebugCameraActive_ = false;
+	WorldTransform worldTransform_;
 
 };

@@ -11,6 +11,7 @@
 #include "ICommand.h"
 #include "Enemy.h"
 #include "SkyDome.h"
+#include "RailCamera.h"
 #include "DebugCamera.h"
 
 #pragma endregion
@@ -27,6 +28,7 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	model_ = Model::Create();
+	worldTransform_.Initialize();
 	viewProjection_.Initialize();
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
@@ -45,6 +47,9 @@ void GameScene::Initialize() {
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true); 
 	skyDome_ = make_unique<SkyDome>();
 	skyDome_->Initialize(modelSkydome_,&viewProjection_);
+
+	railCamera_ = make_unique<RailCamera>();
+	railCamera_->Initialize(worldTransform_.matWorld_, worldTransform_.rotation_);
 
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 
@@ -156,11 +161,15 @@ void GameScene::UpdateCommand() {
 
 void GameScene::ObjectUpdate(){
 
+	railCamera_->Update();
+
 	player_->Update();
 
 	enemy_->Update();
 
 	skyDome_->Update();
+
+	
 
 }
 
