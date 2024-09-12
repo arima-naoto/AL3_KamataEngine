@@ -34,6 +34,9 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	enemyTextureHandle_ = TextureManager::Load("kuppa.jpg");
 
+	railCamera_ = make_unique<RailCamera>();
+	railCamera_->Initialize(worldTransform_.matWorld_, worldTransform_.rotation_);
+
 	Vector3 playerPosition(0.0f, 0.0f, 24.0f);
 	player_ = make_unique<Player>();
 	player_->Initialize(model_, &viewProjection_, textureHandle_,playerPosition);
@@ -50,8 +53,7 @@ void GameScene::Initialize() {
 	skyDome_ = make_unique<SkyDome>();
 	skyDome_->Initialize(modelSkydome_,&viewProjection_);
 
-	railCamera_ = make_unique<RailCamera>();
-	railCamera_->Initialize(worldTransform_.matWorld_, worldTransform_.rotation_);
+
 
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
 
@@ -75,8 +77,8 @@ void GameScene::Update()
 
 	CheckAllCollision();
 
-	railCamera_->SetTranslation(player_->GetWorldTranslate());
 	railCamera_->SetRotation(player_->GetWorldRotation());
+	railCamera_->SetTranslation(player_->GetWorldTranslate());
 
 }
 

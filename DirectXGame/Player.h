@@ -19,7 +19,7 @@ public://メンバ関数
 	~Player();
 	
 	/// 初期化
-	void Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle,const Vector3 &position);
+	void Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle,const Vector3& position);
 	
 	/// 更新
 	void Update();
@@ -89,8 +89,8 @@ private://メンバ変数
 	Input* input_ = nullptr;
 
 	/// キャラクターの移動速度
-	static inline const float kCharacterSpeed = 0.02f;
-	static inline const float kRotSpeed = 0.02f;
+	static inline const float kCharacterSpeed = 0.25f;
+	static inline const float kRotSpeed = 0.0025f;
 
 	Model* modelBullet_ = nullptr;
 	std::list<PlayerBullet*> bullets_;
@@ -98,7 +98,7 @@ private://メンバ変数
 	static inline const float kWidth_ = 2.0f;
 	static inline const float kHeight_ = 2.0f;
 	Vector3 velocity_ = {};
-	Vector3 parentRotation_ = {};
-	Vector3 parentTranslation_{};
+	Vector3 rotate_ = {};
+	Vector3 translate_ = {};
 };
 

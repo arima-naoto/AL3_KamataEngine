@@ -15,7 +15,7 @@ Player::~Player() {
 	
 }
 
-void Player::Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle, const Vector3& position) {
+void Player::Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle,const Vector3 &position) {
 
 	//NULLポインタチェック
 	assert(model);
@@ -40,14 +40,7 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection, uint32_t t
 
 void Player::Update() 
 {
-	bullets_.remove_if([](PlayerBullet* bullet) {
-		if (bullet->GetIsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
-
+	
 	Player::MoveLimit();
 
 	Player::Attack();
@@ -56,15 +49,24 @@ void Player::Update()
 		bullet->Update();
 	}
 
-	worldTransform_.translation_ += velocity_;
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->GetIsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
+	translate_ += velocity_;
+
+	ImGui::DragFloat3("translate", &translate_.x, 0.01f);
 
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
 }
 
 void Player::Draw() 
-{ 
-
+{
 
 	for (auto* bullet : bullets_) {
 		bullet->Draw(*viewProjection_);
@@ -80,31 +82,31 @@ void Player::OnCollision() {}
 void Player::MoveLimit() {
 
 	// プレイヤーの移動範囲を設定する
-	const float kLimitMoveX = 33;
-	const float kLimitMoveY = 18;
+	const float kLimitMoveX = 800;
+	const float kLimitMoveY = 800;
 
-	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kLimitMoveX, kLimitMoveX);
-	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kLimitMoveY, kLimitMoveY);
+	translate_.x = std::clamp(translate_.x, -kLimitMoveX, kLimitMoveX);
+	translate_.y = std::clamp(translate_.y, -kLimitMoveY, kLimitMoveY);
 
 }
 
 #pragma region 移動処理メンバ関数の定義
 
-void Player::MoveRight() { velocity_.x += kCharacterSpeed; }
+void Player::MoveRight() { velocity_.x = kCharacterSpeed; }
 
-void Player::MoveLeft() { velocity_.x -= kCharacterSpeed; }
+void Player::MoveLeft() { velocity_.x = -kCharacterSpeed; }
 
-void Player::MoveUp() { velocity_.y += kCharacterSpeed; }
+void Player::MoveUp() { velocity_.y = kCharacterSpeed; }
 
-void Player::MoveDown() { velocity_.y -= kCharacterSpeed; }
+void Player::MoveDown() { velocity_.y = -kCharacterSpeed; }
 
 #pragma endregion
 
 #pragma region 回転処理メンバ関数の定義
 
-void Player::RotateRight() { parentRotation_.y -= kRotSpeed; }
+void Player::RotateRight() { rotate_.y -= kRotSpeed; }
 
-void Player::RotateLeft() { parentRotation_.y += kRotSpeed; }
+void Player::RotateLeft() { rotate_.y += kRotSpeed; }
 
 #pragma endregion 
 
@@ -116,11 +118,13 @@ void Player::Attack() {
 		Vector3 velocity(0, 0, kBulletSpeed);
 
 		velocity = Rendering::TransformNormal(velocity, worldTransform_.matWorld_);
+		Vector3 bulletPosition = this->GetWorldPosition();
 
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(modelBullet_, worldTransform_.translation_, velocity);
+		newBullet->Initialize(modelBullet_, bulletPosition, velocity);
 
 		bullets_.push_back(newBullet);
+
 	}
 }
 
@@ -152,8 +156,11 @@ AABB Player::GetAABB() {
 
 const std::list<PlayerBullet*>& Player::GetBullets() const { return bullets_; }
 
-void Player::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
+void Player::SetParent(const WorldTransform* parent) {
+	worldTransform_.parent_ = parent;
+	translate_ = worldTransform_.parent_->translation_;
+}
 
-Vector3 Player::GetWorldTranslate() { return parentTranslation_; }
+Vector3 Player::GetWorldTranslate() { return translate_; }
 
-Vector3 Player::GetWorldRotation() { return parentRotation_; }
+Vector3 Player::GetWorldRotation() { return rotate_; }
