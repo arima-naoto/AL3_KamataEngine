@@ -28,7 +28,7 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 	viewProjection_ = viewProjection;
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = Vector3(10, 0, 80);
+	worldTransform_.translation_ = Vector3(10, 0, 100);
 
 	textureHandle_ = textureHandle;
 
@@ -59,11 +59,6 @@ void Enemy::Update() {
 
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
-
-	Begin("enemy");
-	DragFloat3("enemy.translate", &worldTransform_.translation_.x, 0.01f);
-	End();
-
 }
 
 void Enemy::Draw() {
@@ -82,7 +77,7 @@ void Enemy::UpdateApproach() {
 
 	worldTransform_.translation_ -= Vector3(0, 0, 0.2f);
 
-	if (worldTransform_.translation_.z < 6.f) {
+	if (worldTransform_.translation_.z < 26.f) {
 		phase_ = Phase::Leave;
 	}
 

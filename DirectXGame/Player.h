@@ -19,7 +19,7 @@ public://メンバ関数
 	~Player();
 	
 	/// 初期化
-	void Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle);
+	void Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle,const Vector3 &position);
 	
 	/// 更新
 	void Update();
@@ -66,6 +66,12 @@ public://メンバ関数
 
 	const std::list<PlayerBullet*>& GetBullets() const;
 
+	void SetParent(const WorldTransform* parent);
+
+	Vector3 GetWorldTranslate();
+
+	Vector3 GetWorldRotation();
+
 private://メンバ変数
 
 	//モデル
@@ -83,7 +89,7 @@ private://メンバ変数
 	Input* input_ = nullptr;
 
 	/// キャラクターの移動速度
-	static inline const float kCharacterSpeed = 0.2f;
+	static inline const float kCharacterSpeed = 0.02f;
 	static inline const float kRotSpeed = 0.02f;
 
 	Model* modelBullet_ = nullptr;
@@ -91,7 +97,8 @@ private://メンバ変数
 
 	static inline const float kWidth_ = 2.0f;
 	static inline const float kHeight_ = 2.0f;
-
-
+	Vector3 velocity_ = {};
+	Vector3 parentRotation_ = {};
+	Vector3 parentTranslation_{};
 };
 

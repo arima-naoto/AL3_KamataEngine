@@ -34,8 +34,10 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	enemyTextureHandle_ = TextureManager::Load("kuppa.jpg");
 
+	Vector3 playerPosition(0.0f, 0.0f, 24.0f);
 	player_ = make_unique<Player>();
-	player_->Initialize(model_, &viewProjection_, textureHandle_);
+	player_->Initialize(model_, &viewProjection_, textureHandle_,playerPosition);
+	player_->SetParent(&railCamera_->GetWorldTransfrom());
 
 	inputHandler_ = make_unique<InputHandler>();
 	GameScene::Command_Declaration();
@@ -72,6 +74,9 @@ void GameScene::Update()
 	MoveDebugCamera();
 
 	CheckAllCollision();
+
+	railCamera_->SetTranslation(player_->GetWorldTranslate());
+	railCamera_->SetRotation(player_->GetWorldRotation());
 
 }
 
@@ -177,7 +182,7 @@ void GameScene::MoveDebugCamera() {
 
 	#ifdef _DEBUG
 
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (input_->TriggerKey(DIK_RETURN)) {
 		if (!isDebugCameraActive_) {
 			isDebugCameraActive_ = true;
 		} else if (isDebugCameraActive_) {
@@ -187,16 +192,20 @@ void GameScene::MoveDebugCamera() {
 
 #endif // _DEBUG
 
+	if (!isDebugCameraActive_) {
+		railCamera_->Update();
+		viewProjection_.matView = railCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	}
+
 	if (isDebugCameraActive_) {
 
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		viewProjection_.TransferMatrix();
-	} else {
-		viewProjection_.UpdateMatrix();
 	}
-
 }
 
 void GameScene::PlayerCollision(AABB aabb1, AABB aabb2, const std::list<EnemyBullet*>& enemyBullets) {

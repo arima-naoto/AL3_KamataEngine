@@ -11,6 +11,8 @@ Vector3 operator*(const Vector3& v, float s);
 
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2);
 
+Matrix4x4 operator*=(Matrix4x4& m1, const Matrix4x4& m2);
+
 Vector3 operator*=(Vector3& v, float s);
 
 

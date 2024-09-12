@@ -15,7 +15,7 @@ Player::~Player() {
 	
 }
 
-void Player::Initialize(Model* model, ViewProjection * viewProjection,uint32_t textureHandle) {
+void Player::Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle, const Vector3& position) {
 
 	//NULLポインタチェック
 	assert(model);
@@ -28,6 +28,7 @@ void Player::Initialize(Model* model, ViewProjection * viewProjection,uint32_t t
 	
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
+	worldTransform_.translation_ = position;
 
 	// テクスチャハンドル
 	textureHandle_ = textureHandle; 
@@ -54,6 +55,8 @@ void Player::Update()
 	for (auto* bullet : bullets_) {
 		bullet->Update();
 	}
+
+	worldTransform_.translation_ += velocity_;
 
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
@@ -87,33 +90,21 @@ void Player::MoveLimit() {
 
 #pragma region 移動処理メンバ関数の定義
 
-void Player::MoveRight() {
-	worldTransform_.translation_ += Vector3(kCharacterSpeed, 0, 0);
-}
+void Player::MoveRight() { velocity_.x += kCharacterSpeed; }
 
-void Player::MoveLeft() {
-	worldTransform_.translation_ -= Vector3(kCharacterSpeed, 0, 0);
-}
+void Player::MoveLeft() { velocity_.x -= kCharacterSpeed; }
 
-void Player::MoveUp() { 
-	worldTransform_.translation_ += Vector3(0, kCharacterSpeed, 0); 
-}
+void Player::MoveUp() { velocity_.y += kCharacterSpeed; }
 
-void Player::MoveDown() { 
-	worldTransform_.translation_ -= Vector3(0, kCharacterSpeed, 0); 
-}
+void Player::MoveDown() { velocity_.y -= kCharacterSpeed; }
 
 #pragma endregion
 
 #pragma region 回転処理メンバ関数の定義
 
-void Player::RotateRight() {
-	worldTransform_.rotation_ -= Vector3(0, kRotSpeed, 0);
-}
+void Player::RotateRight() { parentRotation_.y -= kRotSpeed; }
 
-void Player::RotateLeft() {
-	worldTransform_.rotation_+= Vector3(0, kRotSpeed, 0);
-}
+void Player::RotateLeft() { parentRotation_.y += kRotSpeed; }
 
 #pragma endregion 
 
@@ -161,3 +152,8 @@ AABB Player::GetAABB() {
 
 const std::list<PlayerBullet*>& Player::GetBullets() const { return bullets_; }
 
+void Player::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
+
+Vector3 Player::GetWorldTranslate() { return parentTranslation_; }
+
+Vector3 Player::GetWorldRotation() { return parentRotation_; }

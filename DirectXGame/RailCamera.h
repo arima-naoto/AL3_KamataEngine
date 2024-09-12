@@ -7,7 +7,8 @@ public:
 	void Update();
 	const WorldTransform& GetWorldTransfrom() const;
 	const ViewProjection& GetViewProjection() const;
-
+	void SetTranslation(Vector3 translation);
+	void SetRotation(Vector3 rotation);
 private:
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
