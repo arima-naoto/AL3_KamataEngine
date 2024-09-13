@@ -4,6 +4,7 @@
 class Rendering {
 
 public:
+	
 
 	static Matrix4x4 MakeScaleMatrix(const Vector3& scale);
 
@@ -22,5 +23,7 @@ public:
 	static Matrix4x4 Inverse(const Matrix4x4 &m);
 
 	static Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
+		
+	
 
 };

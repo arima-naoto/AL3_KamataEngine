@@ -30,7 +30,7 @@ public://メンバ関数
 	/// 衝突時処理
 	void OnCollision();
 
-	void MoveLimit();
+	
 
 #pragma region 移動処理メンバ関数
 
@@ -58,9 +58,11 @@ public://メンバ関数
 
 #pragma endregion
 
-	void Attack();
+	
 
 	Vector3 GetWorldPosition();
+
+	Vector3 GetWorld3DReticlePosition();
 
 	AABB GetAABB();
 
@@ -71,6 +73,14 @@ public://メンバ関数
 	Vector3 GetWorldTranslate();
 
 	Vector3 GetWorldRotation();
+
+private:
+
+	void MoveLimit();
+
+	void Attack();
+
+	void Layout_3DReticle();
 
 private://メンバ変数
 
@@ -100,5 +110,8 @@ private://メンバ変数
 	Vector3 velocity_ = {};
 	Vector3 rotate_ = {};
 	Vector3 translate_ = {};
+
+	WorldTransform worldTransform3DReticle_;
+	Model* modelReticle_ = nullptr;
 };
 

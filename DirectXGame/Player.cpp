@@ -8,6 +8,7 @@
 #include "PlayerBullet.h"
 #include "Rendering.h"
 
+
 Player::~Player() {
 	for (auto* bullet : bullets_) {
 		delete bullet;
@@ -36,11 +37,16 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection, uint32_t t
 	input_ = Input::GetInstance();
 
 	modelBullet_ = Model::CreateFromOBJ("playerBullet", true);
+	modelReticle_ = Model::CreateFromOBJ("cube", true);
+
+	worldTransform3DReticle_.Initialize();
 }
 
 void Player::Update() 
 {
 	
+	Player::Layout_3DReticle();
+
 	Player::MoveLimit();
 
 	Player::Attack();
@@ -58,9 +64,7 @@ void Player::Update()
 	});
 
 	translate_ += velocity_;
-
-	ImGui::DragFloat3("translate", &translate_.x, 0.01f);
-
+	
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
 }
@@ -75,20 +79,11 @@ void Player::Draw()
 	//3Dモデルを描画
 	model_->Draw(worldTransform_,*viewProjection_,textureHandle_); 
 
+	modelReticle_->Draw(worldTransform3DReticle_, *viewProjection_);
+
 }
 
 void Player::OnCollision() {}
-
-void Player::MoveLimit() {
-
-	// プレイヤーの移動範囲を設定する
-	const float kLimitMoveX = 800;
-	const float kLimitMoveY = 800;
-
-	translate_.x = std::clamp(translate_.x, -kLimitMoveX, kLimitMoveX);
-	translate_.y = std::clamp(translate_.y, -kLimitMoveY, kLimitMoveY);
-
-}
 
 #pragma region 移動処理メンバ関数の定義
 
@@ -110,6 +105,16 @@ void Player::RotateLeft() { rotate_.y += kRotSpeed; }
 
 #pragma endregion 
 
+void Player::MoveLimit() {
+
+	// プレイヤーの移動範囲を設定する
+	const float kLimitMoveX = 800;
+	const float kLimitMoveY = 800;
+
+	translate_.x = std::clamp(translate_.x, -kLimitMoveX, kLimitMoveX);
+	translate_.y = std::clamp(translate_.y, -kLimitMoveY, kLimitMoveY);
+}
+
 void Player::Attack() {
 
 	if (input_->TriggerKey(DIK_SPACE)) {
@@ -117,6 +122,8 @@ void Player::Attack() {
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
+		velocity = this->GetWorld3DReticlePosition() - this->GetWorldPosition();
+		velocity = Calculation::Normalize(velocity) * kBulletSpeed;
 		velocity = Rendering::TransformNormal(velocity, worldTransform_.matWorld_);
 		Vector3 bulletPosition = this->GetWorldPosition();
 
@@ -128,6 +135,26 @@ void Player::Attack() {
 	}
 }
 
+void Player::Layout_3DReticle() {
+
+	const float kDistancePlayerTo3Dreticle = 50.0f;
+
+	Vector3 offset = {0, 0, 1.0f};
+
+	Matrix4x4 worldMatrix = Rendering::MakeAffineMatrix(
+		Calculation::Normalize(worldTransform_.scale_), worldTransform_.rotation_, worldTransform_.translation_);
+
+	offset = Calculation::Multiply(offset, worldMatrix);
+
+	offset = Calculation::Normalize(offset) * kDistancePlayerTo3Dreticle;
+
+	worldTransform3DReticle_.translation_ = offset;
+
+	worldTransform3DReticle_.UpdateMatrix();
+
+
+}
+
 Vector3 Player::GetWorldPosition() {
 
 	// ワールド座標を入れる変数
@@ -137,6 +164,20 @@ Vector3 Player::GetWorldPosition() {
 	worldPos.x = worldTransform_.matWorld_.m[3][0]; // ワールド行列のTx
 	worldPos.y = worldTransform_.matWorld_.m[3][1]; // ワールド行列のTy
 	worldPos.z = worldTransform_.matWorld_.m[3][2]; // ワールド行列のTz
+
+	return worldPos;
+
+}
+
+Vector3 Player::GetWorld3DReticlePosition() {
+
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+
+	// ワールド行列の平行移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform3DReticle_.matWorld_.m[3][0]; // ワールド行列のTx
+	worldPos.y = worldTransform3DReticle_.matWorld_.m[3][1]; // ワールド行列のTy
+	worldPos.z = worldTransform3DReticle_.matWorld_.m[3][2]; // ワールド行列のTz
 
 	return worldPos;
 
