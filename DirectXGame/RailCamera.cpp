@@ -9,13 +9,12 @@ void RailCamera::Initialize(const Matrix4x4& matWorld, const Vector3& rotate) {
 	worldTransform_.Initialize();
 	worldTransform_.matWorld_ = matWorld;
 	worldTransform_.rotation_ = rotate;
-	worldTransform_.translation_ = Vector3({0.0f, 0.0f, -100.0f});
+	worldTransform_.translation_ = Vector3({0.0f, 0.0f, -30.0f});
 	viewProjection_.farZ = 2000;
 	viewProjection_.Initialize();
 
 }
 void RailCamera::Update() {
-	worldTransform_.translation_ += Vector3({0,0,-0.1f});
 	worldTransform_.UpdateMatrix();
 	viewProjection_.matView = Rendering::Inverse(worldTransform_.matWorld_);
 }

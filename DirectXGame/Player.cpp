@@ -13,6 +13,7 @@ Player::~Player() {
 	for (auto* bullet : bullets_) {
 		delete bullet;
 	}
+	bullets_.clear();
 	
 }
 
@@ -44,12 +45,6 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection, uint32_t t
 
 void Player::Update() 
 {
-	
-	Player::Layout_3DReticle();
-
-	Player::MoveLimit();
-
-	Player::Attack();
 
 	for (auto* bullet : bullets_) {
 		bullet->Update();
@@ -63,10 +58,19 @@ void Player::Update()
 		return false;
 	});
 
-	translate_ += velocity_;
+	Player::MoveLimit();
+
+	Player::Attack();
+
+	Layout_3DReticle();
+
+	
+
+	worldTransform_.translation_ += velocity_;
 	
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
+
 }
 
 void Player::Draw() 
@@ -87,46 +91,49 @@ void Player::OnCollision() {}
 
 #pragma region 移動処理メンバ関数の定義
 
-void Player::MoveRight() { velocity_.x = kCharacterSpeed; }
+void Player::MoveRight() { velocity_.x += kCharacterSpeed; }
 
-void Player::MoveLeft() { velocity_.x = -kCharacterSpeed; }
+void Player::MoveLeft() { velocity_.x += -kCharacterSpeed; }
 
-void Player::MoveUp() { velocity_.y = kCharacterSpeed; }
+void Player::MoveUp() { velocity_.y += kCharacterSpeed; }
 
-void Player::MoveDown() { velocity_.y = -kCharacterSpeed; }
+void Player::MoveDown() { velocity_.y += -kCharacterSpeed; }
 
 #pragma endregion
 
 #pragma region 回転処理メンバ関数の定義
 
-void Player::RotateRight() { rotate_.y -= kRotSpeed; }
+void Player::RotateRight() { worldTransform_.rotation_.y -= kRotSpeed; }
 
-void Player::RotateLeft() { rotate_.y += kRotSpeed; }
+void Player::RotateLeft() { worldTransform_.rotation_.y += kRotSpeed; }
 
 #pragma endregion 
 
 void Player::MoveLimit() {
 
 	// プレイヤーの移動範囲を設定する
-	const float kLimitMoveX = 800;
-	const float kLimitMoveY = 800;
+	const float kLimitMoveX = 33;
+	const float kLimitMoveY = 18;
 
-	translate_.x = std::clamp(translate_.x, -kLimitMoveX, kLimitMoveX);
-	translate_.y = std::clamp(translate_.y, -kLimitMoveY, kLimitMoveY);
+    worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kLimitMoveX, kLimitMoveX);
+	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kLimitMoveY, kLimitMoveY);
 }
 
 void Player::Attack() {
 
 	if (input_->TriggerKey(DIK_SPACE)) {
-
+		
 		const float kBulletSpeed = 1.0f;
-		Vector3 velocity(0, 0, kBulletSpeed);
 
-		velocity = this->GetWorld3DReticlePosition() - this->GetWorldPosition();
+		Vector3 velocity{0, 0, kBulletSpeed};
+		velocity = Get3DReticlePosition() - GetWorldPosition();
 		velocity = Calculation::Normalize(velocity) * kBulletSpeed;
+		// 速度ベクトルを自機の向きに合わせて回転させる
 		velocity = Rendering::TransformNormal(velocity, worldTransform_.matWorld_);
+
 		Vector3 bulletPosition = this->GetWorldPosition();
 
+		// 生成
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(modelBullet_, bulletPosition, velocity);
 
@@ -142,17 +149,15 @@ void Player::Layout_3DReticle() {
 	Vector3 offset = {0, 0, 1.0f};
 
 	Matrix4x4 worldMatrix = Rendering::MakeAffineMatrix(
-		Calculation::Normalize(worldTransform_.scale_), worldTransform_.rotation_, worldTransform_.translation_);
+		worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
-	offset = Calculation::Multiply(offset, worldMatrix);
+	offset = offset * worldMatrix;
 
 	offset = Calculation::Normalize(offset) * kDistancePlayerTo3Dreticle;
 
-	worldTransform3DReticle_.translation_ = offset;
+	worldTransform3DReticle_.translation_ = Vector3(offset.x, offset.y, offset.z);
 
 	worldTransform3DReticle_.UpdateMatrix();
-
-
 }
 
 Vector3 Player::GetWorldPosition() {
@@ -169,18 +174,13 @@ Vector3 Player::GetWorldPosition() {
 
 }
 
-Vector3 Player::GetWorld3DReticlePosition() {
+Vector3 Player::Get3DReticlePosition() {
 
-	// ワールド座標を入れる変数
-	Vector3 worldPos;
-
-	// ワールド行列の平行移動成分を取得(ワールド座標)
-	worldPos.x = worldTransform3DReticle_.matWorld_.m[3][0]; // ワールド行列のTx
-	worldPos.y = worldTransform3DReticle_.matWorld_.m[3][1]; // ワールド行列のTy
-	worldPos.z = worldTransform3DReticle_.matWorld_.m[3][2]; // ワールド行列のTz
-
-	return worldPos;
-
+	Vector3 reticleWorldPos;
+	reticleWorldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
+	reticleWorldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
+	reticleWorldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
+	return reticleWorldPos;
 }
 
 AABB Player::GetAABB() {
@@ -201,6 +201,8 @@ void Player::SetParent(const WorldTransform* parent) {
 	worldTransform_.parent_ = parent;
 	translate_ = worldTransform_.parent_->translation_;
 }
+
+void Player::SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
 
 Vector3 Player::GetWorldTranslate() { return translate_; }
 

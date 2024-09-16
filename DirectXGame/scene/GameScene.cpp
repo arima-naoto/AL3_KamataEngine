@@ -37,7 +37,7 @@ void GameScene::Initialize() {
 	railCamera_ = make_unique<RailCamera>();
 	railCamera_->Initialize(worldTransform_.matWorld_, worldTransform_.rotation_);
 
-	Vector3 playerPosition(0.0f, 0.0f, 24.0f);
+	Vector3 playerPosition(0.0f, -10.0f, 50.0f);
 	player_ = make_unique<Player>();
 	player_->Initialize(model_, &viewProjection_, textureHandle_,playerPosition);
 	player_->SetParent(&railCamera_->GetWorldTransfrom());
@@ -76,10 +76,6 @@ void GameScene::Update()
 	MoveDebugCamera();
 
 	CheckAllCollision();
-
-	railCamera_->SetRotation(player_->GetWorldRotation());
-	railCamera_->SetTranslation(player_->GetWorldTranslate());
-
 }
 
 void GameScene::Draw() {
@@ -149,6 +145,7 @@ void GameScene::Command_Declaration() {
 
 void GameScene::UpdateCommand() {
 
+	player_->SetVelocity({});
 	virticalCommand_ = inputHandler_->InputVirtical();
 	if (this->virticalCommand_) {
 		virticalCommand_->Exec(*player_);

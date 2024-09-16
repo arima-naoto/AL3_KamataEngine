@@ -71,7 +71,7 @@ Matrix4x4 Rendering::MakeAffineMatrix(const Vector3& scale, const Vector3& rotat
 	Matrix4x4 rotateMatrix = Rendering::MakeRotateMatrix(rotate);
 	Matrix4x4 translateMatrix = Rendering::MakeTranslateMatrix(translate);
 
-	Matrix4x4 affineMatrix = scaleMatrix * rotateMatrix * translateMatrix;
+	Matrix4x4 affineMatrix = (scaleMatrix * rotateMatrix) * translateMatrix;
 
 	return affineMatrix;
 }

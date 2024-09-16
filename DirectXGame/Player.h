@@ -62,13 +62,15 @@ public://メンバ関数
 
 	Vector3 GetWorldPosition();
 
-	Vector3 GetWorld3DReticlePosition();
+	Vector3 Get3DReticlePosition();
 
 	AABB GetAABB();
 
 	const std::list<PlayerBullet*>& GetBullets() const;
 
 	void SetParent(const WorldTransform* parent);
+
+	void SetVelocity(const Vector3& velocity);
 
 	Vector3 GetWorldTranslate();
 

@@ -33,3 +33,5 @@ Vector3 operator*=(Vector3& v, float s) {
 	v.z *= s;
 	return v;
 }
+
+Vector3 operator*(const Vector3& v, const Matrix4x4& m) { return Calculation::Multiply(v, m); }
