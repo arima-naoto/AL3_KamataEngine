@@ -15,6 +15,9 @@ void SkyDome::Initialize(Model *model,ViewProjection *viewProjection) {
 }
 
 void SkyDome::Update() { 
+
+	worldTransform_.rotation_.y += 0.001f;
+
 	worldTransform_.UpdateMatrix();
 }
 

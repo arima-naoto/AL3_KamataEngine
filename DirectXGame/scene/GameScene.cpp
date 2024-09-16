@@ -33,11 +33,12 @@ void GameScene::Initialize() {
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	enemyTextureHandle_ = TextureManager::Load("kuppa.jpg");
+	TextureManager::Load("reticle.png");
 
 	railCamera_ = make_unique<RailCamera>();
 	railCamera_->Initialize(worldTransform_.matWorld_, worldTransform_.rotation_);
 
-	Vector3 playerPosition(0.0f, -10.0f, 50.0f);
+	Vector3 playerPosition(0.0f, 0.0f, 50.0f);
 	player_ = make_unique<Player>();
 	player_->Initialize(model_, &viewProjection_, textureHandle_,playerPosition);
 	player_->SetParent(&railCamera_->GetWorldTransfrom());
@@ -121,6 +122,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	player_->DrawUI();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

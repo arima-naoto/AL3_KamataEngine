@@ -7,7 +7,8 @@
 #include "algorithm"
 #include "PlayerBullet.h"
 #include "Rendering.h"
-
+#include "TextureManager.h"
+#include "WinApp.h"
 
 Player::~Player() {
 	for (auto* bullet : bullets_) {
@@ -15,6 +16,8 @@ Player::~Player() {
 	}
 	bullets_.clear();
 	
+	delete sprite2DReticle_;
+
 }
 
 void Player::Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle,const Vector3 &position) {
@@ -38,13 +41,23 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection, uint32_t t
 	input_ = Input::GetInstance();
 
 	modelBullet_ = Model::CreateFromOBJ("playerBullet", true);
-	modelReticle_ = Model::CreateFromOBJ("cube", true);
+	//modelReticle_ = Model::CreateFromOBJ("cube", true);
 
 	worldTransform3DReticle_.Initialize();
+
+	textureReticle_ = TextureManager::Load("reticle.png");
+
+	sprite2DReticle_ = Sprite::Create(textureReticle_, Vector2({640,600}), {1, 1, 1, 1}, {0.5f, 0.5f});
+	sprite2DReticle_->SetSize(Vector2{90, 90});
+
 }
 
 void Player::Update() 
 {
+
+	Player::MoveLimit();
+
+	Player::Attack();
 
 	for (auto* bullet : bullets_) {
 		bullet->Update();
@@ -58,16 +71,12 @@ void Player::Update()
 		return false;
 	});
 
-	Player::MoveLimit();
-
-	Player::Attack();
-
 	Layout_3DReticle();
 
-	
+	Screen_Convert();
 
 	worldTransform_.translation_ += velocity_;
-	
+
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
 
@@ -83,7 +92,13 @@ void Player::Draw()
 	//3Dモデルを描画
 	model_->Draw(worldTransform_,*viewProjection_,textureHandle_); 
 
-	modelReticle_->Draw(worldTransform3DReticle_, *viewProjection_);
+	//modelReticle_->Draw(worldTransform3DReticle_, *viewProjection_);
+
+}
+
+void Player::DrawUI() {
+
+	sprite2DReticle_->Draw();
 
 }
 
@@ -158,6 +173,22 @@ void Player::Layout_3DReticle() {
 	worldTransform3DReticle_.translation_ = Vector3(offset.x, offset.y, offset.z);
 
 	worldTransform3DReticle_.UpdateMatrix();
+}
+
+void Player::Screen_Convert() {
+
+	Vector3 positonReticle = this->Get3DReticlePosition();
+
+	Matrix4x4 matViewport = Rendering::ViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+	Matrix4x4 matViewProjectionViewport = 
+		viewProjection_->matView * viewProjection_->matProjection * matViewport;
+
+	positonReticle = Rendering::Transform(positonReticle, matViewProjectionViewport);
+
+	Vector2 position = {positonReticle.x, positonReticle.y};
+
+	sprite2DReticle_->SetPosition(position);
 }
 
 Vector3 Player::GetWorldPosition() {

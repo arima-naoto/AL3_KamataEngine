@@ -1,6 +1,7 @@
 #pragma once
 #include "WorldTransform.h"
 #include "Calculation.h"
+#include "Sprite.h"
 #include "cassert"
 #include <memory>
 #include "list"
@@ -9,6 +10,7 @@ class Model;
 class ViewProjection;
 class Input;
 class PlayerBullet;
+
 
 /// <summary>
 /// 自キャラ
@@ -26,6 +28,8 @@ public://メンバ関数
 	
 	/// 描画
 	void Draw();
+
+	void DrawUI();
 
 	/// 衝突時処理
 	void OnCollision();
@@ -84,6 +88,8 @@ private:
 
 	void Layout_3DReticle();
 
+	void Screen_Convert();
+
 private://メンバ変数
 
 	//モデル
@@ -114,6 +120,9 @@ private://メンバ変数
 	Vector3 translate_ = {};
 
 	WorldTransform worldTransform3DReticle_;
-	Model* modelReticle_ = nullptr;
+	//Model* modelReticle_ = nullptr;
+
+	uint32_t textureReticle_ = 0u;
+	Sprite* sprite2DReticle_ = nullptr;
 };
 
