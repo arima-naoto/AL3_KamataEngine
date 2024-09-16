@@ -88,7 +88,7 @@ private:
 
 	void Layout_3DReticle();
 
-	void Screen_Convert();
+	void Screen_Convert(float offsetZ);
 
 private://メンバ変数
 
@@ -108,7 +108,7 @@ private://メンバ変数
 
 	/// キャラクターの移動速度
 	static inline const float kCharacterSpeed = 0.25f;
-	static inline const float kRotSpeed = 0.0025f;
+	static inline const float kRotSpeed = 0.025f;
 
 	Model* modelBullet_ = nullptr;
 	std::list<PlayerBullet*> bullets_;

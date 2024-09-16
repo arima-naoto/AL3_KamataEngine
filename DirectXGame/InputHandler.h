@@ -9,49 +9,52 @@ class InputHandler
 public:
 	
 
-	// "Right"キーに右移動コマンドを割り当てる関数
-	void Assign_MoveRight_Command2_PressKeyRightArrow();
+	// "D"キーに右移動コマンドを割り当てる関数
+	void Assign_MoveRight_Command2_PressKeyD();
 
-	// "Left"キーに左移動コマンドを割り当てる関数
-	void Assign_MoveLeft_Command2_PressKeyLeftArrow();
+	// "A"キーに左移動コマンドを割り当てる関数
+	void Assign_MoveLeft_Command2_PressKeyA();
 
-	// "Up"キーに上移動コマンドを割り当てる関数
-	void Assign_MoveUp_Command2_PressKeyUpArrow();
+	// "W"キーに上移動コマンドを割り当てる関数
+	void Assign_MoveUp_Command2_PressKeyW();
 
-	// "Down"キーに下移動コマンドを割り当てる関数
-	void Assign_MoveDown_Command2_PressKeyDownArrow();
+	// "S"キーに下移動コマンドを割り当てる関数
+	void Assign_MoveDown_Command2_PressKeyS();
 
-	// "D"キーに下移動コマンドを割り当てる関数
-	void Assign_RotateRight_Command2_PressKeyD();
+	// "E"キーに下移動コマンドを割り当てる関数
+	void Assign_RotateRight_Command2_PressKeyE();
 	
-	// "A"キーに下移動コマンドを割り当てる関数
-	void Assign_RotateLeft_Command2_PressKeyA();
+	// "Q"キーに下移動コマンドを割り当てる関数
+	void Assign_RotateLeft_Command2_PressKeyQ();
 
+	//左右移動
 	ICommand* InputVirtical();
 
+	//上下移動
 	ICommand* InputHorizontal();
 
+	//左右移動
 	ICommand* InputRotateVirtical();
 
 private:
 
-	// "Right"キーが押されたときのコマンド
-	ICommand* pressKeyRight_;
-
-	// "Left"キーが押されたときのコマンド
-	ICommand* pressKeyLeft_;
-
-	// "Up"キーが押されたときのコマンド
-	ICommand* pressKeyUp_;
-
-	// "Down"キーが押されたときのコマンド
-	ICommand* pressKeyDown_;
-
 	// "D"キーが押されたときのコマンド
 	ICommand* pressKeyD_;
-	
+
 	// "A"キーが押されたときのコマンド
 	ICommand* pressKeyA_;
+
+	// "W"キーが押されたときのコマンド
+	ICommand* pressKeyW_;
+
+	// "S"キーが押されたときのコマンド
+	ICommand* pressKeyS_;
+
+	// "E"キーが押されたときのコマンド
+	ICommand* pressKeyE_;
+	
+	// "Q"キーが押されたときのコマンド
+	ICommand* pressKeyQ_;
 
 };
 

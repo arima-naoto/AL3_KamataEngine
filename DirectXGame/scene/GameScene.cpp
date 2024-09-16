@@ -135,14 +135,14 @@ void GameScene::Draw() {
 void GameScene::Command_Declaration() {
 
 	// 移動コマンド
-	inputHandler_->Assign_MoveRight_Command2_PressKeyRightArrow();
-	inputHandler_->Assign_MoveLeft_Command2_PressKeyLeftArrow();
-	inputHandler_->Assign_MoveUp_Command2_PressKeyUpArrow();
-	inputHandler_->Assign_MoveDown_Command2_PressKeyDownArrow();
+	inputHandler_->Assign_MoveRight_Command2_PressKeyD();
+	inputHandler_->Assign_MoveLeft_Command2_PressKeyA();
+	inputHandler_->Assign_MoveUp_Command2_PressKeyW();
+	inputHandler_->Assign_MoveDown_Command2_PressKeyS();
 
 	// 回転コマンド
-	inputHandler_->Assign_RotateLeft_Command2_PressKeyA();
-	inputHandler_->Assign_RotateRight_Command2_PressKeyD();
+	inputHandler_->Assign_RotateLeft_Command2_PressKeyQ();
+	inputHandler_->Assign_RotateRight_Command2_PressKeyE();
 
 }
 
