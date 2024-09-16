@@ -47,7 +47,7 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection, uint32_t t
 
 	textureReticle_ = TextureManager::Load("reticle.png");
 
-	sprite2DReticle_ = Sprite::Create(textureReticle_, Vector2({640,600}), {1, 1, 1, 1}, {0.5f, 0.5f});
+	sprite2DReticle_ = Sprite::Create(textureReticle_, Vector2({640,360}), {1, 1, 1, 1}, {0.5f, 0.5f});
 	sprite2DReticle_->SetSize(Vector2{90, 90});
 
 }
@@ -73,6 +73,8 @@ void Player::Update()
 
 	Layout_3DReticle();
 
+	JoyStickMove();
+
 	worldTransform3DReticle_.UpdateMatrix();
 
 	worldTransform_.translation_ += velocity_;
@@ -93,7 +95,6 @@ void Player::Draw()
 	model_->Draw(worldTransform_,*viewProjection_,textureHandle_); 
 
 	//modelReticle_->Draw(worldTransform3DReticle_, *viewProjection_);
-
 }
 
 void Player::DrawUI() {
@@ -123,104 +124,6 @@ void Player::RotateRight() { worldTransform_.rotation_.y -= kRotSpeed; }
 void Player::RotateLeft() { worldTransform_.rotation_.y += kRotSpeed; }
 
 #pragma endregion 
-
-void Player::MoveLimit() {
-
-	// プレイヤーの移動範囲を設定する
-	const float kLimitMoveX = 33;
-	const float kLimitMoveY = 18;
-
-    worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kLimitMoveX, kLimitMoveX);
-	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kLimitMoveY, kLimitMoveY);
-}
-
-void Player::Attack() {
-
-	if (input_->IsTriggerMouse(0)) {
-		
-		const float kBulletSpeed = 1.0f;
-
-		Vector3 velocity{0, 0, kBulletSpeed};
-		velocity = Get3DReticlePosition() - GetWorldPosition();
-		velocity = Calculation::Normalize(velocity) * kBulletSpeed;
-		// 速度ベクトルを自機の向きに合わせて回転させる
-		velocity = Rendering::TransformNormal(velocity, worldTransform_.matWorld_);
-
-		Vector3 bulletPosition = this->GetWorldPosition();
-
-		// 生成
-		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(modelBullet_, bulletPosition, velocity);
-
-		bullets_.push_back(newBullet);
-
-	}
-}
-
-void Player::Layout_3DReticle() {
-
-	const float kDistancePlayerTo3Dreticle = 50.0f;
-
-	Vector3 offset = {0, 0, 1.0f};
-
-	Matrix4x4 worldMatrix = Rendering::MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-
-	offset = offset * worldMatrix;
-
-	offset = Calculation::Normalize(offset) * kDistancePlayerTo3Dreticle;
-
-	worldTransform3DReticle_.translation_ = Vector3(offset.x, offset.y, offset.z);
-	worldTransform3DReticle_.UpdateMatrix();
-
-	Screen_Convert(offset.z);
-
-
-}
-
-void Player::Screen_Convert(float offsetZ) {
-
-	POINT mousePosition;
-	// マウス座標(スクリーン座標)を取得する
-	GetCursorPos(&mousePosition);
-
-	// クライアントエリア座標に変換する
-	HWND hwnd = WinApp::GetInstance()->GetHwnd();
-	ScreenToClient(hwnd, &mousePosition);
-
-	Vector3 positonReticle = this->Get3DReticlePosition();
-
-	Matrix4x4 matViewport = Rendering::ViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
-
-	//ビュープロジェクションビューポート行列
-	Matrix4x4 matVPV = viewProjection_->matView * viewProjection_->matProjection * matViewport;
-	//合成行列の逆行列を計算する
-	Matrix4x4 matInverseVPV = Rendering::Inverse(matVPV);
-
-	//スクリーン座標
-	Vector3 posNear = Vector3(float(mousePosition.x), float(mousePosition.y), 0);
-	Vector3 posFar = Vector3(float(mousePosition.x), float(mousePosition.y), 1);
-
-	//スクリーン座標系からワールド座標系へ
-	posNear = Rendering::Transform(posNear, matInverseVPV);
-	posFar = Rendering::Transform(posFar, matInverseVPV);
-
-	//マウスレイ
-	Vector3 mouseDirection = posFar - posNear;
-	mouseDirection = Calculation::Normalize(mouseDirection);
-
-	const float kDistanceTextObject = 50.0f;
-	worldTransform3DReticle_.translation_ = posNear + mouseDirection * kDistanceTextObject;
-	worldTransform3DReticle_.translation_.z = offsetZ;
-
-	worldTransform3DReticle_.UpdateMatrix();
-
-	Matrix4x4 matViewProjectionViewport = viewProjection_->matView * viewProjection_->matProjection * matViewport;
-
-	positonReticle = Rendering::Transform(positonReticle, matViewProjectionViewport);
-
-	//マウス座標を2Dレティクルのスプライトに代入する
-	sprite2DReticle_->SetPosition(Vector2{float(mousePosition.x), float(mousePosition.y)});
-}
 
 Vector3 Player::GetWorldPosition() {
 
@@ -269,3 +172,134 @@ void Player::SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
 Vector3 Player::GetWorldTranslate() { return translate_; }
 
 Vector3 Player::GetWorldRotation() { return rotate_; }
+
+void Player::MoveLimit() {
+
+	// プレイヤーの移動範囲を設定する
+	const float kLimitMoveX = 33;
+	const float kLimitMoveY = 18;
+
+	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kLimitMoveX, kLimitMoveX);
+	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kLimitMoveY, kLimitMoveY);
+}
+
+void Player::Attack() {
+
+	XINPUT_STATE joyState;
+
+	if (!input_->GetJoystickState(0, joyState)) {
+		return;
+	}
+
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+
+		const float kBulletSpeed = 1.0f;
+
+		Vector3 velocity{0, 0, kBulletSpeed};
+		velocity = Get3DReticlePosition() - GetWorldPosition();
+		velocity = Calculation::Normalize(velocity) * kBulletSpeed;
+		// 速度ベクトルを自機の向きに合わせて回転させる
+		velocity = Rendering::TransformNormal(velocity, worldTransform_.matWorld_);
+
+		Vector3 bulletPosition = this->GetWorldPosition();
+
+		// 生成
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(modelBullet_, bulletPosition, velocity);
+
+		bullets_.push_back(newBullet);
+	}
+}
+
+void Player::Layout_3DReticle() {
+
+	const float kDistancePlayerTo3Dreticle = 50.0f;
+
+	Vector3 offset = {0, 0, 1.0f};
+
+	Matrix4x4 worldMatrix = Rendering::MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+
+	offset = offset * worldMatrix;
+
+	offset = Calculation::Normalize(offset) * kDistancePlayerTo3Dreticle;
+
+	worldTransform3DReticle_.translation_ = Vector3(offset.x, offset.y, offset.z);
+	worldTransform3DReticle_.UpdateMatrix();
+
+	Screen_Convert(offset.z);
+}
+
+void Player::Screen_Convert(float offsetZ) {
+
+	POINT mousePosition;
+	// マウス座標(スクリーン座標)を取得する
+	GetCursorPos(&mousePosition);
+
+	// クライアントエリア座標に変換する
+	HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &mousePosition);
+
+	spritePosition = sprite2DReticle_->GetPosition();
+
+	XINPUT_STATE joyState;
+
+	Vector3 positonReticle = this->Get3DReticlePosition();
+
+	Matrix4x4 matViewport = Rendering::ViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+	// ビュープロジェクションビューポート行列
+	Matrix4x4 matVPV = viewProjection_->matView * viewProjection_->matProjection * matViewport;
+	// 合成行列の逆行列を計算する
+	Matrix4x4 matInverseVPV = Rendering::Inverse(matVPV);
+
+	// スクリーン座標
+	posNear = Vector3(float(spritePosition.x), float(spritePosition.y), 0);
+	posFar = Vector3(float(spritePosition.x), float(spritePosition.y), 1);
+
+	// スクリーン座標系からワールド座標系へ
+	posNear = Rendering::Transform(posNear, matInverseVPV);
+	posFar = Rendering::Transform(posFar, matInverseVPV);
+
+	// マウスレイ
+	Vector3 mouseDirection = posFar - posNear;
+	mouseDirection = Calculation::Normalize(mouseDirection);
+
+	const float kDistanceTextObject = 50.0f;
+	worldTransform3DReticle_.translation_ = posNear + mouseDirection * kDistanceTextObject;
+	worldTransform3DReticle_.translation_.z = offsetZ;
+
+	worldTransform3DReticle_.UpdateMatrix();
+
+	Matrix4x4 matViewProjectionViewport = viewProjection_->matView * viewProjection_->matProjection * matViewport;
+
+	positonReticle = Rendering::Transform(positonReticle, matViewProjectionViewport);
+
+	// マウス座標を2Dレティクルのスプライトに代入する
+	//sprite2DReticle_->SetPosition(Vector2{float(mousePosition.x), float(mousePosition.y)});
+
+	if (input_->GetJoystickState(0, joyState)) {
+		spritePosition.x += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * 5.0f;
+		spritePosition.y -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * 5.0f;
+
+		sprite2DReticle_->SetPosition(spritePosition);
+	}
+
+}
+
+void Player::JoyStickMove() {
+
+	XINPUT_STATE joyState;
+
+	if (input_->GetJoystickState(0, joyState)) {
+		velocity_.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+		velocity_.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+	}
+
+	Player::JoyStick3DReticleMove();
+}
+
+void Player::JoyStick3DReticleMove() {
+
+	
+
+}

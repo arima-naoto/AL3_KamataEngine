@@ -90,6 +90,10 @@ private:
 
 	void Screen_Convert(float offsetZ);
 
+	void JoyStickMove();
+
+	void JoyStick3DReticleMove();
+
 private://メンバ変数
 
 	//モデル
@@ -124,5 +128,10 @@ private://メンバ変数
 
 	uint32_t textureReticle_ = 0u;
 	Sprite* sprite2DReticle_ = nullptr;
+
+	Vector3 posNear = {};
+	Vector3 posFar = {};
+	Vector2 spritePosition = {};
+
 };
 
