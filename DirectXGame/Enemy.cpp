@@ -2,9 +2,9 @@
 #include "Model.h"
 #include "ViewProjection.h"
 #include "cassert"
-#include "EnemyBullet.h"
 #include "Player.h"
 #include "Arithmetic.h"
+#include "GameScene.h"
 
 #ifdef _DEBUG
 #include "imgui.h"
@@ -13,13 +13,13 @@ using namespace ImGui;
 
 Enemy::~Enemy() {
 
-	for (auto* bullet : bullets_) {
+	/*for (auto* bullet : bullets_) {
 		delete bullet;
-	}
+	}*/
 
 }
 
-void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle) {
+void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t textureHandle, const Vector3& position) {
 
 	assert(model);
 
@@ -28,7 +28,7 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 	viewProjection_ = viewProjection;
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = Vector3(10, 0, 100);
+	worldTransform_.translation_ = position;
 
 	textureHandle_ = textureHandle;
 
@@ -38,34 +38,24 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, uint32_t te
 
 }
 
+void (Enemy::*Enemy::spFuncTable[])(){
 
+    &Enemy::UpdateApproach, &Enemy::UpdateLeave
+
+};
 
 void Enemy::Update() {
 
-	bullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->GetIsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
+
 	
 	//現在フェーズの関数を実行する
 	(this->*spFuncTable[static_cast<size_t>(phase_)])();
-
-	for (auto* bullet : bullets_) {
-		bullet->Update();
-	}
 
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
 }
 
 void Enemy::Draw() {
-
-	for (auto* bullet : bullets_) {
-		bullet->Draw(*viewProjection_);
-	}
 
 	model_->Draw(worldTransform_, *viewProjection_, textureHandle_);
 
@@ -95,12 +85,6 @@ void Enemy::UpdateLeave() {
 	
 }
 
-void (Enemy::*Enemy::spFuncTable[])(){
-
-    &Enemy::UpdateApproach,
-	&Enemy::UpdateLeave
-
-};
 
 void Enemy::Fire() {
 
@@ -117,7 +101,7 @@ void Enemy::Fire() {
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(bulletModel_, worldTransform_.translation_, velocity);
 
-	bullets_.push_back(newBullet);
+	gameScene_->AddEnemyBullet(newBullet);
 
 }
 
@@ -154,4 +138,4 @@ AABB Enemy::GetAABB() {
 }
 
 
-const std::list<EnemyBullet*>& Enemy::GetBullets() const { return bullets_; }
+//const std::list<EnemyBullet*>& Enemy::GetBullets() const { return bullets_; }

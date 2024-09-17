@@ -1,7 +1,12 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include <fstream>
 #include "AxisIndicator.h"
+
+#ifdef _DEBUG
+#include "imgui.h"
+#endif // _DEBUG
 
 
 #pragma region 前方宣言したクラスのインクルード
@@ -10,6 +15,7 @@
 #include "InputHandler.h"
 #include "ICommand.h"
 #include "Enemy.h"
+#include "EnemyBullet.h"
 #include "SkyDome.h"
 #include "RailCamera.h"
 #include "DebugCamera.h"
@@ -20,6 +26,15 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
 	delete model_; 
+
+	for (auto* enemy : enemies_) {
+		delete enemy;
+	}
+
+	for (auto* enemyBullet : enemyBullets_) {
+		delete enemyBullet;
+	}
+
 }
 
 void GameScene::Initialize() {
@@ -37,7 +52,7 @@ void GameScene::Initialize() {
 	railCamera_ = make_unique<RailCamera>();
 	railCamera_->Initialize(worldTransform_.matWorld_, worldTransform_.rotation_);
 
-	Vector3 playerPosition(0.0f, 0.0f, 24.0f);
+	Vector3 playerPosition(0.0f, 0.0f, 50.0f);
 	player_ = make_unique<Player>();
 	player_->Initialize(model_, &viewProjection_, textureHandle_,playerPosition);
 	player_->SetParent(&railCamera_->GetWorldTransfrom());
@@ -45,9 +60,7 @@ void GameScene::Initialize() {
 	inputHandler_ = make_unique<InputHandler>();
 	GameScene::Command_Declaration();
 
-	enemy_ = make_unique<Enemy>();
-	enemy_->Initialize(model_, &viewProjection_, enemyTextureHandle_);
-	enemy_->SetPlayer(player_.get());
+	LoadEnemyPopDate();
 
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true); 
 	skyDome_ = make_unique<SkyDome>();
@@ -108,11 +121,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	player_->Draw();
 
-	enemy_->Draw();
-
-	skyDome_->Draw();
+	ObjectDraw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -130,6 +140,86 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
+	enemyBullets_.push_back(enemyBullet);
+}
+
+void GameScene::LoadEnemyPopDate() {
+
+	//ファイルを開く
+	std::ifstream file;
+	file.open("Resources/enemyPop.csv");
+	assert(file.is_open());
+
+	//ファイルの内容を文字列ストリームにコピー
+	enemyPopCommands << file.rdbuf();
+
+	file.close();
+}
+
+void GameScene::UpdateEnemyPopCommand() {
+
+
+
+	//待機処理
+	if (isWait) {
+		waitTime_--;
+
+		if (waitTime_ <= 0) {
+			isWait = false;
+		}
+		return;
+	}
+
+	//1行分の文字列を入れる変数
+	std::string line;
+
+	while (getline(enemyPopCommands,line)) {
+		std::istringstream line_stream(line);
+
+		std::string word;
+
+		getline(line_stream, word, ',');
+
+
+		// "//"から始まる行はコメント
+		if (word.find("//") == 0) {
+			continue;
+		}
+
+		if (word.find("POP") == 0) {
+			// X座標
+			getline(line_stream, word, ',');
+			float x = (float)std::atof(word.c_str());
+			// Y座標
+			getline(line_stream, word, ',');
+			float y = (float)std::atof(word.c_str());
+			// Z座標
+			getline(line_stream, word, ',');
+			float z = (float)std::atof(word.c_str());
+
+			Enemy* enemy = new Enemy();
+			enemy->Initialize(model_, &viewProjection_, enemyTextureHandle_, Vector3(x, y, z));
+			enemy->SetGameScene(this);
+			enemy->SetPlayer(player_.get());
+			enemies_.push_back(enemy);
+		} else if (word.find("WAIT") == 0) {
+
+			getline(line_stream, word, ',');
+
+			//待ち時間
+			int32_t waitTime = atoi(word.c_str());
+
+			isWait = true;
+			waitTime_ = waitTime;
+
+			break;
+
+		}
+	}
+
 }
 
 //各コマンドに対応するキーに割り当て
@@ -169,16 +259,46 @@ void GameScene::UpdateCommand() {
 
 void GameScene::ObjectUpdate(){
 
+	UpdateEnemyPopCommand();
+
 	railCamera_->Update();
 
 	player_->Update();
 
-	enemy_->Update();
+	enemyBullets_.remove_if([](EnemyBullet* enemyBullet) {
+		if (enemyBullet->GetIsDead()) {
+			delete enemyBullet;
+			return true;
+		}
+		return false;
+	 });
+
+	for (auto* enemy : enemies_) {
+		enemy->Update();
+	}
+
+	for (auto* enemyBullet : enemyBullets_) {
+		enemyBullet->Update();
+	}
 
 	skyDome_->Update();
 
-	
+	ImGui::Text("time = %d", waitTime_);
+}
 
+void GameScene::ObjectDraw(){
+
+	player_->Draw();
+
+	for (auto* enemy : enemies_) {
+		enemy->Draw();
+	}
+
+	for (auto* enemyBullet : enemyBullets_) {
+		enemyBullet->Draw(viewProjection_);
+	}
+
+	skyDome_->Draw();
 }
 
 void GameScene::MoveDebugCamera() {
@@ -230,16 +350,18 @@ void GameScene::PlayerCollision(AABB aabb1, AABB aabb2, const std::list<EnemyBul
 
 void GameScene::EnemyCollision(AABB aabb1, AABB aabb2, const std::list<PlayerBullet*>& playerBullets) {
 
-	aabb2 = enemy_->GetAABB();
+	for (auto* enemy : enemies_) {
+		aabb2 = enemy->GetAABB();
 
-	for (auto* bullet : playerBullets) {
-		aabb1 = bullet->GetAABB();
+		for (auto* bullet : playerBullets) {
+			aabb1 = bullet->GetAABB();
 
-		if (IsCollision(aabb1, aabb2)) {
+			if (IsCollision(aabb1, aabb2)) {
 
-			enemy_->OnCollision();
+				enemy->OnCollision();
 
-			bullet->OnCollision();
+				bullet->OnCollision();
+			}
 		}
 	}
 
@@ -270,12 +392,11 @@ void GameScene::CheckAllCollision() {
 	AABB aabb1 = {}, aabb2 = {};
 
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
-	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
-
-	PlayerCollision(aabb1, aabb2, enemyBullets);
+	
+	PlayerCollision(aabb1, aabb2, enemyBullets_);
 
 	EnemyCollision(aabb1, aabb2, playerBullets);
 
-	BulletCollision(aabb1, aabb2, playerBullets, enemyBullets);
+	BulletCollision(aabb1, aabb2, playerBullets, enemyBullets_);
 
 }

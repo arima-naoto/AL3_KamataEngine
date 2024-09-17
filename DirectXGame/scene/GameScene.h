@@ -11,6 +11,8 @@
 #include "PlayerBullet.h"
 #include "EnemyBullet.h"
 
+#include <sstream>
+
 #include "memory"
 using namespace std;
 
@@ -18,6 +20,7 @@ class Player;
 class InputHandler;
 class ICommand;
 class Enemy;
+class EnemyBullet;
 class SkyDome;
 class RailCamera;
 class DebugCamera;
@@ -53,6 +56,14 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+
+private:
+
+	void LoadEnemyPopDate();
+
+	void UpdateEnemyPopCommand();
+
 	///コマンド宣言
 	void Command_Declaration();
 	
@@ -60,6 +71,8 @@ public: // メンバ関数
 
 	///各オブジェクトの更新処理
 	void ObjectUpdate();
+
+	void ObjectDraw();
 
 	void MoveDebugCamera();
 
@@ -95,12 +108,21 @@ private: // メンバ変数
 	ICommand* horizotalCommand_ = nullptr;
 	ICommand* rotateMentCommand_ = nullptr;
 
-	unique_ptr<Enemy> enemy_ = nullptr;
+
+	std::stringstream enemyPopCommands;
+
+	
+	std::list<Enemy*> enemies_;
+	std::list<EnemyBullet*> enemyBullets_; 
+
 	unique_ptr<SkyDome> skyDome_ = nullptr;
 	unique_ptr<RailCamera> railCamera_ = nullptr;
 	unique_ptr<DebugCamera> debugCamera_ = nullptr;
 
 	bool isDebugCameraActive_ = false;
 	WorldTransform worldTransform_;
+
+	bool isWait = false;
+	int waitTime_ = 120;
 
 };

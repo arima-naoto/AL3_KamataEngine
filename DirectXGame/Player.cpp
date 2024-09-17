@@ -82,11 +82,11 @@ void Player::OnCollision() {}
 void Player::MoveLimit() {
 
 	// プレイヤーの移動範囲を設定する
-	const float kLimitMoveX = 800;
-	const float kLimitMoveY = 800;
-
-	translate_.x = std::clamp(translate_.x, -kLimitMoveX, kLimitMoveX);
-	translate_.y = std::clamp(translate_.y, -kLimitMoveY, kLimitMoveY);
+	const float kLimitMoveX = 33;
+	const float kLimitMoveY = 18;
+	
+	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kLimitMoveX, kLimitMoveX);
+	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kLimitMoveY, kLimitMoveY);
 
 }
 

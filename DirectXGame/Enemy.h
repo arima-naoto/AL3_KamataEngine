@@ -5,8 +5,9 @@
 
 class Model;
 class ViewProjection;
-class EnemyBullet;
+
 class Player;
+class GameScene;
 
 enum class Phase {
 	Approach,
@@ -19,7 +20,7 @@ public:
 
 	~Enemy();
 
-	void Initialize(Model* model,ViewProjection *viewProjection,uint32_t textureHandle);
+	void Initialize(Model* model,ViewProjection *viewProjection,uint32_t textureHandle,const Vector3 &position);
 
 	void Update();
 
@@ -33,7 +34,7 @@ public:
 
 	AABB GetAABB();
 
-	const std::list<EnemyBullet*>& GetBullets() const;
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
  
 private:
 
@@ -59,7 +60,7 @@ private:
 	static void (Enemy::*spFuncTable[])();
 
 	Model* bulletModel_ = nullptr;
-	std::list<EnemyBullet*> bullets_; 
+
 
 	static const int kFireInterval = 60;
 	int32_t fireTimer = 0;
@@ -68,4 +69,6 @@ private:
 
 	static inline const float kWidth_ = 2.0f;
 	static inline const float kHeight_ = 2.0f;
+
+	GameScene* gameScene_ = nullptr;
 };
