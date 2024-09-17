@@ -21,10 +21,17 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
+	// 地面モデルデータ
+	model_[Object::kGround].reset(Model::CreateFromOBJ("ground", true));
+	// 地面の生成
+	ground_ = make_unique<Ground>();
+	ground_->Initialize(model_[Object::kGround].get(), &viewProjection_);
 
-	CreateModel();
-	InitializeObject();
-	
+    // 自キャラモデルデータ
+	model_[Object::kPlayer].reset(Model::CreateFromOBJ("cube", true));
+	// 自キャラの生成
+	player_ = make_unique<Player>();
+	player_->Initialize(model_[Object::kPlayer].get(), &viewProjection_);
 
 	//デバッグカメラ
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
@@ -36,6 +43,8 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() { 
+	ground_->Update();
+
 	player_->Update(); 
 
 	MoveDebugCamera();
@@ -67,6 +76,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
+	ground_->Draw();
+	
 	player_->Draw();
 
 	// 3Dオブジェクト描画後処理
@@ -87,25 +99,9 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
-void GameScene::CreateModel() {
+void GameScene::CreateModel() {}
 
-	// 自キャラモデルデータ
-	model_[Object::kPlayer].reset(Model::CreateFromOBJ("cube", true));
-	// 地面モデルデータ
-	model_[Object::kGround].reset(Model::CreateFromOBJ("ground", true));
-
-}
-
-void GameScene::InitializeObject() {
-
-	// 自キャラの生成
-	player_ = make_unique<Player>();
-	player_->Initialize(model_[Object::kPlayer].get(), &viewProjection_);
-	// 地面の生成
-	ground_ = make_unique<Ground>();
-	ground_->Initialize(model_[Object::kGround].get(), &viewProjection_);
-
-}
+void GameScene::InitializeObject() {}
 
 void GameScene::MoveDebugCamera() {
 
