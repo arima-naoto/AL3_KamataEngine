@@ -4,9 +4,7 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() { 
-	delete model_,player_; 
-}
+GameScene::~GameScene() {}
 
 void GameScene::Initialize() {
 
@@ -15,7 +13,7 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	//3Dモデルデータの生成
-	model_ = Model::Create();
+	model_.reset(Model::Create());
 
 	textureHandle_ = TextureManager::Load("uvChecker.png");
 
@@ -23,10 +21,10 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	//自キャラの生成
-	player_ = new Player();
+	player_ = make_unique<Player>();
 
 	//自キャラの初期化
-	player_->Initialize(model_,textureHandle_,&viewProjection_);
+	player_->Initialize(model_.get(), textureHandle_, &viewProjection_);
 }
 
 void GameScene::Update() { 

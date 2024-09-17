@@ -9,6 +9,9 @@
 #include "WorldTransform.h"
 #include "Player.h"
 
+#include <memory>
+using namespace std;
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -46,10 +49,10 @@ private: // メンバ変数
 	Audio* audio_ = nullptr;
 
 	//3Dモデルデータ
-	Model* model_ = nullptr;
+	unique_ptr<Model> model_ = nullptr;
 
 	//自キャラ
-	Player* player_ = nullptr;
+	unique_ptr<Player> player_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
