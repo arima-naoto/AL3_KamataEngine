@@ -7,7 +7,18 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "Player.h"
+
+#include "memory"
+using namespace std;
+
+class Player;
+class Ground;
+class DebugCamera;
+
+enum Object {
+	kPlayer,
+	kGround
+};
 
 /// <summary>
 /// ゲームシーン
@@ -40,24 +51,36 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+private:
+
+	void CreateModel();
+	void InitializeObject();
+
+	void MoveDebugCamera();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
-	//3Dモデルデータ
-	Model* model_ = nullptr;
-
-	//自キャラ
-	Player* player_ = nullptr;
+	// テクスチャハンドル
+	uint32_t textureHandle_ = 0;
+	// ビュープロジェクション
+	ViewProjection viewProjection_;
 
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	
-	//テクスチャハンドル
-	uint32_t textureHandle_ = 0;
 
-	//ビュープロジェクション
-	ViewProjection viewProjection_;
+	// 3Dモデルデータ
+	unique_ptr<Model> model_[2] = {nullptr};
+
+	// 自キャラ
+	unique_ptr<Player> player_ = nullptr;
+	// 地面
+	unique_ptr<Ground> ground_ = nullptr;
+
+	//デバッグカメラ
+	bool isDebugCameraActive_ = false;
+	unique_ptr<DebugCamera> debugCamera_ = nullptr;
 };

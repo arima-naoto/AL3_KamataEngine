@@ -16,7 +16,7 @@ public://メンバ関数
 	/// <param name="model">モデル</param>
 	/// <param name="textureHandle">テクスチャハンドル</param>
 	/// <param name="viewProjection">ビュープロジェクション</param>
-	void Initialize(Model* model, uint32_t textureHandle, ViewProjection* viewProjection);
+	void Initialize(Model* model, ViewProjection* viewProjection);
 
 	/// <summary>
 	/// 更新
@@ -30,14 +30,11 @@ public://メンバ関数
 
 private://メンバ変数
 
-	//ワールド変換データ
-	WorldTransform worldTransform_;
-
-	//モデル
+	// モデル
 	Model* model_ = nullptr;
 
-	//テクスチャハンドル
-	uint32_t textureHandle_ = 0u;
+	//ワールド変換データ
+	WorldTransform worldTransform_;
 
 	//ビュープロジェクション
 	ViewProjection *viewProjection_ = nullptr;
