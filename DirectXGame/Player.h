@@ -67,6 +67,8 @@ public://メンバ関数
 	const std::list<PlayerBullet*>& GetBullets() const;
 
 	void SetParent(const WorldTransform* parent);
+	
+	void SetVelocity(Vector3 velocity);
 
 	Vector3 GetWorldTranslate();
 

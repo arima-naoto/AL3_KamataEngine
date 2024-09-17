@@ -149,6 +149,7 @@ void GameScene::Command_Declaration() {
 
 void GameScene::UpdateCommand() {
 
+	player_->SetVelocity({});
 	virticalCommand_ = inputHandler_->InputVirtical();
 	if (this->virticalCommand_) {
 		virticalCommand_->Exec(*player_);

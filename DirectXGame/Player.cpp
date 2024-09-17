@@ -57,7 +57,7 @@ void Player::Update()
 		return false;
 	});
 
-	translate_ += velocity_;
+	worldTransform_.translation_ += velocity_;
 
 	ImGui::DragFloat3("translate", &translate_.x, 0.01f);
 
@@ -160,6 +160,8 @@ void Player::SetParent(const WorldTransform* parent) {
 	worldTransform_.parent_ = parent;
 	translate_ = worldTransform_.parent_->translation_;
 }
+
+void Player::SetVelocity(Vector3 velocity) { velocity_ = velocity; }
 
 Vector3 Player::GetWorldTranslate() { return translate_; }
 
