@@ -13,11 +13,13 @@ using namespace std;
 
 class Player;
 class Ground;
+class SkyDome;
 class DebugCamera;
 
 enum Object {
 	kPlayer,
-	kGround
+	kGround,
+	kSkydome
 };
 
 /// <summary>
@@ -73,12 +75,14 @@ private: // メンバ変数
 	/// </summary>
 
 	// 3Dモデルデータ
-	unique_ptr<Model> model_[2] = {nullptr};
+	unique_ptr<Model> model_[3] = {nullptr};
 
 	// 自キャラ
 	unique_ptr<Player> player_ = nullptr;
 	// 地面
 	unique_ptr<Ground> ground_ = nullptr;
+	// 天球
+	unique_ptr<SkyDome> skyDome_ = nullptr;
 
 	//デバッグカメラ
 	bool isDebugCameraActive_ = false;
