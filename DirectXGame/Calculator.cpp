@@ -2,13 +2,6 @@
 
 float Calculator::Cot(float x) { return 1.0f / tanf(x); }
 
-Vector2 Calculator::Subtract(const Vector2& v1, const Vector2& v2) {
-	Vector2 resultSubtract;
-	resultSubtract.x = v1.x - v2.x;
-	resultSubtract.y = v1.y - v2.y;
-	return resultSubtract;
-}
-
 Vector3 Calculator::Add(const Vector3& v1, const Vector3& v2) { 
 	Vector3 resultAdd;
 	resultAdd.x = v1.x + v2.x;

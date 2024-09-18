@@ -59,7 +59,7 @@ Matrix4x4 Rendering::MakeRotateMatrix(const Vector3& rotate) {
 	Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(rotate.y);
 	Matrix4x4 rotateZMatrix = Rendering::MakeRotateZMatrix(rotate.z);
 
-	Matrix4x4 rotateMatrix = rotateXMatrix * rotateYMatrix * rotateZMatrix;
+	Matrix4x4 rotateMatrix = rotateZMatrix * (rotateXMatrix * rotateYMatrix);
 
 	return rotateMatrix;
 
@@ -76,25 +76,14 @@ Matrix4x4 Rendering::MakeTranslateMatrix(const Vector3 &translate) {
 
 }
 
-Matrix4x4 Rendering::SRTAffineMatrix(const Affine& affine){
+Matrix4x4 Rendering::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 
-	Matrix4x4 scaleMatrix = Rendering::MakeScaleMatrix(affine.scale);
-	Matrix4x4 rotateMatrix = Rendering::MakeRotateMatrix(affine.rotate);
-	Matrix4x4 translateMatrix = Rendering::MakeTranslateMatrix(affine.translate);
+	Matrix4x4 scaleMatrix = Rendering::MakeScaleMatrix(scale);
+	Matrix4x4 rotateMatrix = Rendering::MakeRotateMatrix(rotate);
+	Matrix4x4 translateMatrix = Rendering::MakeTranslateMatrix(translate);
 
 	Matrix4x4 affineMatrix = scaleMatrix * rotateMatrix * translateMatrix;
 	return affineMatrix;
-}
-
-Matrix4x4 Rendering::STRAffineMatrix(const Affine& affine) {
-
-	Matrix4x4 scaleMatrix = Rendering::MakeScaleMatrix(affine.scale);
-	Matrix4x4 rotateMatrix = Rendering::MakeRotateMatrix(affine.rotate);
-	Matrix4x4 translateMatrix = Rendering::MakeTranslateMatrix(affine.translate);
-
-	Matrix4x4 affineMatrix = scaleMatrix * translateMatrix * rotateMatrix;
-	return affineMatrix;
-
 }
 
 Matrix4x4 Rendering::Inverse(const Matrix4x4& m) {
@@ -179,25 +168,6 @@ Matrix4x4 Rendering::Inverse(const Matrix4x4& m) {
 
 	return result;
 
-}
-
-Matrix4x4 Rendering::MakePerspectiveFovMatrix(Fov<float> perspective) {
-
-	return {
-		1.0f / perspective.aspectRatio * Cot(perspective.fovY / 2.0f),0.0f,0.0f,0.0f,
-		0.0f,Cot(perspective.fovY / 2.0f),0.0f,0.0f,
-		0.0f,0.0f,perspective.farClip / (perspective.farClip - perspective.nearClip),1.0f,
-		0.0f,0.0f,-(perspective.nearClip * perspective.farClip) / (perspective.farClip - perspective.nearClip),0.0f
-	};
-}
-
-Matrix4x4 Rendering::ViewportMatrix(ViewRect<float> viewport) {
-	return {
-		viewport.width / 2.0f,0.0f,0.0f,0.0f,
-		0.0f,-viewport.height / 2.0f,0.0f,0.0f,
-		0.0f,0.0f,viewport.maxDepth - viewport.minDepth,0.0f,
-		(viewport.left + viewport.width) / 2.0f,(viewport.top + viewport.height) / 2.0f,viewport.minDepth,1.0f
-	};
 }
 
 Vector3 Rendering::Transform(const Vector3& vector, const Matrix4x4& matrix)

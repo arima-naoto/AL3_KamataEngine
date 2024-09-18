@@ -129,7 +129,7 @@ void GameScene::InitializeObject() {
 
 void GameScene::MoveDebugCamera() {
 
-	if (input_->TriggerKey(DIK_RETURN)) {
+	if (input_->TriggerKey(DIK_SPACE)) {
 		if (!isDebugCameraActive_) {
 			isDebugCameraActive_ = true;
 		} else if (isDebugCameraActive_) {

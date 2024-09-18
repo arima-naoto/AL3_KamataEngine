@@ -1,5 +1,6 @@
 #pragma once
-#include "project/math/Structure.h"
+#include "Vector3.h"
+#include "Matrix4x4.h"
 #define _USE_MATH_DEFINES
 #include "cmath"
 #include "cassert"
@@ -9,8 +10,6 @@ class Calculator {
 public:
 
 	static float Cot(float x);
-
-	static Vector2 Subtract(const Vector2& v1, const Vector2& v2);
 
 	static Vector3 Add(const Vector3& v1, const Vector3& v2);
 

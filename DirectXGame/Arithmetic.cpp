@@ -1,7 +1,5 @@
 #include "Arithmetic.h"
 
-Vector2 operator-(const Vector2& v1, const Vector2& v2) { return Calculator::Subtract(v1, v2); }
-
 Vector3 operator+(const Vector3& v1, const Vector3& v2) { return Calculator::Add(v1, v2);}
 
 Vector3 operator-(const Vector3& v1, const Vector3& v2) { return Calculator::Subtract(v1, v2);}

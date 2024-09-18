@@ -1,7 +1,5 @@
 #pragma once
-#include "project/math/Calculator.h"
-
-Vector2 operator-(const Vector2& v1, const Vector2& v2);
+#include "Calculator.h"
 
 Vector3 operator+(const Vector3& v1, const Vector3& v2);
 

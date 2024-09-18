@@ -79,14 +79,6 @@ private: // メンバ変数
 
 	// 自キャラ
 	unique_ptr<Player> player_ = nullptr;
-	
-	//プレイヤーのパーツ
-	unique_ptr<Model> modelFighterBody_ = nullptr;
-	unique_ptr<Model> modelFighterHead_ = nullptr;
-	unique_ptr<Model> modelFighterL_arm_ = nullptr;
-	unique_ptr<Model> modelFighterR_arm_ = nullptr;
-
-	
 	// 地面
 	unique_ptr<Ground> ground_ = nullptr;
 	// 天球
