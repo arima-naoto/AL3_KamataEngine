@@ -20,7 +20,6 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	// ビュープロジェクションの初期化
-	viewProjection_.farZ = 2000;
 	viewProjection_.Initialize();
 
 	CreateModel();
@@ -29,6 +28,7 @@ void GameScene::Initialize() {
 
 	//デバッグカメラ
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
+	debugCamera_->SetFarZ(2000);
 
 	//軸方向表示
 	AxisIndicator::GetInstance()->SetVisible(true);
