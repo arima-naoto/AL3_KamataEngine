@@ -101,7 +101,7 @@ void GameScene::Draw() {
 void GameScene::CreateModel() {
 
 	// 自キャラモデルデータ
-	model_[Object::kPlayer].reset(Model::CreateFromOBJ("cube", true));
+	model_[Object::kPlayer].reset(Model::CreateFromOBJ("player",true));
 
 	// 地面モデルデータ
 	model_[Object::kGround].reset(Model::CreateFromOBJ("ground", true));
