@@ -25,6 +25,8 @@ public://メンバ関数
 	/// </summary>
 	void Draw();
 
+	const WorldTransform& GetWorldTransform() { return worldTransform_; };
+
 private:
 
 	///ジョイスティックによる座標の移動

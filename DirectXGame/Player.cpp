@@ -46,6 +46,7 @@ void Player::Draw()
 }
 
 
+
 void Player::JoyStickMove() {
 
 	XINPUT_STATE joyState;

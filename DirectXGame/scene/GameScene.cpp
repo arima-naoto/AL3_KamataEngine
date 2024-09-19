@@ -129,9 +129,12 @@ void GameScene::InitializeObject() {
 
 	followCamera_ = make_unique<FollowCamera>();
 	followCamera_->Initialize(&viewProjection_);
+	followCamera_->SetTatget(&player_->GetWorldTransform());
 }
 
 void GameScene::MoveDebugCamera() {
+
+#ifdef _DEBUG
 
 	if (input_->TriggerKey(DIK_SPACE)) {
 		if (!isDebugCameraActive_) {
@@ -141,17 +144,17 @@ void GameScene::MoveDebugCamera() {
 		}
 	}
 
-#ifdef _DEBUG
+#endif //_DEBUG
 
-	if (isDebugCameraActive_) {
+	if (!isDebugCameraActive_) {
+		followCamera_->Update();
+		viewProjection_.matView = followCamera_->GetViewProjection()->matView;
+		viewProjection_.matProjection = followCamera_->GetViewProjection()->matProjection;
+		viewProjection_.TransferMatrix();
+	} else {
 		debugCamera_->Update();
-
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		viewProjection_.TransferMatrix();
-	} else {
-		viewProjection_.UpdateMatrix();
 	}
-
-#endif //_DEBUG
 }
