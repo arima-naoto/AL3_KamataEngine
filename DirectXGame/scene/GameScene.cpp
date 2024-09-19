@@ -28,7 +28,7 @@ void GameScene::Initialize() {
 
 	//デバッグカメラ
 	debugCamera_ = make_unique<DebugCamera>(WinApp::kWindowWidth,WinApp::kWindowHeight);
-	debugCamera_->SetFarZ(2000);
+	debugCamera_->SetFarZ(10000);
 
 	//軸方向表示
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -118,6 +118,11 @@ void GameScene::InitializeObject() {
 	// 自キャラの生成
 	player_ = make_unique<Player>();
 	player_->Initialize(model_[Object::kPlayer].get(), &viewProjection_);
+
+	followCamera_ = make_unique<FollowCamera>();
+	followCamera_->Initialize(&viewProjection_);
+	followCamera_->SetTatget(&player_->GetWorldTransform());
+
 	player_->SetViewProjection(followCamera_->GetViewProjection());
 
 	// 地面の生成
@@ -127,10 +132,6 @@ void GameScene::InitializeObject() {
 	// 天球の生成
 	skyDome_ = make_unique<SkyDome>();
 	skyDome_->Initialize(model_[Object::kSkydome].get(), &viewProjection_);
-
-	followCamera_ = make_unique<FollowCamera>();
-	followCamera_->Initialize(&viewProjection_);
-	followCamera_->SetTatget(&player_->GetWorldTransform());
 }
 
 void GameScene::MoveDebugCamera() {

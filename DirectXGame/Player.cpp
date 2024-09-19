@@ -60,6 +60,12 @@ void Player::JoyStickMove() {
 
 		move = ~move * speed;
 
+	    Matrix4x4 cameraMatrix = viewProjection_->matView;
+	
+		move = Rendering::TransformNormal(move, cameraMatrix);
+
+
+
 		worldTransform_.translation_ += move;
 
 	}
