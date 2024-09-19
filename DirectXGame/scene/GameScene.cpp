@@ -118,6 +118,7 @@ void GameScene::InitializeObject() {
 	// 自キャラの生成
 	player_ = make_unique<Player>();
 	player_->Initialize(model_[Object::kPlayer].get(), &viewProjection_);
+	player_->SetViewProjection(followCamera_->GetViewProjection());
 
 	// 地面の生成
 	ground_ = make_unique<Ground>();

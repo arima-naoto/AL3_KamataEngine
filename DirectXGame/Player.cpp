@@ -66,3 +66,7 @@ void Player::JoyStickMove() {
 
 
 }
+
+void Player::SetViewProjection(const ViewProjection* viewProjection) {
+	viewProjection_ = viewProjection;
+}

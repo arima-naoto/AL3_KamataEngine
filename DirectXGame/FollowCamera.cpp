@@ -1,6 +1,6 @@
 #include "FollowCamera.h"
 #include "ViewProjection.h"
-#include "Arithmetic.h"
+#include "Rendering.h"
 #include "input.h"
 
 void FollowCamera::Initialize(ViewProjection* viewprojection) { 
@@ -16,6 +16,10 @@ void FollowCamera::Update() {
 
 		//追従対象からカメラまでのオフセット
 		Vector3 offset = {0.0f, 2.0f, -10.0f};
+
+		Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
+
+		offset = Rendering::TransformNormal(offset, rotateYMatrix);
 
 		//座標をコピーしてオフセット分ずらす
 		viewProjection_->translation_ = target_->translation_ + offset;

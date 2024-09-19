@@ -27,6 +27,8 @@ public://メンバ関数
 
 	const WorldTransform& GetWorldTransform() { return worldTransform_; };
 
+	void SetViewProjection(const ViewProjection* viewProjection);
+
 private:
 
 	///ジョイスティックによる座標の移動
@@ -40,7 +42,7 @@ private://メンバ変数
 	WorldTransform worldTransform_;
 
 	//ビュープロジェクション
-	ViewProjection *viewProjection_ = nullptr;
+	const ViewProjection *viewProjection_ = nullptr;
 
 	Input* input_ = nullptr;
 };
