@@ -45,4 +45,7 @@ private://メンバ変数
 	const ViewProjection *viewProjection_ = nullptr;
 
 	Input* input_ = nullptr;
+
+	Vector3 velocity_ = {};
+
 };

@@ -60,13 +60,15 @@ void Player::JoyStickMove() {
 
 		move = ~move * speed;
 
-	    Matrix4x4 cameraMatrix = viewProjection_->matView;
+	    Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
 	
-		move = Rendering::TransformNormal(move, cameraMatrix);
-
-
+		move = Rendering::TransformNormal(move, rotateYMatrix);
 
 		worldTransform_.translation_ += move;
+
+	    velocity_ = move;
+
+		worldTransform_.rotation_.y = std::atan2(velocity_.x, velocity_.z);
 
 	}
 
