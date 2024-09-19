@@ -1,4 +1,8 @@
 #include "Player.h"
+#include "Model.h"
+#include "ViewProjection.h"
+
+#include "cassert"
 
 void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 
@@ -18,11 +22,16 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 void Player::Update() 
 {
 	//行列を定数バッファに転送
-	worldTransform_.TransferMatrix();
+	worldTransform_.UpdateMatrix();
 }
 
 void Player::Draw() 
 { 
 	//3Dモデルを描画
 	model_->Draw(worldTransform_,*viewProjection_); 
+}
+
+
+void Player::JoyStickMoveTranslate() {
+
 }

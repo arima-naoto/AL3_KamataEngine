@@ -1,8 +1,9 @@
 #pragma once
-#include "Model.h"
+
 #include "WorldTransform.h"
-#include "cassert"
-#include "ViewProjection.h"
+
+class Model;
+class ViewProjection;
 
 /// <summary>
 /// 自キャラ
@@ -23,6 +24,10 @@ public://メンバ関数
 	/// </summary>
 	void Draw();
 
+private:
+
+	///ジョイスティックによる座標の移動
+	void JoyStickMoveTranslate();
 	
 private://メンバ変数
 
