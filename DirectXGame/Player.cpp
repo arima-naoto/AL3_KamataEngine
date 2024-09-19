@@ -1,8 +1,15 @@
 #include "Player.h"
 #include "Model.h"
 #include "ViewProjection.h"
+#include "Input.h"
+#include "Rendering.h"
 
 #include "cassert"
+#ifdef _DEBUG
+#include <imgui.h>
+using namespace ImGui;
+#endif // _DEBUG
+
 
 void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 
@@ -17,11 +24,18 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 	//引数の内容をメンバ変数に記録
 	viewProjection_ = viewProjection;
 	
+	input_ = Input::GetInstance();
+
 }
 
 void Player::Update() 
 {
-	//行列を定数バッファに転送
+	
+
+	//ジョイスティックによる自機の移動
+	Player::JoyStickMove();
+
+	//行列を更新する
 	worldTransform_.UpdateMatrix();
 }
 
@@ -32,6 +46,22 @@ void Player::Draw()
 }
 
 
-void Player::JoyStickMoveTranslate() {
+void Player::JoyStickMove() {
+
+	XINPUT_STATE joyState;
+
+	if (input_->GetJoystickState(0, joyState)) {
+
+		const float speed = 0.3f;
+	   
+		Vector3 move = {
+			(float)joyState.Gamepad.sThumbLX / SHRT_MAX ,0.f, (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
+
+		move = ~move * speed;
+
+		worldTransform_.translation_ += move;
+
+	}
+
 
 }

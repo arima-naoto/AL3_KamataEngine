@@ -1,13 +1,13 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
-
+#include "AxisIndicator.h"
 
 #include "Player.h"
 #include "Ground.h"
 #include "SkyDome.h"
+#include "FollowCamera.h"
 #include "DebugCamera.h"
-#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
@@ -43,6 +43,8 @@ void GameScene::Update() {
 	ground_->Update();
 
 	skyDome_->Update();
+
+	followCamera_->Update();
 
 	MoveDebugCamera();
 }
@@ -125,6 +127,8 @@ void GameScene::InitializeObject() {
 	skyDome_ = make_unique<SkyDome>();
 	skyDome_->Initialize(model_[Object::kSkydome].get(), &viewProjection_);
 
+	followCamera_ = make_unique<FollowCamera>();
+	followCamera_->Initialize(&viewProjection_);
 }
 
 void GameScene::MoveDebugCamera() {

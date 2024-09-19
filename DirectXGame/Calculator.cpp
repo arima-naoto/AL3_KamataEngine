@@ -35,6 +35,19 @@ Vector3 Calculator::Forward(const Vector3& v, float s) {
 	return resultForward;
 }
 
+Vector3 Calculator::Normalize(const Vector3& v) {
+
+	// 正規化を使用して計算結果を求める
+	float length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+	Vector3 resultNormalize = {v.x, v.y, v.z};
+
+	if (length != 0.0f) {
+		resultNormalize = {v.x / length, v.y / length, v.z / length};
+	}
+	return resultNormalize;
+
+}
+
 Matrix4x4 Calculator::Add(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 resultAdd{};
 

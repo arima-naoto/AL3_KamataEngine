@@ -4,6 +4,7 @@
 
 class Model;
 class ViewProjection;
+class Input;
 
 /// <summary>
 /// 自キャラ
@@ -27,7 +28,7 @@ public://メンバ関数
 private:
 
 	///ジョイスティックによる座標の移動
-	void JoyStickMoveTranslate();
+	void JoyStickMove();
 	
 private://メンバ変数
 
@@ -38,4 +39,6 @@ private://メンバ変数
 
 	//ビュープロジェクション
 	ViewProjection *viewProjection_ = nullptr;
+
+	Input* input_ = nullptr;
 };
