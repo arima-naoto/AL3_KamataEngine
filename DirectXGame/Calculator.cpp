@@ -35,6 +35,15 @@ Vector3 Calculator::Forward(const Vector3& v, float s) {
 	return resultForward;
 }
 
+float Calculator::Length(const Vector3& v) {
+
+	float scalarX = std::powf(v.x, 2);
+	float scalarY = std::powf(v.y, 2);
+	float scalarZ = std::powf(v.z, 2);
+
+	return std::sqrtf(scalarX + scalarY + scalarZ);
+}
+
 Vector3 Calculator::Normalize(const Vector3& v) {
 
 	// 正規化を使用して計算結果を求める
@@ -93,3 +102,12 @@ Matrix4x4 Calculator::Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return multiply;
 }
 
+float Calculator::LerpShortAngle(float a, float b, float t) {
+
+	float diff = b - a;
+
+	float Lerp = std::fmod(-2 * float(M_PI), 2 * float(M_PI)) + diff * t;
+	Lerp = std::fmod(float(-M_PI), float(M_PI)) + diff * t;
+
+	return a + Lerp * t;
+}

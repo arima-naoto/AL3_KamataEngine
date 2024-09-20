@@ -47,5 +47,6 @@ private://メンバ変数
 	Input* input_ = nullptr;
 
 	Vector3 velocity_ = {};
+	Vector3 targetRotate_ = {};
 
 };

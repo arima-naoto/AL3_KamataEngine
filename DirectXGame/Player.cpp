@@ -53,23 +53,32 @@ void Player::JoyStickMove() {
 
 	if (input_->GetJoystickState(0, joyState)) {
 
+		const float threshold = 0.7f;
 		const float speed = 0.3f;
+		bool isMoving = false;
 	   
 		Vector3 move = {
 			(float)joyState.Gamepad.sThumbLX / SHRT_MAX ,0.f, (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
+		
+		if (Calculator::Length(move) > threshold) {
+			isMoving = true;
+		}
 
-		move = ~move * speed;
+		if (isMoving) {
 
-	    Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
-	
-		move = Rendering::TransformNormal(move, rotateYMatrix);
+			move = ~move * speed;
 
-		worldTransform_.translation_ += move;
+			Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
 
-	    velocity_ = move;
+			move = Rendering::TransformNormal(move, rotateYMatrix);
 
-		worldTransform_.rotation_.y = std::atan2(velocity_.x, velocity_.z);
+			worldTransform_.translation_ += move;
+			velocity_ = move;
 
+			targetRotate_.y = std::atan2(move.x, move.z);
+		}
+
+		worldTransform_.rotation_.y = Calculator::LerpShortAngle(worldTransform_.rotation_.y, targetRotate_.y, 1.0f);
 	}
 
 

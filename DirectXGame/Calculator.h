@@ -19,6 +19,8 @@ public:
 
 	static Vector3 Forward(const Vector3& v, float s);
 
+	static float Length(const Vector3& v);
+
 	static Vector3 Normalize(const Vector3& v);
 
 	static Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2);
@@ -26,5 +28,7 @@ public:
 	static Matrix4x4 Subtract(const Matrix4x4& m1, const Matrix4x4& m2);
 	
 	static Matrix4x4 Multiply (const Matrix4x4& m1, const Matrix4x4& m2);
+
+	static float LerpShortAngle(float a, float b, float t);
 
 };
