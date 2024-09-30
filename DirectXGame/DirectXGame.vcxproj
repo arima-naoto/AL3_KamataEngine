@@ -115,6 +115,7 @@
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerParts.cpp" />
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="SkyDome.cpp" />
@@ -149,11 +150,13 @@
     <ClInclude Include="FollowCamera.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="input\Input.h" />
+    <ClInclude Include="IPlayerParts.h" />
     <ClInclude Include="math\Matrix4x4.h" />
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerParts.h" />
     <ClInclude Include="Rendering.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="SkyDome.h" />

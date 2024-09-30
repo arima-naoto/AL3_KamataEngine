@@ -1,4 +1,5 @@
 #include "Arithmetic.h"
+#include "WorldTransform.h"
 
 Vector3 operator+(const Vector3& v1, const Vector3& v2) { return Calculator::Add(v1, v2);}
 

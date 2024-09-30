@@ -4,6 +4,8 @@
 #include "Input.h"
 #include "Rendering.h"
 
+
+
 #include "cassert"
 #ifdef _DEBUG
 #include <imgui.h>
@@ -26,26 +28,52 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 	
 	input_ = Input::GetInstance();
 
+	InitializeParts();
+
 }
 
 void Player::Update() 
 {
-	
+
+	for (auto& playerPart : playerParts_) {
+		playerPart->Update();
+	}
 
 	//ジョイスティックによる自機の移動
 	Player::JoyStickMove();
+
+	
 
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
 }
 
-void Player::Draw() 
-{ 
-	//3Dモデルを描画
-	model_->Draw(worldTransform_,*viewProjection_); 
+void Player::Draw() { 
+
+	for (auto &playerPart : playerParts_) {
+		playerPart->Draw();
+	}
 }
 
+void Player::InitializeParts() {
 
+	playerParts_[static_cast<int>(IPlayerParts::body)] = make_unique<PlayerBody>();
+	playerParts_[static_cast<int>(IPlayerParts::body)]->Initialize(Model::CreateFromOBJ("float_Body"), viewProjection_);
+	playerParts_[static_cast<int>(IPlayerParts::body)]->SetParent(&this->GetWorldTransform());
+
+	playerParts_[static_cast<int>(IPlayerParts::head)] = make_unique<PlayerHead>();
+	playerParts_[static_cast<int>(IPlayerParts::head)]->Initialize(Model::CreateFromOBJ("float_Head"),viewProjection_);
+	playerParts_[static_cast<int>(IPlayerParts::head)]->SetParent(&playerParts_[static_cast<int>(IPlayerParts::body)]->GetWorldTransform());
+
+	playerParts_[static_cast<int>(IPlayerParts::left_arm)] = make_unique<PlayerLeft_Arm>();
+	playerParts_[static_cast<int>(IPlayerParts::left_arm)]->Initialize(Model::CreateFromOBJ("float_L_arm"),viewProjection_);
+	playerParts_[static_cast<int>(IPlayerParts::left_arm)]->SetParent(&playerParts_[static_cast<int>(IPlayerParts::body)]->GetWorldTransform());
+
+	playerParts_[static_cast<int>(IPlayerParts::right_arm)] = make_unique<PlayerRight_Arm>();
+	playerParts_[static_cast<int>(IPlayerParts::right_arm)]->Initialize(Model::CreateFromOBJ("float_R_arm"),viewProjection_);
+	playerParts_[static_cast<int>(IPlayerParts::right_arm)]->SetParent(&playerParts_[static_cast<int>(IPlayerParts::body)]->GetWorldTransform());
+
+}
 
 void Player::JoyStickMove() {
 

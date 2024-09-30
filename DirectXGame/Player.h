@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WorldTransform.h"
+#include "PlayerParts.h"
 
 class Model;
 class ViewProjection;
@@ -31,6 +32,8 @@ public://メンバ関数
 
 private:
 
+	void InitializeParts();
+
 	///ジョイスティックによる座標の移動
 	void JoyStickMove();
 	
@@ -48,5 +51,7 @@ private://メンバ変数
 
 	Vector3 velocity_ = {};
 	Vector3 targetRotate_ = {};
+
+	unique_ptr<IPlayerParts> playerParts_[IPlayerParts::partsNum] = {nullptr};
 
 };

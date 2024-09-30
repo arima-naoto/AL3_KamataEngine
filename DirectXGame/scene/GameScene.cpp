@@ -103,7 +103,7 @@ void GameScene::Draw() {
 void GameScene::CreateModel() {
 
 	// 自キャラモデルデータ
-	model_[Object::kPlayer].reset(Model::CreateFromOBJ("player",true));
+	model_[Object::kPlayer].reset(Model::Create());
 
 	// 地面モデルデータ
 	model_[Object::kGround].reset(Model::CreateFromOBJ("ground", true));
