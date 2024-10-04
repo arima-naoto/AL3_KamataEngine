@@ -11,6 +11,18 @@ class Input;
 /// 自キャラ
 /// </summary>
 class Player {
+
+public:
+
+	enum class Behavior {
+		kRoot,
+		kDash,
+	};
+
+	struct WorkDash {
+		uint32_t dashuParameter_ = 0;
+	};
+
 public://メンバ関数
 
 	/// 初期化
@@ -36,6 +48,10 @@ private:
 
 	///ジョイスティックによる座標の移動
 	void JoyStickMove();
+
+	void BehaviorDashInitialize();
+
+	void BehaviorDashUpdate();
 	
 private://メンバ変数
 
@@ -53,5 +69,7 @@ private://メンバ変数
 	Vector3 targetRotate_ = {};
 
 	unique_ptr<IPlayerParts> playerParts_[IPlayerParts::partsNum] = {nullptr};
+
+	WorkDash workDash_;
 
 };

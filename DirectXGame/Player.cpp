@@ -30,6 +30,8 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 
 	InitializeParts();
 
+	BehaviorDashInitialize();
+
 }
 
 void Player::Update() 
@@ -42,7 +44,7 @@ void Player::Update()
 	//ジョイスティックによる自機の移動
 	Player::JoyStickMove();
 
-	
+	BehaviorDashUpdate();
 
 	//行列を更新する
 	worldTransform_.UpdateMatrix();
@@ -53,6 +55,10 @@ void Player::Draw() {
 	for (auto &playerPart : playerParts_) {
 		playerPart->Draw();
 	}
+}
+
+void Player::SetViewProjection(const ViewProjection* viewProjection) { 
+	viewProjection_ = viewProjection; 
 }
 
 void Player::InitializeParts() {
@@ -108,10 +114,24 @@ void Player::JoyStickMove() {
 
 		worldTransform_.rotation_.y = Calculator::LerpShortAngle(worldTransform_.rotation_.y, targetRotate_.y, 1.0f);
 	}
+}
 
+void Player::BehaviorDashInitialize() { 
+	workDash_.dashuParameter_ = 0; 
+	worldTransform_.rotation_.y = 
+}
+
+void Player::BehaviorDashUpdate() {
+
+	XINPUT_STATE joyState;
+
+	if (!input_->GetJoystickState(0, joyState)) {
+		return;
+	}
+
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+		Behavior::kDash;
+	}
 
 }
 
-void Player::SetViewProjection(const ViewProjection* viewProjection) {
-	viewProjection_ = viewProjection;
-}
