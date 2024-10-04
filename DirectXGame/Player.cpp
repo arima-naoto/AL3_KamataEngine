@@ -30,24 +30,14 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 
 	InitializeParts();
 
-	BehaviorDashInitialize();
+	BehaviorRootInitialize();
 
 }
 
 void Player::Update() 
-{
-
-	for (auto& playerPart : playerParts_) {
-		playerPart->Update();
-	}
-
-	//ジョイスティックによる自機の移動
-	Player::JoyStickMove();
-
-	BehaviorDashUpdate();
-
-	//行列を更新する
-	worldTransform_.UpdateMatrix();
+{ 
+	InitializeBehavior();
+	UpdateBehavior();
 }
 
 void Player::Draw() { 
@@ -116,22 +106,63 @@ void Player::JoyStickMove() {
 	}
 }
 
-void Player::BehaviorDashInitialize() { 
-	workDash_.dashuParameter_ = 0; 
-	worldTransform_.rotation_.y = 
-}
+//通常行動
+void Player::BehaviorRootInitialize() { InitializeParts(); }
+void Player::BehaviorRootUpdate() {
 
-void Player::BehaviorDashUpdate() {
-
-	XINPUT_STATE joyState;
-
-	if (!input_->GetJoystickState(0, joyState)) {
-		return;
+	for (auto& playerPart : playerParts_) {
+		playerPart->Update();
 	}
 
-	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-		Behavior::kDash;
-	}
+	// ジョイスティックによる自機の移動
+	Player::JoyStickMove();
 
 }
 
+//ダッシュ
+void Player::BehaviorDashInitialize() {}
+void Player::BehaviorDashUpdate() {}
+
+void Player::InitializeBehavior() {
+
+	if (behaviorRequest_) {
+		// ふるまいを変更する
+		behavior_ = behaviorRequest_.value();
+		switch (behavior_) {
+		case Player::Behavior::kRoot:
+
+			BehaviorRootInitialize();
+
+			break;
+		case Player::Behavior::kDash:
+
+			BehaviorDashInitialize();
+			BehaviorDashUpdate();
+
+			break;
+		}
+		behaviorRequest_ = std::nullopt;
+	}
+
+}
+
+void Player::UpdateBehavior() {
+
+	switch (behavior_) {
+	case Player::Behavior::kRoot:
+
+		BehaviorRootUpdate();
+
+		break;
+	case Player::Behavior::kDash:
+
+		BehaviorDashUpdate();
+
+		break;
+	}
+
+	// 行列を更新する
+	worldTransform_.UpdateMatrix();
+
+
+}

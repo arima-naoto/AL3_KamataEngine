@@ -3,6 +3,8 @@
 #include "WorldTransform.h"
 #include "PlayerParts.h"
 
+#include <optional>
+
 class Model;
 class ViewProjection;
 class Input;
@@ -16,11 +18,7 @@ public:
 
 	enum class Behavior {
 		kRoot,
-		kDash,
-	};
-
-	struct WorkDash {
-		uint32_t dashuParameter_ = 0;
+		kDash
 	};
 
 public://メンバ関数
@@ -49,9 +47,19 @@ private:
 	///ジョイスティックによる座標の移動
 	void JoyStickMove();
 
+	///通常行動初期化
+	void BehaviorRootInitialize();
+
+	///通常行動更新
+	void BehaviorRootUpdate();
+
 	void BehaviorDashInitialize();
 
 	void BehaviorDashUpdate();
+
+	void InitializeBehavior();
+
+	void UpdateBehavior();
 	
 private://メンバ変数
 
@@ -70,6 +78,7 @@ private://メンバ変数
 
 	unique_ptr<IPlayerParts> playerParts_[IPlayerParts::partsNum] = {nullptr};
 
-	WorkDash workDash_;
+	Behavior behavior_ = Behavior::kRoot;
+	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
 };
