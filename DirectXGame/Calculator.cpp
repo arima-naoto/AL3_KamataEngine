@@ -102,7 +102,7 @@ Matrix4x4 Calculator::Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return multiply;
 }
 
-float Calculator::LerpShortAngle(float a, float b, float t) {
+float Calculator::Lerp(float a, float b, float t) {
 
 	float diff = b - a;
 

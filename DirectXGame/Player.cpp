@@ -30,8 +30,6 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 
 	InitializeParts();
 
-	BehaviorRootInitialize();
-
 }
 
 void Player::Update() 
@@ -102,7 +100,7 @@ void Player::JoyStickMove() {
 			targetRotate_.y = std::atan2(move.x, move.z);
 		}
 
-		worldTransform_.rotation_.y = Calculator::LerpShortAngle(worldTransform_.rotation_.y, targetRotate_.y, 1.0f);
+		worldTransform_.rotation_.y = Calculator::Lerp(worldTransform_.rotation_.y, targetRotate_.y, 1.0f);
 	}
 }
 
