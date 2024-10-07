@@ -28,7 +28,7 @@ public://メンバ関数
 
 	const WorldTransform& GetWorldTransform() { return worldTransform_; };
 
-	void SetViewProjection(const ViewProjection* viewProjection);
+	void SetViewProjection(const ViewProjection* viewProjection) { viewProjection_ = viewProjection; };
 
 private:
 
