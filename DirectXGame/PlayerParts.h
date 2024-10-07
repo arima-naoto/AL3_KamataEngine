@@ -80,5 +80,4 @@ private:
 	void UpdateFloatingGimmick();
 
 	float floatingParameter_ = 0.0f;
-
 };

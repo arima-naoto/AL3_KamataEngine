@@ -38,9 +38,6 @@ void Player::Update()
 { 
 	//ふるまい更新処理
 	UpdateBehavior();
-
-	ImGui::DragInt("paramete", &workDash_.dashParameter_, 0.01f);
-	ImGui::DragFloat3("player.translate", &worldTransform_.translation_.x, 0.01f);
 }
 
 void Player::Draw() { 
@@ -56,21 +53,18 @@ void Player::SetViewProjection(const ViewProjection* viewProjection) {
 
 void Player::InitializeParts() {
 
-	playerParts_[static_cast<int>(IPlayerParts::body)] = make_unique<PlayerBody>();
-	playerParts_[static_cast<int>(IPlayerParts::body)]->Initialize(Model::CreateFromOBJ("float_Body"), viewProjection_);
-	playerParts_[static_cast<int>(IPlayerParts::body)]->SetParent(&this->GetWorldTransform());
-
-	playerParts_[static_cast<int>(IPlayerParts::head)] = make_unique<PlayerHead>();
-	playerParts_[static_cast<int>(IPlayerParts::head)]->Initialize(Model::CreateFromOBJ("float_Head"),viewProjection_);
-	playerParts_[static_cast<int>(IPlayerParts::head)]->SetParent(&playerParts_[static_cast<int>(IPlayerParts::body)]->GetWorldTransform());
-
-	playerParts_[static_cast<int>(IPlayerParts::left_arm)] = make_unique<PlayerLeft_Arm>();
-	playerParts_[static_cast<int>(IPlayerParts::left_arm)]->Initialize(Model::CreateFromOBJ("float_L_arm"),viewProjection_);
-	playerParts_[static_cast<int>(IPlayerParts::left_arm)]->SetParent(&playerParts_[static_cast<int>(IPlayerParts::body)]->GetWorldTransform());
-
-	playerParts_[static_cast<int>(IPlayerParts::right_arm)] = make_unique<PlayerRight_Arm>();
-	playerParts_[static_cast<int>(IPlayerParts::right_arm)]->Initialize(Model::CreateFromOBJ("float_R_arm"),viewProjection_);
-	playerParts_[static_cast<int>(IPlayerParts::right_arm)]->SetParent(&playerParts_[static_cast<int>(IPlayerParts::body)]->GetWorldTransform());
+	playerParts_[int(IPlayerParts::body)] = make_unique<PlayerBody>();
+	playerParts_[int(IPlayerParts::body)]->Initialize(Model::CreateFromOBJ("float_Body"), viewProjection_);
+	playerParts_[int(IPlayerParts::body)]->SetParent(&this->GetWorldTransform());
+	playerParts_[int(IPlayerParts::head)] = make_unique<PlayerHead>();
+	playerParts_[int(IPlayerParts::head)]->Initialize(Model::CreateFromOBJ("float_Head"),viewProjection_);
+	playerParts_[int(IPlayerParts::head)]->SetParent(&playerParts_[static_cast<int>(IPlayerParts::body)]->GetWorldTransform());
+	playerParts_[int(IPlayerParts::left_arm)] = make_unique<PlayerLeft_Arm>();
+	playerParts_[int(IPlayerParts::left_arm)]->Initialize(Model::CreateFromOBJ("float_L_arm"),viewProjection_);
+	playerParts_[int(IPlayerParts::left_arm)]->SetParent(&playerParts_[static_cast<int>(IPlayerParts::body)]->GetWorldTransform());
+	playerParts_[int(IPlayerParts::right_arm)] = make_unique<PlayerRight_Arm>();
+	playerParts_[int(IPlayerParts::right_arm)]->Initialize(Model::CreateFromOBJ("float_R_arm"),viewProjection_);
+	playerParts_[int(IPlayerParts::right_arm)]->SetParent(&playerParts_[static_cast<int>(IPlayerParts::body)]->GetWorldTransform());
 
 }
 

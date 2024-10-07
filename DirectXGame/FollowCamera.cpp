@@ -3,6 +3,14 @@
 #include "Rendering.h"
 #include "input.h"
 
+#include "Player.h"
+
+#ifdef _DEBUG
+#include <imgui.h>
+using namespace ImGui;
+#endif // _DEBUG
+
+
 void FollowCamera::Initialize(ViewProjection* viewprojection) { 
 	viewProjection_ = viewprojection; 
 
@@ -12,8 +20,8 @@ void FollowCamera::Initialize(ViewProjection* viewprojection) {
 
 void FollowCamera::Update() {
 
-	//
-	static float cameraLerp = 1.0f;
+	//カメラ補間変数
+	static float cameraLerp = 0.13f;
 
 	if (target_) {
 		// 追従座標の補間
@@ -24,11 +32,9 @@ void FollowCamera::Update() {
 	Vector3 offset = CalcOffset();
 	// カメラ座標
 	viewProjection_->translation_ = interTarget_ + offset;
-
-	
+	//ジョイスティックによるカメラの回転
 	FollowCamera::JoyStickRotation();
-
-
+	//ビュー行列の更新
 	viewProjection_->UpdateViewMatrix();
 }
 
@@ -36,15 +42,12 @@ void FollowCamera::Reset() {
 
 	// 追従対象がいれば
 	if (target_) {
-
 		// 追従座標・角度の初期化
 		interTarget_ = target_->translation_;
 		viewProjection_->rotation_.y = target_->rotation_.y;
-	
-
 	}
 
-	desticationAngleY = viewProjection_->rotation_.y;	
+	desticationAngleY = viewProjection_->rotation_.y;
 
 	// 追従対象からのオフセット
 	Vector3 offset = CalcOffset();

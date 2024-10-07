@@ -46,6 +46,9 @@ public://メンバ関数
 
 	void SetViewProjection(const ViewProjection* viewProjection);
 
+	///ふるまいのゲッター
+	const Behavior& GetBehevior() { return this->behavior_; }
+
 private:
 
 	void InitializeParts();

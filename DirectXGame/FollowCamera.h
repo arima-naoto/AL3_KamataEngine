@@ -2,6 +2,7 @@
 #include "WorldTransform.h"
 class ViewProjection;
 class Input;
+class Player;
 
 class FollowCamera {
 
@@ -38,5 +39,7 @@ private:
 	Vector3 interTarget_ = {};
 
 	float desticationAngleY = 0.0f;
+
+	Player* player_ = nullptr;
 
 };
