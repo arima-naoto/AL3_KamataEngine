@@ -30,12 +30,17 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 
 	InitializeParts();
 
+	InitializeBehavior();
+
 }
 
 void Player::Update() 
 { 
-	InitializeBehavior();
+	//ふるまい更新処理
 	UpdateBehavior();
+
+	ImGui::DragInt("paramete", &workDash_.dashParameter_, 0.01f);
+	ImGui::DragFloat3("player.translate", &worldTransform_.translation_.x, 0.01f);
 }
 
 void Player::Draw() { 
@@ -69,6 +74,7 @@ void Player::InitializeParts() {
 
 }
 
+//ジョイスティックによる移動
 void Player::JoyStickMove() {
 
 	XINPUT_STATE joyState;
@@ -88,24 +94,39 @@ void Player::JoyStickMove() {
 
 		if (isMoving) {
 
-			move = ~move * speed;
-
-			Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
-
-			move = Rendering::TransformNormal(move, rotateYMatrix);
-
-			worldTransform_.translation_ += move;
-			velocity_ = move;
-
-			targetRotate_.y = std::atan2(move.x, move.z);
+			if (behavior_ == Behavior::kRoot) {
+				UpdateMovement(move, speed);
+			} else if (behavior_ == Behavior::kDash) {
+				UpdateMovement(move, speed * 2);
+			}
+		
 		}
 
-		worldTransform_.rotation_.y = Calculator::Lerp(worldTransform_.rotation_.y, targetRotate_.y, 1.0f);
+		worldTransform_.rotation_.y = Calculator::LerpShortAngle(worldTransform_.rotation_.y, targetRotate_.y, destinationAngleY);
 	}
 }
 
-//通常行動
-void Player::BehaviorRootInitialize() { InitializeParts(); }
+void Player::UpdateMovement(Vector3 &move,float speed) {
+
+	move = ~move * speed;
+
+	Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
+
+	move = Rendering::TransformNormal(move, rotateYMatrix);
+
+	worldTransform_.translation_ += move;
+	velocity_ = move;
+
+	targetRotate_.y = std::atan2(move.x, move.z);
+
+}
+
+#pragma region ふるまいのメンバ関数
+
+//通常行動初期化
+void Player::BehaviorRootInitialize() {}
+
+//通常行動更新
 void Player::BehaviorRootUpdate() {
 
 	for (auto& playerPart : playerParts_) {
@@ -115,12 +136,48 @@ void Player::BehaviorRootUpdate() {
 	// ジョイスティックによる自機の移動
 	Player::JoyStickMove();
 
+	XINPUT_STATE joyState;
+
+	if (!input_->GetJoystickState(0, joyState)) {
+		return;
+	}
+
+	// ダッシュボタンを押したら
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+		// 行動リクエストに、ダッシュをリクエストする
+		behavior_ = Behavior::kDash;
+	}
 }
 
-//ダッシュ
-void Player::BehaviorDashInitialize() {}
-void Player::BehaviorDashUpdate() {}
+//ダッシュ初期化
+void Player::BehaviorDashInitialize() { 
+	workDash_.dashParameter_ = 0; 
+	worldTransform_.rotation_.y = destinationAngleY;
+}
 
+//ダッシュ更新
+void Player::BehaviorDashUpdate() {
+
+	//各パーツの更新処理
+	for (auto& playerPart : playerParts_) {
+		playerPart->Update();
+	}
+	
+	// ジョイスティックによる自機の移動
+	Player::JoyStickMove();
+
+	// ダッシュの時間<frame>
+	const int32_t behaviorDashTime = 60; 
+
+	// 基底の時間経過で通常行動に戻る
+	if (++workDash_.dashParameter_ >= behaviorDashTime) {
+		destinationAngleY = 1.0f;
+		workDash_.dashParameter_ = 0;
+		behavior_ = Behavior::kRoot;
+	}
+}
+
+//ふるまいの初期化
 void Player::InitializeBehavior() {
 
 	if (behaviorRequest_) {
@@ -135,15 +192,14 @@ void Player::InitializeBehavior() {
 		case Player::Behavior::kDash:
 
 			BehaviorDashInitialize();
-			BehaviorDashUpdate();
 
 			break;
 		}
 		behaviorRequest_ = std::nullopt;
 	}
-
 }
 
+//ふるまいの更新処理
 void Player::UpdateBehavior() {
 
 	switch (behavior_) {
@@ -161,6 +217,6 @@ void Player::UpdateBehavior() {
 
 	// 行列を更新する
 	worldTransform_.UpdateMatrix();
-
-
 }
+
+#pragma endregion

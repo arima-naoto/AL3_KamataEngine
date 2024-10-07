@@ -11,13 +11,18 @@ public:
 
 	void Update();
 
-	void SetTatget(const WorldTransform* target) { target_ = target; }
+	void Reset();
+
+	void SetTatget(const WorldTransform* target);
 
 	const ViewProjection* GetViewProjection(){ return viewProjection_; }
 
 private:
 
 	void JoyStickRotation();
+
+	//オフセット計算
+	Vector3 CalcOffset() const;
 
 private:
 
@@ -28,5 +33,10 @@ private:
 	const WorldTransform* target_ = nullptr;
 
 	Input* input_ = nullptr;
+
+	// 追従対象の残像座標
+	Vector3 interTarget_ = {};
+
+	float desticationAngleY = 0.0f;
 
 };

@@ -29,6 +29,8 @@ public:
 	
 	static Matrix4x4 Multiply (const Matrix4x4& m1, const Matrix4x4& m2);
 
-	static float Lerp(float a, float b, float t);
+	static Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
+	
+	static float LerpShortAngle(float a, float b, float t);
 
 };

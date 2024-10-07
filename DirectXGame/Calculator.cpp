@@ -1,4 +1,5 @@
 #include "Calculator.h"
+#include "Arithmetic.h"
 
 float Calculator::Cot(float x) { return 1.0f / tanf(x); }
 
@@ -102,12 +103,14 @@ Matrix4x4 Calculator::Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return multiply;
 }
 
-float Calculator::Lerp(float a, float b, float t) {
+Vector3 Calculator::Lerp(const Vector3& a, const Vector3& b, float t) { 
+	return Vector3(a * (1.0f - t) + b * t); }
 
-	float diff = b - a;
+float Calculator::LerpShortAngle(float a, float b, float t) {
 
-	float Lerp = std::fmod(-2 * float(M_PI), 2 * float(M_PI)) + diff * t;
-	Lerp = std::fmod(float(-M_PI), float(M_PI)) + diff * t;
+	// aとbの間の差を計算し,正規化する
+	float diff = fmod(b - a + float(M_PI), 2 * float(M_PI)) - float(M_PI);
 
-	return a + Lerp * t;
+	// 線形補間を適用する
+	return a + diff * t;
 }
