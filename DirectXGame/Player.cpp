@@ -3,8 +3,7 @@
 #include "ViewProjection.h"
 #include "Input.h"
 #include "Rendering.h"
-
-
+#include "GlobalVariables.h"
 
 #include "cassert"
 #ifdef _DEBUG
@@ -15,23 +14,28 @@ using namespace ImGui;
 
 void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 
-	//NULLポインタチェック
+	// NULLポインタチェック
 	assert(model);
-	
-	//引数として受け取ったデータをメンバ変数に記録する
+
+	// 引数として受け取ったデータをメンバ変数に記録する
 	model_ = model; // モデル
 
-	//ワールド変換の初期化
+	// ワールド変換の初期化
 	worldTransform_.Initialize();
-	//引数の内容をメンバ変数に記録
+	// 引数の内容をメンバ変数に記録
 	viewProjection_ = viewProjection;
-	
+
 	input_ = Input::GetInstance();
 
 	InitializeParts();
 
 	InitializeBehavior();
 
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+	globalVariables->SetValue(groupName, "Test", 90);
 }
 
 void Player::Update() 
