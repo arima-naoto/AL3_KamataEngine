@@ -3,6 +3,7 @@
 #include "variant"
 #include "map"
 #include "string"
+#include "Windows.h"
 
 #include "json.hpp"
 

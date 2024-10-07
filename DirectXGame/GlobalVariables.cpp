@@ -1,10 +1,10 @@
+#define WIN32_LEAN_AND_MEAN // 不要な定義を無効化
+#define NOMINMAX
 #include "GlobalVariables.h"
 #include "fstream"
-#include "Windows.h"
 
 #ifdef _DEBUG
 #include "imgui.h"
-using namespace ImGui;
 #endif // _DEBUG
 
 
@@ -15,51 +15,61 @@ GlobalVariables* GlobalVariables::GetInstance() {
 }
 
 void GlobalVariables::Update() {
-	
-	if (!Begin("Global Variables", nullptr, ImGuiWindowFlags_MenuBar)) {
-		End();
+
+	if (!ImGui::Begin("Global Variables", nullptr, ImGuiWindowFlags_MenuBar)) {
+		ImGui::End();
 		return;
 	}
 
-	if (BeginMenuBar()) {
+	if (!ImGui::BeginMenuBar()) {
+		return;
+	}
 
-		// 各グループについて
-		for (std::map<std::string, Group>::iterator itGroup = dates_.begin(); itGroup != dates_.end(); ++itGroup) {
+	// 各グループについて
+	for (std::map<std::string, Group>::iterator itGroup = dates_.begin(); itGroup != dates_.end(); ++itGroup) {
 
-			// グループ名を取得
-			const std::string& groupName = itGroup->first;
-			// グループの参照を取得
-			Group& group = itGroup->second;
+		// グループ名を取得
+		const std::string& groupName = itGroup->first;
+		// グループの参照を取得
+		Group& group = itGroup->second;
 
-			if (BeginMenu(groupName.c_str())) {
+		if (!ImGui::BeginMenu(groupName.c_str())) {
+			continue;
+		}
 
-				// 各項目について
-				for (std::map<std::string, Item>::iterator itItem = group.items.begin(); itItem != group.items.end(); ++itItem) {
+		// 各項目について
+		for (std::map<std::string, Item>::iterator itItem = group.items.begin(); itItem != group.items.end(); ++itItem) {
 
-					// 項目名を取得
-					const std::string& itemName = itItem->first;
+			// 項目名を取得
+			const std::string& itemName = itItem->first;
 
-					// 項目の参照を取得
-					Item& item = itItem->second;
+			// 項目の参照を取得
+			Item& item = itItem->second;
 
-					// int32_t型の値を保持していれば
-					if (std::holds_alternative<int32_t>(item.value)) {
-						int32_t* ptr = std::get_if<int32_t>(&item.value);
-						SliderInt(itemName.c_str(), ptr, 0, 100);
-					} else if (std::holds_alternative<float>(item.value)) {
-						float* ptr = std::get_if<float>(&item.value);
-						SliderFloat(itemName.c_str(), ptr, 0, 100);
-					} else if (std::holds_alternative<Vector3>(item.value)) {
-						Vector3* ptr = std::get_if<Vector3>(&item.value);
-						SliderFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), -10, 10);
-					}
-				}
-				EndMenu();
+			// int32_t型の値を保持していれば
+			if (std::holds_alternative<int32_t>(item.value)) {
+				int32_t* ptr = std::get_if<int32_t>(&item.value);
+				ImGui::SliderInt(itemName.c_str(), ptr, 0, 100);
+			} else if (std::holds_alternative<float>(item.value)) {
+				float* ptr = std::get_if<float>(&item.value);
+				ImGui::SliderFloat(itemName.c_str(), ptr, 0, 100);
+			} else if (std::holds_alternative<Vector3>(item.value)) {
+				Vector3* ptr = std::get_if<Vector3>(&item.value);
+				ImGui::SliderFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), -10, 10);
+			}
+
+			ImGui::Text("\n");
+
+			if (ImGui::Button("Save")) {
+				SaveFile(groupName);
+				std::string message = std::format("{}.json saved.", groupName);
+				MessageBoxA(nullptr, message.c_str(), "GlobalVariables", 0);
 			}
 		}
-		EndMenuBar();
+		ImGui::EndMenu();
 	}
-	End();
+	ImGui::EndMenuBar();
+	ImGui::End();
 }
 
 void GlobalVariables::CreateGroup(const std::string& groupName) { 
