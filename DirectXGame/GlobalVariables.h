@@ -31,12 +31,6 @@ public:
 	void SetValue(const std::string& groupName, const std::string& key, float value);
 	void SetValue(const std::string& groupName, const std::string& key, const Vector3& value);
 
-	/// <summary>
-	/// ファイル書き出し
-	/// </summary>
-	/// <param name="groupName"></param>
-	void SaveFile(const std::string& groupName);
-
 private:
 
 	/// <summary>
@@ -68,11 +62,5 @@ private:
 	};
 
 	std::map<std::string, Group> dates_;
-
-	using json = nlohmann::json;
-
-	//グローバル変数の保存先ファイルパス
-	const std::string kDirectoryPath = "Resources/GlobalVariables/";
-
 
 };
