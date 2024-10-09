@@ -1,4 +1,5 @@
 #include "PlayerParts.h"
+#include "GlobalVariables.h"
 
 #include <cmath>
 using namespace std;
@@ -24,10 +25,6 @@ void PlayerBody::Update() {
 	SetAffine();
 
 	UpdateFloatingGimmick();
-
-	ImGui::SliderFloat3("body.scale", &worldTransform.scale_.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("body.rotation", &worldTransform.rotation_.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("body.translate", &worldTransform.translation_.x, -5.0f, 5.0f);
 
 	worldTransform.UpdateMatrix();
 }
@@ -70,10 +67,6 @@ void PlayerHead::Update() {
 
 	SetAffine();
 
-	ImGui::SliderFloat3("head.scale", &worldTransform.scale_.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("head.rotation", &worldTransform.rotation_.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("head.translate", &worldTransform.translation_.x, -5.0f, 5.0f);
-
 	worldTransform.UpdateMatrix();
 }
 
@@ -82,6 +75,7 @@ void PlayerHead::Draw() {
 	model_->Draw(worldTransform, *viewProjection_);
 
 }
+
 
 ///===========================================================================================================================================
 
@@ -105,10 +99,6 @@ void PlayerLeft_Arm::Update() {
 	SetAffine();
 
     UpdateFloatingGimmick();
-
-    ImGui::SliderFloat3("Left_Arm.scale", &worldTransform.scale_.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("Left_Arm.rotation", &worldTransform.rotation_.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("Left_Arm.translate", &worldTransform.translation_.x, -5.0f, 5.0f);
 
 	worldTransform.UpdateMatrix();
 }
@@ -153,10 +143,6 @@ void PlayerRight_Arm::Update() {
 	SetAffine();
 
 	UpdateFloatingGimmick();
-
-	ImGui::SliderFloat3("Right_Arm.scale", &worldTransform.scale_.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("Right_Arm.rotation", &worldTransform.rotation_.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("Right_Arm.translate", &worldTransform.translation_.x, -5.0f, 5.0f);
 
 	worldTransform.UpdateMatrix();
 }

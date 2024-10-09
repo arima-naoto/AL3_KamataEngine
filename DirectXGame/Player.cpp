@@ -34,12 +34,19 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection) {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Player";
 
-	GlobalVariables::GetInstance()->CreateGroup(groupName);
-	globalVariables->SetValue(groupName, "Test", 90);
+	globalVariables->CreateGroup(groupName);
+	globalVariables->AddItem(groupName, "body Translate", playerParts_[(int)IPlayerParts::body]->GetPosition());
+	globalVariables->AddItem(groupName, "head Translate", playerParts_[(int)IPlayerParts::head]->GetPosition());
+	globalVariables->AddItem(groupName, "L_Arm Translate", playerParts_[(int)IPlayerParts::left_arm]->GetPosition());
+	globalVariables->AddItem(groupName, "R_Arm Translate", playerParts_[(int)IPlayerParts::right_arm]->GetPosition());
+
+	ApplyGlobalVariables();
+
 }
 
 void Player::Update() 
 { 
+
 	//ふるまい更新処理
 	UpdateBehavior();
 }
@@ -218,3 +225,16 @@ void Player::UpdateBehavior() {
 }
 
 #pragma endregion
+
+void Player::ApplyGlobalVariables() {
+
+	
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+
+	playerParts_[(int)IPlayerParts::body]->GetPosition() = globalVariables->GetVector3Value(groupName, "body Translate");
+	playerParts_[(int)IPlayerParts::head]->GetPosition() = globalVariables->GetVector3Value(groupName, "head Translate");
+	playerParts_[(int)IPlayerParts::left_arm]->GetPosition() = globalVariables->GetVector3Value(groupName, "L_Arm Translate");
+	playerParts_[(int)IPlayerParts::right_arm]->GetPosition() = globalVariables->GetVector3Value(groupName, "R_Arm Translate");
+
+}

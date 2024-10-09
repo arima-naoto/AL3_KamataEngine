@@ -79,6 +79,9 @@ private:
 	void UpdateBehavior();
 
 #pragma endregion
+
+	void ApplyGlobalVariables();
+
 	
 private://メンバ変数
 

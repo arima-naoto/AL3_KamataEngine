@@ -7,13 +7,14 @@
 #include "imgui.h"
 #endif // _DEBUG
 
-
+//シングルトンパターン
 GlobalVariables* GlobalVariables::GetInstance() { 
 	//静的インスタンスを作成
 	static GlobalVariables instance;
 	return &instance;
 }
 
+//更新処理
 void GlobalVariables::Update() {
 
 	if (!ImGui::Begin("Global Variables", nullptr, ImGuiWindowFlags_MenuBar)) {
@@ -58,13 +59,13 @@ void GlobalVariables::Update() {
 				ImGui::SliderFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), -10, 10);
 			}
 
-			ImGui::Text("\n");
+		/*	ImGui::Text("\n");
 
 			if (ImGui::Button("Save")) {
 				SaveFile(groupName);
 				std::string message = std::format("{}.json saved.", groupName);
 				MessageBoxA(nullptr, message.c_str(), "GlobalVariables", 0);
-			}
+			}*/
 		}
 		ImGui::EndMenu();
 	}
@@ -72,10 +73,12 @@ void GlobalVariables::Update() {
 	ImGui::End();
 }
 
+//グループの作成
 void GlobalVariables::CreateGroup(const std::string& groupName) { 
 	dates_[groupName]; 
 }
 
+//値のセット(int32_t)
 void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, int32_t value) {
 
 	Group& group = dates_[groupName];
@@ -87,6 +90,7 @@ void GlobalVariables::SetValue(const std::string& groupName, const std::string& 
 
 }
 
+//値のセット(float)
 void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, float value) {
 
 	Group& group = dates_[groupName];
@@ -97,6 +101,7 @@ void GlobalVariables::SetValue(const std::string& groupName, const std::string& 
 	group.items[key] = newItem;
 }
 
+//値のセット(Vector3)
 void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, const Vector3& value) {
 
 	Group& group = dates_[groupName];
@@ -107,6 +112,7 @@ void GlobalVariables::SetValue(const std::string& groupName, const std::string& 
 	group.items[key] = newItem;
 }
 
+//ファイル書き出し
 void GlobalVariables::SaveFile(const std::string& groupName) {
 
 	/// グループを検索
@@ -174,4 +180,178 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 		// ファイルを閉じる
 		ofs.close();
 	}
+}
+
+//ディレクトリの全ファイル読み込み
+void GlobalVariables::LoadFiles() { 
+	//保存先ディレクトリのパスをローカル変数で宣言
+	std::filesystem::path dir(kDirectoryPath); 
+	//ディレクトリが無ければスキップする
+	if (!std::filesystem::exists(dir)) {
+		return;
+	}
+
+	std::filesystem::directory_iterator dir_it(kDirectoryPath);
+	for (const std::filesystem::directory_entry& entry : dir_it) {
+
+//========================================================<パスによる分別>=============================================================
+		
+		//ファイルパスを取得
+		const std::filesystem::path& filePath = entry.path();
+
+		//ファイル拡張子を取得
+		std::string extension = filePath.extension().string();
+		//.jsonファイル以外はスキップ
+		if (extension.compare(".json") != 0) {
+			continue;
+		}
+
+		//ファイル読み込み
+		LoadFile(filePath.stem().string());
+	}
+}
+
+//ファイルから読み込む
+void GlobalVariables::LoadFile(const std::string& groupName) {
+
+	//読み込むJSONファイルのフルパスを合成する
+	std::string filePath = kDirectoryPath + groupName + ".json";
+	//読み込み用ファイルストリーム
+	std::ifstream ifs;
+	//ファイルを読み込み用に開く
+	ifs.open(filePath);
+
+	//ファイルオープン失敗?
+	if (!ifs.is_open()) {
+		MessageBoxA(nullptr, "ファイルのオープンに失敗しました", "エラー", MB_OK || MB_ICONERROR);
+		assert(false);
+	}
+
+	json root;
+
+	//json文字列からjsonのデータ構造に展開
+	ifs >> root;
+	// ファイルを閉じる
+	ifs.close();
+
+	//グループを検索
+	json::iterator itGroup = root.find(groupName);
+
+	//未登録チェック
+	assert(itGroup != root.end());
+
+	//各アイテムについて
+	for (json::iterator itItem = itGroup->begin(); itItem != itGroup->end(); ++itItem) {
+
+		//アイテム名を取得
+		const std::string& itemName = itItem.key();
+
+		//int32_t型の値を保持していれば
+		if (itItem->is_number_integer()) {
+			// int32_t型の値を登録
+			int32_t value = itItem->get<int32_t>();
+			SetValue(groupName, itemName, value);
+			//int32_t型のSetValue
+		}
+		//float型の値を保持していれば
+		else if (itItem->is_number_float()) {
+			//float型の値を登録
+			double value = itItem->get<double>();
+			SetValue(groupName, itemName, static_cast<float>(value));
+			//float型のSetValue
+		}
+		//要素数３の配列であれば
+		else if (itItem->is_array() && itItem->size() == 3) {
+			//float型のjson配列登録
+			Vector3 value = {itItem->at(0), itItem->at(1), itItem->at(2)};
+			SetValue(groupName, itemName, value);
+			//Vector3型のSetValue
+		}
+
+	}
+
+}
+
+//項目の追加(int32_t)
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, int32_t value) {
+
+	Group& group = dates_[groupName];
+
+	//項目が未登録なら
+	if (group.items.find(key) == group.items.end()) {
+		// SetValueの呼び出し
+		SetValue(groupName, key, value);
+
+	}	
+}
+
+//項目の追加(float)
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, float value) {
+
+	Group& group = dates_[groupName];
+
+	// 項目が未登録なら
+	if (group.items.find(key) == group.items.end()) {
+		// SetValueの呼び出し
+		SetValue(groupName, key, value);
+	}	
+
+}
+
+//項目の追加(Vector3)
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, const Vector3& value) {
+
+	Group& group = dates_[groupName];
+
+	// 項目が未登録なら
+	if (group.items.find(key) == group.items.end()) {
+		// SetValueの呼び出し
+		SetValue(groupName, key, value);
+	}	
+
+}
+
+int32_t GlobalVariables::GetIntValue(const std::string& groupName, const std::string& key) const {
+
+   // 指定グループが存在しているか
+	assert(dates_.find(groupName) != dates_.end());
+
+	// グループの参照を取得
+	const Group& group = dates_.at(groupName);
+
+	// 指定グループに指定のキーが存在するかチェック
+	assert(group.items.find(key) != group.items.end());
+
+	// 指定グループから指定のキーの値を取得
+	return std::get<int32_t>(group.items.at(key).value);
+}
+
+float GlobalVariables::GetfloatValue(const std::string& groupName, const std::string& key) const {
+
+	// 指定グループが存在しているか
+	assert(dates_.find(groupName) != dates_.end());
+
+	// グループの参照を取得
+	const Group& group = dates_.at(groupName);
+
+	// 指定グループに指定のキーが存在するかチェック
+	assert(group.items.find(key) != group.items.end());
+
+	// 指定グループから指定のキーの値を取得
+	return std::get<float>(group.items.at(key).value);
+}
+
+Vector3 GlobalVariables::GetVector3Value(const std::string& groupName, const std::string& key) const {
+	// 指定グループが存在しているか
+	assert(dates_.find(groupName) != dates_.end());
+
+	// グループの参照を取得
+	const Group& group = dates_.at(groupName);
+
+	// 指定グループに指定のキーが存在するかチェック
+	assert(group.items.find(key) != group.items.end());
+
+	// 指定グループから指定のキーの値を取得
+	return std::get<Vector3>(group.items.at(key).value);
+
 }

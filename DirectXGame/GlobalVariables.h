@@ -28,8 +28,11 @@ public:
 	/// <param name="groupName">グループ名</param>
 	void CreateGroup(const std::string& groupName);
 
+	///値のセット(int32_t型)
 	void SetValue(const std::string& groupName, const std::string& key, int32_t value);
+	///値のセット(float型)
 	void SetValue(const std::string& groupName, const std::string& key, float value);
+	///値のセット(Vector3型)
 	void SetValue(const std::string& groupName, const std::string& key, const Vector3& value);
 
 	/// <summary>
@@ -38,6 +41,27 @@ public:
 	/// <param name="groupName"></param>
 	void SaveFile(const std::string& groupName);
 
+	/// <summary>
+	/// ディレクトリの全ファイル読み込み
+	/// </summary>
+	void LoadFiles();
+
+	/// <summary>
+	/// ファイルから読み込む
+	/// </summary>
+	/// <param name="groupName"></param>
+	void LoadFile(const std::string& groupName);
+
+	///項目の追加
+	void AddItem(const std::string& groupName, const std::string& key, int32_t value);
+	void AddItem(const std::string& groupName, const std::string& key, float value);
+	void AddItem(const std::string& groupName, const std::string& key, const Vector3 &value);
+
+	///値の取得
+	int32_t GetIntValue(const std::string& groupName, const std::string& key) const;
+    float GetfloatValue(const std::string& groupName, const std::string& key) const;
+	Vector3 GetVector3Value(const std::string& groupName, const std::string& key) const;
+	
 private:
 
 	/// <summary>

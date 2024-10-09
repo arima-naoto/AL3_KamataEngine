@@ -54,6 +54,8 @@ public:
 
 	void SetParent(const WorldTransform* parent) { worldTransform.parent_ = parent; }
 
+	Vector3 GetPosition() { return this->translate_; }
+
 	void SetPosition(const Vector3& position) { this->translate_ = position; }
 
 	void SetAffine(){
