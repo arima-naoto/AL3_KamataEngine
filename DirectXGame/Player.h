@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WorldTransform.h"
+#include "vector"
 
 class Model;
 class ViewProjection;
@@ -13,7 +14,7 @@ class Player {
 public://メンバ関数
 
 	/// 初期化
-	void Initialize(Model* model, ViewProjection* viewProjection);
+	void Initialize(std::vector<Model*>models, ViewProjection* viewProjection);
 
 	/// <summary>
 	/// 更新
@@ -25,21 +26,23 @@ public://メンバ関数
 	/// </summary>
 	void Draw();
 
-	const WorldTransform& GetWorldTransform() { return worldTransform_; };
+	const std::vector<WorldTransform*> GetWorldTransform() { return worldTransforms_; };
 
 	void SetViewProjection(const ViewProjection* viewProjection);
 
 private:
+
+	void InitializeWorldTransform();
 
 	///ジョイスティックによる座標の移動
 	void JoyStickMove();
 	
 private://メンバ変数
 
-	Model* model_ = nullptr;
+	std::vector<Model*> models_;
 
 	//ワールド変換データ
-	WorldTransform worldTransform_;
+	std::vector<WorldTransform*>worldTransforms_;
 
 	//ビュープロジェクション
 	const ViewProjection *viewProjection_ = nullptr;
