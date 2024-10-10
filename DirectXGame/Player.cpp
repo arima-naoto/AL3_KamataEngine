@@ -101,6 +101,21 @@ void Player::BehaviorRootInitialize() {}
 void Player::BehaviorDashInitialize() {
 	workDash_.dashParameter_ = 0;
 	worldTransforms_[kBase]->rotation_.y = destinationAngleY;
+	worldTransforms_[kLeft_arm]->rotation_.x = 0.5f;
+	worldTransforms_[kRight_arm]->rotation_.x = 0.5f;
+}
+
+// ジャンプ初期化
+void Player::BehaviorJumpInitialize() {
+
+	worldTransforms_[kBody]->translation_.y = 0;
+	worldTransforms_[kLeft_arm]->rotation_.x = 0;
+	worldTransforms_[kRight_arm]->rotation_.x = 0;
+
+	// ジャンプ初速
+	const float kJumpFirstSpeed = 1.0f;
+	// ジャンプ初速を与える
+	velocity_.y =  kJumpFirstSpeed;
 }
 
 // ふるまいの初期化
@@ -112,14 +127,21 @@ void Player::InitializeBehavior() {
 		switch (behavior_) {
 		case Player::Behavior::kRoot:
 
+			//通常行動初期化
 			BehaviorRootInitialize();
-
 			break;
 		case Player::Behavior::kDash:
 
+			//ダッシュ初期化
 			BehaviorDashInitialize();
-
 			break;
+
+		case Player::Behavior::kJump:
+
+			//ジャンプ初期化
+			BehaviorJumpInitialize();
+			break;
+
 		}
 		behaviorRequest_ = std::nullopt;
 	}
@@ -140,25 +162,25 @@ void Player::JoyStickMove(const float speed) {
 	
 		bool isMoving = false;
 	   
-		Vector3 move = {
+		velocity_ = {
 			(float)joyState.Gamepad.sThumbLX / SHRT_MAX ,0.f, (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
 		
-		if (Calculator::Length(move) > threshold) {
+		if (Calculator::Length(velocity_) > threshold) {
 			isMoving = true;
 		}
 
 		if (isMoving) {
 
-			move = ~move * speed;
+			velocity_ = ~velocity_ * speed;
 
 			Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
 
-			move = Rendering::TransformNormal(move, rotateYMatrix);
+			velocity_ = Rendering::TransformNormal(velocity_, rotateYMatrix);
 
-			worldTransforms_[kBase]->translation_ += move;
-			velocity_ = move;
+			worldTransforms_[kBase]->translation_ += velocity_;
+			velocity_ = velocity_;
 
-			targetRotate_.y = std::atan2(move.x, move.z);
+			targetRotate_.y = std::atan2(velocity_.x, velocity_.z);
 		}
 
 		worldTransforms_[kBase]->rotation_.y = Calculator::LerpShortAngle(
@@ -186,7 +208,7 @@ void Player::UpdateFloatingGimmick() {
 // 通常行動更新
 void Player::BehaviorRootUpdate() {
 
-	const float speed = 0.3f;
+	const float speed = 0.5f;
 
 	JoyStickMove(speed);
 	UpdateFloatingGimmick();
@@ -201,6 +223,12 @@ void Player::BehaviorRootUpdate() {
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
 		// ダッシュリクエスト
 		behaviorRequest_ = Behavior::kDash;
+	}
+
+	//ジャンプボタンを押したら
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+		// ジャンプリクエスト
+		behaviorRequest_ = Behavior::kJump;
 	}
 
 }
@@ -220,20 +248,47 @@ void Player::BehaviorDashUpdate() {
 
 }
 
+// ジャンプ更新
+void Player::BehaviorJumpUpdate() {
+
+	// 移動
+	worldTransforms_[kBase]->translation_ += velocity_;
+	// 重力加速度
+	const float kGravityAcceleration = 0.05f;
+	// 加速度ベクトル
+	Vector3 accelerationVector = {0, -kGravityAcceleration, 0};
+	// 加速する
+	velocity_ += accelerationVector;
+	//着地
+	if (worldTransforms_[kBase]->translation_.y <= 0.0f) {
+		worldTransforms_[kBase]->translation_.y = 0;
+		//ジャンプ終了
+		behaviorRequest_ = Behavior::kRoot;
+	}
+
+}
+
 // ふるまいの更新処理
 void Player::UpdateBehavior() {
 
 	switch (behavior_) {
 	case Player::Behavior::kRoot:
 
+		//通常行動更新
 		BehaviorRootUpdate();
-
 		break;
 	case Player::Behavior::kDash:
 
+		//ダッシュ更新
 		BehaviorDashUpdate();
-
 		break;
+
+	case Player::Behavior::kJump:
+
+		//ジャンプ更新
+		BehaviorJumpUpdate();
+		break;
+
 	}
 
 	// 行列を更新する

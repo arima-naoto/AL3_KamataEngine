@@ -26,7 +26,8 @@ public:
 
 	enum class Behavior {
 		kRoot,
-		kDash
+		kDash,
+		kJump,
 	};
 
 	//ダッシュ用ワーク
@@ -73,6 +74,9 @@ private:
 	/// ダッシュ初期化
 	void BehaviorDashInitialize();
 
+	///ジャンプ行動初期化
+	void BehaviorJumpInitialize();
+
 	/// ふるまい初期化
 	void InitializeBehavior();
 
@@ -91,6 +95,9 @@ private:
 
 	///ダッシュ更新
 	void BehaviorDashUpdate();	
+
+	///ジャンプ行動初期化
+	void BehaviorJumpUpdate();
 
 	///ふるまい更新
 	void UpdateBehavior();
