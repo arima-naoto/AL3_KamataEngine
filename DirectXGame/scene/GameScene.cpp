@@ -133,7 +133,7 @@ void GameScene::InitializeObject() {
 
 	followCamera_ = make_unique<FollowCamera>();
 	followCamera_->Initialize(&viewProjection_);
-	followCamera_->SetTatget(player_->GetWorldTransform()[0]);
+	followCamera_->SetTarget(player_->GetWorldTransform()[0]);
 
 	player_->SetViewProjection(followCamera_->GetViewProjection());
 

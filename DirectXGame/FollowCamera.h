@@ -14,7 +14,7 @@ public:
 
 	void Reset();
 
-	void SetTatget(const WorldTransform* target);
+	void SetTarget(const WorldTransform* target);
 
 	const ViewProjection* GetViewProjection(){ return viewProjection_; }
 

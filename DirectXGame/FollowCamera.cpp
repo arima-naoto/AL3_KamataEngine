@@ -55,7 +55,7 @@ void FollowCamera::Reset() {
 	viewProjection_->translation_ = interTarget_ + offset;
 }
 
-void FollowCamera::SetTatget(const WorldTransform* target) { 
+void FollowCamera::SetTarget(const WorldTransform* target) { 
 	target_ = target; 
 	FollowCamera::Reset();
 }
@@ -70,6 +70,14 @@ void FollowCamera::JoyStickRotation() {
 		const float kRotateSpeed = 1.f / 60.f;
 
 		viewProjection_->rotation_.y += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kRotateSpeed;
+
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
+			float targetAngle = target_->rotation_.y + 2 * float(M_PI);
+
+			const float rotateLerpSpeed = 0.05f;
+			viewProjection_->rotation_.y = Calculator::LerpShortAngle(viewProjection_->rotation_.y, targetAngle, rotateLerpSpeed);
+		}
+
 	}
 }
 
