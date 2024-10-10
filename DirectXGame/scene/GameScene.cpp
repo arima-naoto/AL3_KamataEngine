@@ -118,11 +118,13 @@ void GameScene::CreateModel() {
 
 void GameScene::InitializeObject() {
 
+	//パーツ
 	std::vector<Model*> playerParts = {
-		modelFighterBody_.get(), 
-		modelFighterHead_.get(), 
-		modelFighterL_arm_.get(), 
-		modelFighterR_arm_.get()
+	    nullptr,                  // ベース(存在していないのでnullptrにしている)
+	    modelFighterBody_.get(),  // 体
+	    modelFighterHead_.get(),  // 頭
+	    modelFighterL_arm_.get(), // 左腕
+	    modelFighterR_arm_.get()  // 右腕
 	};
 
 	// 自キャラの生成

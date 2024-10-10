@@ -52,6 +52,15 @@
     <Filter Include="ソース ファイル\2d">
       <UniqueIdentifier>{814a0f6d-f847-4c45-856d-4688fa4c9e6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{c28c4560-9890-4289-aad4-07b8db8a0af8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\gameObject">
+      <UniqueIdentifier>{ef4a477a-6632-4afd-b0a2-283ea173c4fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\math">
+      <UniqueIdentifier>{bd25fb90-56dc-40b2-955f-63c3f86557dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -68,6 +77,30 @@
     </ClCompile>
     <ClCompile Include="2d\ImGuiManager.cpp">
       <Filter>ソース ファイル\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTransform.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Calculator.cpp">
+      <Filter>assets\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Arithmetic.cpp">
+      <Filter>assets\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering.cpp">
+      <Filter>assets\math</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowCamera.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Ground.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyDome.cpp">
+      <Filter>assets\gameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +190,27 @@
     </ClInclude>
     <ClInclude Include="3d\ObjectColor.h">
       <Filter>ヘッダー ファイル\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Arithmetic.h">
+      <Filter>assets\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Calculator.h">
+      <Filter>assets\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering.h">
+      <Filter>assets\math</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowCamera.h">
+      <Filter>assets\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Ground.h">
+      <Filter>assets\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>assets\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyDome.h">
+      <Filter>assets\gameObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
