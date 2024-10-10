@@ -1,13 +1,21 @@
 #pragma once
 
 #include "WorldTransform.h"
-#include "PlayerParts.h"
-
+#include "vector"
 #include <optional>
 
 class Model;
 class ViewProjection;
 class Input;
+
+//プレイヤーパーツの列挙体
+enum Parts {
+	kBase,
+	kBody,
+	kHead,
+	kLeft_arm,
+	kRight_arm
+};
 
 /// <summary>
 /// 自キャラ
@@ -30,7 +38,7 @@ public:
 public://メンバ関数
 
 	/// 初期化
-	void Initialize(Model* model, ViewProjection* viewProjection);
+	void Initialize(std::vector<Model*> models, ViewProjection* viewProjection);
 
 	/// <summary>
 	/// 更新
@@ -42,7 +50,7 @@ public://メンバ関数
 	/// </summary>
 	void Draw();
 
-	const WorldTransform& GetWorldTransform() { return worldTransform_; };
+	const std::vector<WorldTransform*> GetWorldTransform() { return worldTransforms_; };
 
 	void SetViewProjection(const ViewProjection* viewProjection);
 
@@ -51,44 +59,57 @@ public://メンバ関数
 
 private:
 
-	void InitializeParts();
+#pragma region 初期化メンバ関数
+
+	/// 各ワールドトランスフォーム初期化
+	void InitializeWorldTransform();
+
+	/// 浮遊ギミック初期化
+	void InitializeFloatingGimmick();
+
+	/// 通常行動初期化
+	void BehaviorRootInitialize();
+
+	/// ダッシュ初期化
+	void BehaviorDashInitialize();
+
+	/// ふるまい初期化
+	void InitializeBehavior();
+
+#pragma endregion
 
 	///ジョイスティックによる座標の移動
-	void JoyStickMove();
+	void JoyStickMove(const float speed);
 
-	void UpdateMovement(Vector3 &move,float speed);
+#pragma region 更新処理メンバ関数
 
-#pragma region ふるまいのメンバ関数
-
-	///通常行動初期化
-	void BehaviorRootInitialize();
+	/// 浮遊ギミック更新
+	void UpdateFloatingGimmick();
 
 	///通常行動更新
 	void BehaviorRootUpdate();
 
-	///ダッシュ初期化
-	void BehaviorDashInitialize();
-
 	///ダッシュ更新
-	void BehaviorDashUpdate();
-
-	///ふるまい初期化
-	void InitializeBehavior();
+	void BehaviorDashUpdate();	
 
 	///ふるまい更新
 	void UpdateBehavior();
 
 #pragma endregion
 
+	/// デバッグテキスト描画
+	void DrawDebugText();
+
+	/// 調整項目の適用
 	void ApplyGlobalVariables();
 
 	
 private://メンバ変数
 
-	Model* model_ = nullptr;
+	std::vector<Model*> models_;
 
 	//ワールド変換データ
-	WorldTransform worldTransform_;
+	std::vector<WorldTransform*> worldTransforms_;
 
 	//ビュープロジェクション
 	const ViewProjection *viewProjection_ = nullptr;
@@ -98,7 +119,13 @@ private://メンバ変数
 	Vector3 velocity_ = {};
 	Vector3 targetRotate_ = {};
 
-	unique_ptr<IPlayerParts> playerParts_[IPlayerParts::partsNum] = {nullptr};
+	/// 浮遊ギミックの媒介変数
+	float floatingParameter_ = 0.0f;
+	/// 浮遊移動のサイクル<frame>
+	static inline int32_t cycle_ = 90;
+	/// 浮遊の振幅
+	static inline float amplitube = 0.2f;
+	static inline float armAngle_ = 0.5f;
 
 	Behavior behavior_ = Behavior::kRoot;
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;

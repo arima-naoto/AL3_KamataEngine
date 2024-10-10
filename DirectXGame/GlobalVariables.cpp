@@ -59,7 +59,7 @@ void GlobalVariables::Update() {
 				ImGui::SliderFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), -10, 10);
 			}
 
-		/*	ImGui::Text("\n");
+			/*ImGui::Text("\n");
 
 			if (ImGui::Button("Save")) {
 				SaveFile(groupName);

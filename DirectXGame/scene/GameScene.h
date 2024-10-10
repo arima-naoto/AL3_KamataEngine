@@ -17,12 +17,6 @@ class SkyDome;
 class FollowCamera;
 class DebugCamera;
 
-enum Object {
-	kPlayer,
-	kGround,
-	kSkydome
-};
-
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -76,7 +70,13 @@ private: // メンバ変数
 	/// </summary>
 
 	// 3Dモデルデータ
-	unique_ptr<Model> model_[3] = {nullptr};
+	unique_ptr<Model> modelFighterBody_ = nullptr;
+	unique_ptr<Model> modelFighterHead_ = nullptr;
+	unique_ptr<Model> modelFighterL_arm_ = nullptr;
+	unique_ptr<Model> modelFighterR_arm_ = nullptr;
+
+	unique_ptr<Model> modelGround_ = {nullptr};
+	unique_ptr<Model> modelSkydome_ = {nullptr};
 
 	// 自キャラ
 	unique_ptr<Player> player_ = nullptr;

@@ -1,5 +1,7 @@
 {
     "Player": {
+        "FloatingAmplitube": 0.20000000298023224,
+        "FloatingCycle": 90,
         "L_Arm Translate": [
             -0.5270000100135803,
             1.2619999647140503,
@@ -19,6 +21,7 @@
             0.0,
             1.503999948501587,
             0.0
-        ]
+        ],
+        "idelArmAngleMax": 0.5
     }
 }
