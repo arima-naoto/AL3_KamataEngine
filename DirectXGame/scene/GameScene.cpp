@@ -98,7 +98,9 @@ void GameScene::CreateModel() {
 	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
 
 	// 敵モデルデータ
-	modelEnemy_.reset(Model::CreateFromOBJ("needle_Body", true));
+	modelEnemyBody_.reset(Model::CreateFromOBJ("needle_Body", true));
+	modelEnemyL_spear_.reset(Model::CreateFromOBJ("spear", true));
+	modelEnemyR_spear_.reset(Model::CreateFromOBJ("spear", true));
 
 	// 地面モデルデータ
 	modelGround_.reset(Model::CreateFromOBJ("ground", true));
@@ -122,8 +124,15 @@ void GameScene::InitializeObject() {
 	player_ = make_unique<Player>();
 	player_->Initialize(playerParts, &viewProjection_);
 
+	std::vector<Model*> enemyParts = {
+		nullptr, 
+		modelEnemyBody_.get(), 
+		modelEnemyL_spear_.get(), 
+		modelEnemyR_spear_.get()
+	};
+
 	enemy_ = make_unique<Enemy>();
-	enemy_->Initialize(modelEnemy_.get(), &viewProjection_);
+	enemy_->Initialize(enemyParts, &viewProjection_);
 
 	followCamera_ = make_unique<FollowCamera>();
 	followCamera_->Initialize(&viewProjection_);

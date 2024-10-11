@@ -13,20 +13,15 @@ using namespace ImGui;
 
 
 ///初期化処理
-void Enemy::Initialize(Model* model, ViewProjection* viewProjection) {
+void Enemy::Initialize(std::vector<Model*> models, ViewProjection* viewProjection) {
 
 	//NULLポインタチェック
-	assert(model);
 
 	// 引数で受け取ったデータをメンバ変数に記録する
-	model_ = model;
+	models_ = models;
 	viewProjection_ = viewProjection;
 
-	// ワールドトランスフォームの初期化
-	worldTransform_.Initialize();
-	worldTransform_.rotation_.y = pi_v<float> / -2.0f;
-	worldTransform_.translation_ = {0.f, -0.65f, 10.0f};
-
+	InitializeWorldTransform();
 }
 
 /// 更新処理
@@ -35,13 +30,12 @@ void Enemy::Update() {
 	//向いている方向に移動
 	Enemy::Move();
 
-#ifdef _DEBUG
-	DragFloat3("enemy.rotate", &worldTransform_.rotation_.x, 0.01f);
-	DragFloat3("enemy.translate", &worldTransform_.translation_.x, 0.01f);
-#endif // _DEBUG
+	DragFloat3("L_Spear.translate", &worldTransforms_[2]->translation_.x, 0.01f);
 
 	//行列の更新
-	worldTransform_.UpdateMatrix();
+	for (auto *worldTransform : worldTransforms_) {
+		worldTransform->UpdateMatrix();
+	}
 
 }
 
@@ -49,19 +43,42 @@ void Enemy::Update() {
 void Enemy::Draw() {
 
 	///3Dモデルを描画する
-	model_->Draw(worldTransform_, *viewProjection_);
+	models_[1]->Draw(*worldTransforms_[1], *viewProjection_);
+	models_[2]->Draw(*worldTransforms_[2], *viewProjection_);
+	models_[3]->Draw(*worldTransforms_[3], *viewProjection_);
+
+}
+
+void Enemy::InitializeWorldTransform() {
+
+	for (int i = 0; i < 4; i++) {
+		worldTransforms_.resize(4);
+		WorldTransform* worldTransform = new WorldTransform();
+		worldTransform->Initialize();
+		worldTransforms_[i] = worldTransform;
+	}
+
+	
+	worldTransforms_[0]->rotation_.y = pi_v<float> / -2.0f;
+	worldTransforms_[0]->translation_ = {0.f, -0.65f, 10.0f};
+
+	worldTransforms_[1]->parent_ = this->GetWorldTransform()[0];
+	worldTransforms_[2]->parent_ = this->GetWorldTransform()[1];
+	worldTransforms_[2]->translation_.x = 0.87f;
+	worldTransforms_[3]->parent_ = this->GetWorldTransform()[1];
+	worldTransforms_[3]->translation_.x = -0.87f;
 
 }
 
 void Enemy::Move() {
 
-	worldTransform_.rotation_.y += 1.0f / 90.0f;
+	worldTransforms_[0]->rotation_.y += 1.0f / 90.0f;
 
 	const float kCharacterSpeed = 0.1f;
 	velocity_ = {0, 0, kCharacterSpeed};
 
-	velocity_ = Rendering::TransformNormal(velocity_, worldTransform_.matWorld_);
+	velocity_ = Rendering::TransformNormal(velocity_, worldTransforms_[0]->matWorld_);
 
-	worldTransform_.translation_ += velocity_;
+	worldTransforms_[0]->translation_ += velocity_;
 
 }

@@ -73,12 +73,16 @@ private: // メンバ変数
 	/// </summary>
 
 	// 3Dモデルデータ
+
 	unique_ptr<Model> modelFighterBody_ = nullptr;
 	unique_ptr<Model> modelFighterHead_ = nullptr;
 	unique_ptr<Model> modelFighterL_arm_ = nullptr;
 	unique_ptr<Model> modelFighterR_arm_ = nullptr;
 
-	unique_ptr<Model> modelEnemy_ = {nullptr};
+	unique_ptr<Model> modelEnemyBody_ = {nullptr};
+	unique_ptr<Model> modelEnemyL_spear_ = {nullptr};
+	unique_ptr<Model> modelEnemyR_spear_ = {nullptr};
+
 	unique_ptr<Model> modelGround_ = {nullptr};
 	unique_ptr<Model> modelSkydome_ = {nullptr};
 

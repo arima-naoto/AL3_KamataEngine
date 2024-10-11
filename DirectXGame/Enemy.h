@@ -1,5 +1,6 @@
 #pragma once
 #include "WorldTransform.h"
+#include "vector"
 
 /// クラスの前方宣言
 class Model;
@@ -12,7 +13,7 @@ class Enemy {
 
 public: // メンバ関数
 	// 初期化処理
-	void Initialize(Model* model, ViewProjection* viewProjection);
+	void Initialize(std::vector<Model*> models, ViewProjection* viewProjection);
 
 	// 更新処理
 	void Update();
@@ -20,19 +21,23 @@ public: // メンバ関数
 	// 描画処理
 	void Draw();
 
+	const std::vector<WorldTransform*> GetWorldTransform(){ return worldTransforms_;};
+
 private:
+
+	void InitializeWorldTransform();
 
 	void Move();
 
 private: // メンバ変数
 	// モデルデータ
-	Model* model_ = nullptr;
+	std::vector<Model*> models_;
 
 	// ビュープロジェクション
 	ViewProjection* viewProjection_ = nullptr;
 
 	// ワールド変換データ
-	WorldTransform worldTransform_;
+	std::vector<WorldTransform*> worldTransforms_;
 
 	// 速度
 	Vector3 velocity_;
