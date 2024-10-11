@@ -11,11 +11,13 @@
 #include "memory"
 using namespace std;
 
-class Player;
-class Ground;
-class SkyDome;
-class FollowCamera;
-class DebugCamera;
+// 各クラスの前方宣言
+class Player;        // プレイヤー
+class Enemy;         // 敵
+class Ground;        // 地面
+class SkyDome;       // 天球
+class FollowCamera;  // レールカメラ
+class DebugCamera;   // デバッグカメラ
 
 /// <summary>
 /// ゲームシーン
@@ -49,9 +51,10 @@ public: // メンバ関数
 	void Draw();
 
 private:
-
 	void CreateModel();
 	void InitializeObject();
+
+	void UpdateObject();
 
 	void MoveDebugCamera();
 
@@ -75,19 +78,22 @@ private: // メンバ変数
 	unique_ptr<Model> modelFighterL_arm_ = nullptr;
 	unique_ptr<Model> modelFighterR_arm_ = nullptr;
 
+	unique_ptr<Model> modelEnemy_ = {nullptr};
 	unique_ptr<Model> modelGround_ = {nullptr};
 	unique_ptr<Model> modelSkydome_ = {nullptr};
 
 	// 自キャラ
 	unique_ptr<Player> player_ = nullptr;
+	// 敵
+	unique_ptr<Enemy> enemy_ = nullptr;
 	// 地面
 	unique_ptr<Ground> ground_ = nullptr;
 	// 天球
 	unique_ptr<SkyDome> skyDome_ = nullptr;
-	//レールカメラ
+	// レールカメラ
 	unique_ptr<FollowCamera> followCamera_ = nullptr;
 
-	//デバッグカメラ
+	// デバッグカメラ
 	bool isDebugCameraActive_ = false;
 	unique_ptr<DebugCamera> debugCamera_ = nullptr;
 };

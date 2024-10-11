@@ -13,7 +13,6 @@
 using namespace ImGui;
 #endif // _DEBUG
 
-
 void Player::Initialize(std::vector<Model*> model, ViewProjection* viewProjection) {
 
 	// 引数として受け取ったデータをメンバ変数に記録する
@@ -208,7 +207,7 @@ void Player::UpdateFloatingGimmick() {
 // 通常行動更新
 void Player::BehaviorRootUpdate() {
 
-	const float speed = 0.5f;
+	const float speed = 0.3f;
 
 	JoyStickMove(speed);
 	UpdateFloatingGimmick();
@@ -236,7 +235,7 @@ void Player::BehaviorRootUpdate() {
 // ダッシュ更新
 void Player::BehaviorDashUpdate() {
 
-	const float dashSpeed = 1.0f;
+	const float dashSpeed = 0.7f;
 	JoyStickMove(dashSpeed);
 
 	//ダッシュの時間<frame>
@@ -254,7 +253,7 @@ void Player::BehaviorJumpUpdate() {
 	// 移動
 	worldTransforms_[kBase]->translation_ += velocity_;
 	// 重力加速度
-	const float kGravityAcceleration = 0.05f;
+	const float kGravityAcceleration = 0.075f;
 	// 加速度ベクトル
 	Vector3 accelerationVector = {0, -kGravityAcceleration, 0};
 	// 加速する

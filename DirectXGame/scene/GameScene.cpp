@@ -4,6 +4,7 @@
 #include "AxisIndicator.h"
 
 #include "Player.h"
+#include "Enemy.h"
 #include "Ground.h"
 #include "SkyDome.h"
 #include "FollowCamera.h"
@@ -36,18 +37,7 @@ void GameScene::Initialize() {
 
 }
 
-void GameScene::Update() { 
-	
-	player_->Update(); 
-
-	ground_->Update();
-
-	skyDome_->Update();
-
-	followCamera_->Update();
-
-	MoveDebugCamera();
-}
+void GameScene::Update() { UpdateObject(); }
 
 void GameScene::Draw() {
 
@@ -75,12 +65,11 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	
-	player_->Draw();
 
-	ground_->Draw();
-
-	skyDome_->Draw();
+	player_->Draw();  // プレイヤー
+	enemy_->Draw();   // 敵
+	ground_->Draw();  // 地面
+	skyDome_->Draw(); // 天球
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -108,12 +97,14 @@ void GameScene::CreateModel() {
 	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
 
+	// 敵モデルデータ
+	modelEnemy_.reset(Model::CreateFromOBJ("needle_Body", true));
+
 	// 地面モデルデータ
 	modelGround_.reset(Model::CreateFromOBJ("ground", true));
 
 	// 天球モデルデータ
 	modelSkydome_.reset(Model::CreateFromOBJ("SkyDome", true));
-
 }
 
 void GameScene::InitializeObject() {
@@ -131,6 +122,9 @@ void GameScene::InitializeObject() {
 	player_ = make_unique<Player>();
 	player_->Initialize(playerParts, &viewProjection_);
 
+	enemy_ = make_unique<Enemy>();
+	enemy_->Initialize(modelEnemy_.get(), &viewProjection_);
+
 	followCamera_ = make_unique<FollowCamera>();
 	followCamera_->Initialize(&viewProjection_);
 	followCamera_->SetTarget(player_->GetWorldTransform()[0]);
@@ -145,6 +139,16 @@ void GameScene::InitializeObject() {
 	skyDome_ = make_unique<SkyDome>();
 	skyDome_->Initialize(modelSkydome_.get(), &viewProjection_);
 }
+
+///各オブジェクトの更新処理
+void GameScene::UpdateObject() {
+	player_->Update();       // プレイヤー
+	enemy_->Update();        // 敵
+	ground_->Update();       // 地面
+	skyDome_->Update();      // 天球
+	followCamera_->Update(); // レールカメラ
+	MoveDebugCamera();       // デバッグカメラ
+};
 
 void GameScene::MoveDebugCamera() {
 
