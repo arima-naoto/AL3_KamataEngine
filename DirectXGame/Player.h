@@ -14,7 +14,8 @@ enum Parts {
 	kBody,
 	kHead,
 	kLeft_arm,
-	kRight_arm
+	kRight_arm,
+	khammer,
 };
 
 /// <summary>
@@ -26,6 +27,7 @@ public:
 
 	enum class Behavior {
 		kRoot,
+		kAttack,
 		kDash,
 		kJump,
 	};
@@ -71,6 +73,9 @@ private:
 	/// 通常行動初期化
 	void BehaviorRootInitialize();
 
+	/// 攻撃行動初期化
+	void BehaviorAttackInitialize();
+
 	/// ダッシュ初期化
 	void BehaviorDashInitialize();
 
@@ -90,16 +95,19 @@ private:
 	/// 浮遊ギミック更新
 	void UpdateFloatingGimmick();
 
-	///通常行動更新
+	/// 通常行動更新
 	void BehaviorRootUpdate();
 
-	///ダッシュ更新
+	/// 攻撃行動更新
+	void BehaviorAttackUpdate();
+
+	/// ダッシュ更新
 	void BehaviorDashUpdate();	
 
-	///ジャンプ行動初期化
+	/// ジャンプ行動更新
 	void BehaviorJumpUpdate();
 
-	///ふるまい更新
+	/// ふるまい更新
 	void UpdateBehavior();
 
 #pragma endregion
@@ -139,5 +147,10 @@ private://メンバ変数
 
 	WorkDash workDash_;
 	float destinationAngleY = 1.0f;
+
+	bool isAttack = false;
+
+	static void (Player::*behaviorInitializeTable[])();
+	static void (Player::*behaviorUpdateTable[])();
 
 };

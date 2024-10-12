@@ -87,7 +87,7 @@ void Enemy::Move() {
 
 void Enemy::UpdateFloatingGimmick() {
 
-	const int32_t cycle = 90;
+	const int32_t cycle = 20;
 
 	// 1フレーム出のパラメータ加算値
 	const float step = pi_v<float> * 2.0f / cycle;
@@ -95,7 +95,7 @@ void Enemy::UpdateFloatingGimmick() {
 	floatingParameter_ += step;
 	// 2π超えたら0に戻す
 	floatingParameter_ = std::fmod(floatingParameter_, pi_v<float> * 2.0f);
-	const float amplitube = 0.2f;
+	const float amplitube = 0.5f;
 	// 浮遊を座標に反映
 	worldTransforms_[2]->translation_.z = std::sin(floatingParameter_) * amplitube;
 	worldTransforms_[3]->translation_.z = std::sin(floatingParameter_) * -amplitube;

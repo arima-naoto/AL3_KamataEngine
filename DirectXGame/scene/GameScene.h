@@ -78,6 +78,7 @@ private: // メンバ変数
 	unique_ptr<Model> modelFighterHead_ = nullptr;
 	unique_ptr<Model> modelFighterL_arm_ = nullptr;
 	unique_ptr<Model> modelFighterR_arm_ = nullptr;
+	unique_ptr<Model> modelhammer_ = nullptr;
 
 	unique_ptr<Model> modelEnemyBody_ = {nullptr};
 	unique_ptr<Model> modelEnemyL_spear_ = {nullptr};

@@ -6,6 +6,7 @@
 #include "GlobalVariables.h"
 
 #define M_PI 3.14f
+#define moveSpeed 0.3f;
 
 #include "cassert"
 #ifdef _DEBUG
@@ -47,6 +48,13 @@ void Player::Update()
 { 
 	InitializeBehavior();
 	UpdateBehavior();
+
+#ifdef _DEBUG
+	DragFloat3("player.translate", &worldTransforms_[kBase]->translation_.x, 0.01f);
+	DragFloat3("hammer.translate", &worldTransforms_[khammer]->translation_.x, 0.01f);
+	DragFloat3("hammer.rotation", &worldTransforms_[khammer]->rotation_.x, 0.01f);
+#endif // _DEBUG
+
 }
 
 void Player::Draw() { 
@@ -57,6 +65,9 @@ void Player::Draw() {
 	models_[kLeft_arm]->Draw(*worldTransforms_[kLeft_arm], *viewProjection_);   // 左腕
 	models_[kRight_arm]->Draw(*worldTransforms_[kRight_arm], *viewProjection_); // 右腕
 
+	
+	models_[khammer]->Draw(*worldTransforms_[khammer], *viewProjection_);
+	
 }
 
 void Player::SetViewProjection(const ViewProjection* viewProjection) { 
@@ -67,8 +78,8 @@ void Player::SetViewProjection(const ViewProjection* viewProjection) {
 
 // 各ワールドトランスフォームの初期化
 void Player::InitializeWorldTransform() {
-	for (int i = 0; i < 5; i++) {
-		worldTransforms_.resize(5);
+	for (int i = 0; i < 6; i++) {
+		worldTransforms_.resize(6);
 		WorldTransform* worldTransform = new WorldTransform();
 		worldTransform->Initialize();
 		worldTransforms_[i] = worldTransform;
@@ -88,13 +99,26 @@ void Player::InitializeWorldTransform() {
 	// 右腕の親子関係
 	worldTransforms_[kRight_arm]->parent_ = GetWorldTransform()[kBody];
 	worldTransforms_[kRight_arm]->translation_ = {0.527f, 1.262f, 0.0f}; // 座標設定
+
+	worldTransforms_[khammer]->parent_ = GetWorldTransform()[kBody];
+	worldTransforms_[khammer]->translation_.y = 1.37f;
+	worldTransforms_[khammer]->rotation_.x = 3;
+
 }
 
 // 浮遊ギミック初期化
 void Player::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
 
+
 // 通常行動初期化
 void Player::BehaviorRootInitialize() {}
+
+// 攻撃行動初期化
+void Player::BehaviorAttackInitialize() {
+	worldTransforms_[kBase]->translation_.y = 0;
+	worldTransforms_[kLeft_arm]->rotation_.x = 0;
+	worldTransforms_[kRight_arm]->rotation_.x = 0;
+}
 
 // ダッシュ初期化
 void Player::BehaviorDashInitialize() {
@@ -123,25 +147,10 @@ void Player::InitializeBehavior() {
 	 if (behaviorRequest_) {
 		// ふるまいを変更する
 		behavior_ = behaviorRequest_.value();
-		switch (behavior_) {
-		case Player::Behavior::kRoot:
 
-			//通常行動初期化
-			BehaviorRootInitialize();
-			break;
-		case Player::Behavior::kDash:
-
-			//ダッシュ初期化
-			BehaviorDashInitialize();
-			break;
-
-		case Player::Behavior::kJump:
-
-			//ジャンプ初期化
-			BehaviorJumpInitialize();
-			break;
-
-		}
+		// ふるまい初期化をメンバ関数ポインタで呼び出す
+		(this->*behaviorInitializeTable[static_cast<size_t>(behavior_)])();
+	
 		behaviorRequest_ = std::nullopt;
 	}
 }
@@ -218,6 +227,12 @@ void Player::BehaviorRootUpdate() {
 		return;
 	}
 
+	//攻撃ボタンを押したら
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X) {
+		//攻撃リクエスト
+		behaviorRequest_ = Behavior::kAttack;
+	}
+
 	//ダッシュボタンを押したら
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
 		// ダッシュリクエスト
@@ -229,6 +244,62 @@ void Player::BehaviorRootUpdate() {
 		// ジャンプリクエスト
 		behaviorRequest_ = Behavior::kJump;
 	}
+
+}
+
+// 攻撃行動更新
+void Player::BehaviorAttackUpdate() {
+	static int32_t shakeUpTimer = 0;
+	
+	static int32_t attackTimer = 0;
+
+	if (!isAttack) {
+		if (shakeUpTimer < 15) {
+			// 振りかぶり行動
+			worldTransforms_[kLeft_arm]->rotation_.x -= 0.24f;
+			worldTransforms_[kRight_arm]->rotation_.x -= 0.24f;
+			worldTransforms_[khammer]->rotation_.x -= 0.24f;
+		}
+
+		// 振りかぶりタイマーを進め、指定のタイマーまで到達していたら
+		if (++shakeUpTimer >= 30) {
+			shakeUpTimer = 0;
+			isAttack = true; // 攻撃フラグを立てる
+		}
+	} else {
+
+		if (attackTimer < 10) {
+
+			Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
+			worldTransforms_[kBase]->translation_ += forward * moveSpeed;
+
+			//振り下ろす処理
+			worldTransforms_[kLeft_arm]->rotation_.x += 0.2f;
+			worldTransforms_[kRight_arm]->rotation_.x += 0.2f;
+			worldTransforms_[khammer]->rotation_.x += 0.218f;
+		}
+
+	
+
+		//攻撃フェーズの処理
+		if (++attackTimer >= 30) {
+			attackTimer = 0;
+			isAttack = false;
+			worldTransforms_[khammer]->rotation_.x = 3;
+			//攻撃リクエストに、通常行動をリクエスト
+			behaviorRequest_ = Behavior::kRoot;
+		}
+	}
+
+
+#ifdef _DEBUG
+
+	DragInt("breakTimer", &shakeUpTimer, 0.01f);
+	DragInt("attackTimer", &attackTimer, 0.01f);
+	Checkbox("isAttack", &isAttack);
+
+
+#endif // _DEBUG
 
 }
 
@@ -270,25 +341,8 @@ void Player::BehaviorJumpUpdate() {
 // ふるまいの更新処理
 void Player::UpdateBehavior() {
 
-	switch (behavior_) {
-	case Player::Behavior::kRoot:
-
-		//通常行動更新
-		BehaviorRootUpdate();
-		break;
-	case Player::Behavior::kDash:
-
-		//ダッシュ更新
-		BehaviorDashUpdate();
-		break;
-
-	case Player::Behavior::kJump:
-
-		//ジャンプ更新
-		BehaviorJumpUpdate();
-		break;
-
-	}
+	//ふるまい更新をメンバ関数ポインタで呼び出す
+	(this->*behaviorUpdateTable[static_cast<size_t>(behavior_)])();
 
 	// 行列を更新する
 	for (auto worldTransform : worldTransforms_) {
@@ -326,3 +380,17 @@ void Player::ApplyGlobalVariables() {
 	armAngle_ = globalVariables->GetfloatValue(groupName, "idelArmAngleMax");
 
 }
+
+void (Player::*Player::behaviorInitializeTable[])(){ 
+	&Player::BehaviorRootInitialize,
+	&Player::BehaviorAttackInitialize,
+	&Player::BehaviorDashInitialize,
+	&Player::BehaviorJumpInitialize
+};
+
+void (Player::*Player::behaviorUpdateTable[])(){ 
+	&Player::BehaviorRootUpdate,
+	&Player::BehaviorAttackUpdate,
+	&Player::BehaviorDashUpdate,
+	&Player::BehaviorJumpUpdate
+};

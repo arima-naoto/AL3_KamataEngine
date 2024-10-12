@@ -96,6 +96,7 @@ void GameScene::CreateModel() {
 	modelFighterHead_.reset(Model::CreateFromOBJ("float_Head", true));
 	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
+	modelhammer_.reset(Model::CreateFromOBJ("hammer", true));
 
 	// 敵モデルデータ
 	modelEnemyBody_.reset(Model::CreateFromOBJ("needle_Body", true));
@@ -117,7 +118,8 @@ void GameScene::InitializeObject() {
 	    modelFighterBody_.get(),  // 体
 	    modelFighterHead_.get(),  // 頭
 	    modelFighterL_arm_.get(), // 左腕
-	    modelFighterR_arm_.get()  // 右腕
+	    modelFighterR_arm_.get(), // 右腕
+	    modelhammer_.get()
 	};
 
 	// 自キャラの生成
