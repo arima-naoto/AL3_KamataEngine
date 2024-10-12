@@ -29,7 +29,7 @@ void Enemy::Update() {
 
 	//向いている方向に移動
 	Enemy::Move();
-
+	UpdateFloatingGimmick();
 	DragFloat3("L_Spear.translate", &worldTransforms_[2]->translation_.x, 0.01f);
 
 	//行列の更新
@@ -70,6 +70,8 @@ void Enemy::InitializeWorldTransform() {
 
 }
 
+void Enemy::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
+
 void Enemy::Move() {
 
 	worldTransforms_[0]->rotation_.y += 1.0f / 90.0f;
@@ -80,5 +82,24 @@ void Enemy::Move() {
 	velocity_ = Rendering::TransformNormal(velocity_, worldTransforms_[0]->matWorld_);
 
 	worldTransforms_[0]->translation_ += velocity_;
+
+}
+
+void Enemy::UpdateFloatingGimmick() {
+
+	const int32_t cycle = 90;
+
+	// 1フレーム出のパラメータ加算値
+	const float step = pi_v<float> * 2.0f / cycle;
+	// パラメータを1ステップ分加算
+	floatingParameter_ += step;
+	// 2π超えたら0に戻す
+	floatingParameter_ = std::fmod(floatingParameter_, pi_v<float> * 2.0f);
+	const float amplitube = 0.2f;
+	// 浮遊を座標に反映
+	worldTransforms_[2]->translation_.z = std::sin(floatingParameter_) * amplitube;
+	worldTransforms_[3]->translation_.z = std::sin(floatingParameter_) * -amplitube;
+	
+
 
 }

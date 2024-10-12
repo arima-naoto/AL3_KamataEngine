@@ -27,7 +27,11 @@ private:
 
 	void InitializeWorldTransform();
 
+	void InitializeFloatingGimmick();
+
 	void Move();
+
+	void UpdateFloatingGimmick();
 
 private: // メンバ変数
 	// モデルデータ
@@ -41,5 +45,7 @@ private: // メンバ変数
 
 	// 速度
 	Vector3 velocity_;
+
+	float floatingParameter_;
 
 };
