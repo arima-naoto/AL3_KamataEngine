@@ -6,7 +6,6 @@
 #include "GlobalVariables.h"
 
 #define M_PI 3.14f
-#define moveSpeed 0.3f;
 
 #include "cassert"
 #ifdef _DEBUG
@@ -53,6 +52,10 @@ void Player::Update()
 	DragFloat3("player.translate", &worldTransforms_[kBase]->translation_.x, 0.01f);
 	DragFloat3("hammer.translate", &worldTransforms_[khammer]->translation_.x, 0.01f);
 	DragFloat3("hammer.rotation", &worldTransforms_[khammer]->rotation_.x, 0.01f);
+	DragInt("anticipation", &anticpationTime, 0.01f);
+	DragInt("charge", &chargeTime, 0.01f);
+	DragInt("swing", &swingTime, 0.01f);
+	DragInt("recovery", &recoveryTime, 0.01f);
 #endif // _DEBUG
 
 }
@@ -118,6 +121,11 @@ void Player::BehaviorAttackInitialize() {
 	worldTransforms_[kBase]->translation_.y = 0;
 	worldTransforms_[kLeft_arm]->rotation_.x = 0;
 	worldTransforms_[kRight_arm]->rotation_.x = 0;
+
+	anticpationTime = 0;
+	chargeTime = 0;
+	swingTime = 0;
+	recoveryTime = 0;
 }
 
 // ダッシュ初期化
@@ -249,58 +257,88 @@ void Player::BehaviorRootUpdate() {
 
 // 攻撃行動更新
 void Player::BehaviorAttackUpdate() {
-	static int32_t shakeUpTimer = 0;
+	//	static int32_t shakeUpTimer = 0;
+	//
+	//	static int32_t attackTimer = 0;
+	//
+	//	if (!isAttack) {
+	//		if (shakeUpTimer < 15) {
+	//			// 振りかぶり行動
+	//			worldTransforms_[kLeft_arm]->rotation_.x -= 0.24f;
+	//			worldTransforms_[kRight_arm]->rotation_.x -= 0.24f;
+	//			worldTransforms_[khammer]->rotation_.x -= 0.24f;
+	//		}
+	//
+	//		// 振りかぶりタイマーを進め、指定のタイマーまで到達していたら
+	//		if (++shakeUpTimer >= 30) {
+	//			shakeUpTimer = 0;
+	//			isAttack = true; // 攻撃フラグを立てる
+	//		}
+	//	} else {
+	//
+	//		if (attackTimer < 10) {
+	//
+	//			Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
+	//			worldTransforms_[kBase]->translation_ += forward * moveSpeed;
+	//
+	//			
+	//		}
+	//
+	//
+	//
+	//		//攻撃フェーズの処理
+	//		if (++attackTimer >= 30) {
+	//			attackTimer = 0;
+	//			isAttack = false;
+	//		
+	//			//攻撃リクエストに、通常行動をリクエスト
+	//			behaviorRequest_ = Behavior::kRoot;
+	//		}
+	//	}
+	//
+	//
+	// #ifdef _DEBUG
+	//
+	//	DragInt("breakTimer", &shakeUpTimer, 0.01f);
+	//	DragInt("attackTimer", &attackTimer, 0.01f);
+	//	Checkbox("isAttack", &isAttack);
+	//
+	//
+	// #endif // _DEBUG
+
 	
-	static int32_t attackTimer = 0;
+	//if (chargeTime < 10) {
+	//	Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
+	//	worldTransforms_[kBase]->translation_ += forward * chargeSpeed;
+	//}
 
-	if (!isAttack) {
-		if (shakeUpTimer < 15) {
-			// 振りかぶり行動
-			worldTransforms_[kLeft_arm]->rotation_.x -= 0.24f;
-			worldTransforms_[kRight_arm]->rotation_.x -= 0.24f;
-			worldTransforms_[khammer]->rotation_.x -= 0.24f;
-		}
 
-		// 振りかぶりタイマーを進め、指定のタイマーまで到達していたら
-		if (++shakeUpTimer >= 30) {
-			shakeUpTimer = 0;
-			isAttack = true; // 攻撃フラグを立てる
-		}
-	} else {
-
-		if (attackTimer < 10) {
-
+	if (++anticpationTime > 20) {
+		chargeTime++;
+		if (chargeTime > 5) {
+			swingTime++;
+			if (swingTime > 20) {
+				recoveryTime++;
+				if (recoveryTime > 10) {
+					worldTransforms_[khammer]->rotation_.x = 3;
+					behaviorRequest_ = Player::Behavior::kRoot;
+				}
+			} else if (swingTime < 10) {
+				// 振り下ろす処理
+				worldTransforms_[kLeft_arm]->rotation_.x += swingSpeed;
+			    worldTransforms_[kRight_arm]->rotation_.x += swingSpeed;
+				worldTransforms_[khammer]->rotation_.x += 0.2422f;
+			} 
+		} else if (chargeSpeed < 2.5f) {
+			
 			Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-			worldTransforms_[kBase]->translation_ += forward * moveSpeed;
-
-			//振り下ろす処理
-			worldTransforms_[kLeft_arm]->rotation_.x += 0.2f;
-			worldTransforms_[kRight_arm]->rotation_.x += 0.2f;
-			worldTransforms_[khammer]->rotation_.x += 0.218f;
+			worldTransforms_[kBase]->translation_ += forward * chargeSpeed;
 		}
-
-	
-
-		//攻撃フェーズの処理
-		if (++attackTimer >= 30) {
-			attackTimer = 0;
-			isAttack = false;
-			worldTransforms_[khammer]->rotation_.x = 3;
-			//攻撃リクエストに、通常行動をリクエスト
-			behaviorRequest_ = Behavior::kRoot;
-		}
+	} else if (anticpationTime < 10) {
+		worldTransforms_[kLeft_arm]->rotation_.x -= anticipationSpeed;
+		worldTransforms_[kRight_arm]->rotation_.x -= anticipationSpeed;
+		worldTransforms_[khammer]->rotation_.x -= anticipationSpeed;
 	}
-
-
-#ifdef _DEBUG
-
-	DragInt("breakTimer", &shakeUpTimer, 0.01f);
-	DragInt("attackTimer", &attackTimer, 0.01f);
-	Checkbox("isAttack", &isAttack);
-
-
-#endif // _DEBUG
-
 }
 
 // ダッシュ更新
