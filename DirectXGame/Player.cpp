@@ -52,10 +52,7 @@ void Player::Update()
 	DragFloat3("player.translate", &worldTransforms_[kBase]->translation_.x, 0.01f);
 	DragFloat3("hammer.translate", &worldTransforms_[khammer]->translation_.x, 0.01f);
 	DragFloat3("hammer.rotation", &worldTransforms_[khammer]->rotation_.x, 0.01f);
-	DragInt("anticipation", &anticpationTime, 0.01f);
-	DragInt("charge", &chargeTime, 0.01f);
-	DragInt("swing", &swingTime, 0.01f);
-	DragInt("recovery", &recoveryTime, 0.01f);
+	DragInt("parameter", &workAttack_.attackParameter_, 0.01f);
 #endif // _DEBUG
 
 }
@@ -122,10 +119,7 @@ void Player::BehaviorAttackInitialize() {
 	worldTransforms_[kLeft_arm]->rotation_.x = 0;
 	worldTransforms_[kRight_arm]->rotation_.x = 0;
 
-	anticpationTime = 0;
-	chargeTime = 0;
-	swingTime = 0;
-	recoveryTime = 0;
+	workAttack_.attackParameter_ = 0;
 }
 
 // ダッシュ初期化
@@ -257,88 +251,36 @@ void Player::BehaviorRootUpdate() {
 
 // 攻撃行動更新
 void Player::BehaviorAttackUpdate() {
-	//	static int32_t shakeUpTimer = 0;
-	//
-	//	static int32_t attackTimer = 0;
-	//
-	//	if (!isAttack) {
-	//		if (shakeUpTimer < 15) {
-	//			// 振りかぶり行動
-	//			worldTransforms_[kLeft_arm]->rotation_.x -= 0.24f;
-	//			worldTransforms_[kRight_arm]->rotation_.x -= 0.24f;
-	//			worldTransforms_[khammer]->rotation_.x -= 0.24f;
-	//		}
-	//
-	//		// 振りかぶりタイマーを進め、指定のタイマーまで到達していたら
-	//		if (++shakeUpTimer >= 30) {
-	//			shakeUpTimer = 0;
-	//			isAttack = true; // 攻撃フラグを立てる
-	//		}
-	//	} else {
-	//
-	//		if (attackTimer < 10) {
-	//
-	//			Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-	//			worldTransforms_[kBase]->translation_ += forward * moveSpeed;
-	//
-	//			
-	//		}
-	//
-	//
-	//
-	//		//攻撃フェーズの処理
-	//		if (++attackTimer >= 30) {
-	//			attackTimer = 0;
-	//			isAttack = false;
-	//		
-	//			//攻撃リクエストに、通常行動をリクエスト
-	//			behaviorRequest_ = Behavior::kRoot;
-	//		}
-	//	}
-	//
-	//
-	// #ifdef _DEBUG
-	//
-	//	DragInt("breakTimer", &shakeUpTimer, 0.01f);
-	//	DragInt("attackTimer", &attackTimer, 0.01f);
-	//	Checkbox("isAttack", &isAttack);
-	//
-	//
-	// #endif // _DEBUG
 
-	
-	//if (chargeTime < 10) {
-	//	Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-	//	worldTransforms_[kBase]->translation_ += forward * chargeSpeed;
-	//}
+#pragma region プレイヤーの攻撃処理
 
+	workAttack_.attackParameter_++;
 
-	if (++anticpationTime > 20) {
-		chargeTime++;
-		if (chargeTime > 5) {
-			swingTime++;
-			if (swingTime > 20) {
-				recoveryTime++;
-				if (recoveryTime > 10) {
-					worldTransforms_[khammer]->rotation_.x = 3;
-					behaviorRequest_ = Player::Behavior::kRoot;
-				}
-			} else if (swingTime < 10) {
-				// 振り下ろす処理
-				worldTransforms_[kLeft_arm]->rotation_.x += swingSpeed;
-			    worldTransforms_[kRight_arm]->rotation_.x += swingSpeed;
-				worldTransforms_[khammer]->rotation_.x += 0.2422f;
-			} 
-		} else if (chargeSpeed < 2.5f) {
-			
-			Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-			worldTransforms_[kBase]->translation_ += forward * chargeSpeed;
-		}
-	} else if (anticpationTime < 10) {
-		worldTransforms_[kLeft_arm]->rotation_.x -= anticipationSpeed;
-		worldTransforms_[kRight_arm]->rotation_.x -= anticipationSpeed;
-		worldTransforms_[khammer]->rotation_.x -= anticipationSpeed;
+	if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 10) {
+		worldTransforms_[kLeft_arm]->rotation_.x -= 0.4f;
+		worldTransforms_[kRight_arm]->rotation_.x -= 0.4f;
+		worldTransforms_[khammer]->rotation_.x -= 0.4f;
 	}
+
+	if (workAttack_.attackParameter_ > 15 && workAttack_.attackParameter_ < 25) {
+
+		Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
+		worldTransforms_[kBase]->translation_ += forward * 0.2f;
+	}
+	
+	if (workAttack_.attackParameter_ > 30 && workAttack_.attackParameter_ < 40) {
+		worldTransforms_[kLeft_arm]->rotation_.x += 0.23f;
+		worldTransforms_[kRight_arm]->rotation_.x += 0.23f;
+		worldTransforms_[khammer]->rotation_.x += 0.2422f;
+	} 
+
+	if (workAttack_.attackParameter_ > 60) {
+		worldTransforms_[khammer]->rotation_.x = 3;
+		behaviorRequest_ = Behavior::kRoot;
+	}
+		
+#pragma endregion
+
 }
 
 // ダッシュ更新

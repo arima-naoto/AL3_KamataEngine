@@ -32,6 +32,10 @@ public:
 		kJump,
 	};
 
+	struct WorkAttack {
+		int32_t attackParameter_;
+	};
+
 	//ダッシュ用ワーク
 	struct WorkDash {
 		// ダッシュ用の媒介変数
@@ -145,25 +149,10 @@ private://メンバ変数
 	Behavior behavior_ = Behavior::kRoot;
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
+	WorkAttack workAttack_;
+
 	WorkDash workDash_;
 	float destinationAngleY = 1.0f;
-
-	//bool isAttack = false;
-
-	// 振りかぶり時間
-	int32_t anticpationTime;
-	// 溜め時間
-	int32_t chargeTime;
-	// 攻撃振りの時間
-	int32_t swingTime;
-	// 硬直時間
-	int32_t recoveryTime;
-	// 振りかぶりの移動速さ
-	float anticipationSpeed = 0.4f;
-	// ための移動速さ
-	float chargeSpeed = 0.3f;
-	// 攻撃振りの移動速さ
-	float swingSpeed = 0.23f;
 
 	static void (Player::*behaviorInitializeTable[])();
 	static void (Player::*behaviorUpdateTable[])();
