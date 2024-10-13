@@ -50,12 +50,6 @@ void Player::Update()
 
 #ifdef _DEBUG
 	DragFloat3("player.translate", &worldTransforms_[kBase]->translation_.x, 0.01f);
-	DragFloat3("hammer.translate", &worldTransforms_[khammer]->translation_.x, 0.01f);
-	DragFloat3("hammer.rotation", &worldTransforms_[khammer]->rotation_.x, 0.01f);
-	DragInt("anticipation", &anticpationTime, 0.01f);
-	DragInt("charge", &chargeTime, 0.01f);
-	DragInt("swing", &swingTime, 0.01f);
-	DragInt("recovery", &recoveryTime, 0.01f);
 #endif // _DEBUG
 
 }
@@ -67,9 +61,6 @@ void Player::Draw() {
 	models_[kHead]->Draw(*worldTransforms_[kHead], *viewProjection_);           // 頭
 	models_[kLeft_arm]->Draw(*worldTransforms_[kLeft_arm], *viewProjection_);   // 左腕
 	models_[kRight_arm]->Draw(*worldTransforms_[kRight_arm], *viewProjection_); // 右腕
-
-	
-	models_[khammer]->Draw(*worldTransforms_[khammer], *viewProjection_);
 	
 }
 
@@ -81,8 +72,8 @@ void Player::SetViewProjection(const ViewProjection* viewProjection) {
 
 // 各ワールドトランスフォームの初期化
 void Player::InitializeWorldTransform() {
-	for (int i = 0; i < 6; i++) {
-		worldTransforms_.resize(6);
+	for (int i = 0; i < 5; i++) {
+		worldTransforms_.resize(5);
 		WorldTransform* worldTransform = new WorldTransform();
 		worldTransform->Initialize();
 		worldTransforms_[i] = worldTransform;
@@ -102,11 +93,6 @@ void Player::InitializeWorldTransform() {
 	// 右腕の親子関係
 	worldTransforms_[kRight_arm]->parent_ = GetWorldTransform()[kBody];
 	worldTransforms_[kRight_arm]->translation_ = {0.527f, 1.262f, 0.0f}; // 座標設定
-
-	worldTransforms_[khammer]->parent_ = GetWorldTransform()[kBody];
-	worldTransforms_[khammer]->translation_.y = 1.37f;
-	worldTransforms_[khammer]->rotation_.x = 3;
-
 }
 
 // 浮遊ギミック初期化
@@ -115,18 +101,6 @@ void Player::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
 
 // 通常行動初期化
 void Player::BehaviorRootInitialize() {}
-
-// 攻撃行動初期化
-void Player::BehaviorAttackInitialize() {
-	worldTransforms_[kBase]->translation_.y = 0;
-	worldTransforms_[kLeft_arm]->rotation_.x = 0;
-	worldTransforms_[kRight_arm]->rotation_.x = 0;
-
-	anticpationTime = 0;
-	chargeTime = 0;
-	swingTime = 0;
-	recoveryTime = 0;
-}
 
 // ダッシュ初期化
 void Player::BehaviorDashInitialize() {
@@ -235,12 +209,6 @@ void Player::BehaviorRootUpdate() {
 		return;
 	}
 
-	//攻撃ボタンを押したら
-	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X) {
-		//攻撃リクエスト
-		behaviorRequest_ = Behavior::kAttack;
-	}
-
 	//ダッシュボタンを押したら
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
 		// ダッシュリクエスト
@@ -253,92 +221,6 @@ void Player::BehaviorRootUpdate() {
 		behaviorRequest_ = Behavior::kJump;
 	}
 
-}
-
-// 攻撃行動更新
-void Player::BehaviorAttackUpdate() {
-	//	static int32_t shakeUpTimer = 0;
-	//
-	//	static int32_t attackTimer = 0;
-	//
-	//	if (!isAttack) {
-	//		if (shakeUpTimer < 15) {
-	//			// 振りかぶり行動
-	//			worldTransforms_[kLeft_arm]->rotation_.x -= 0.24f;
-	//			worldTransforms_[kRight_arm]->rotation_.x -= 0.24f;
-	//			worldTransforms_[khammer]->rotation_.x -= 0.24f;
-	//		}
-	//
-	//		// 振りかぶりタイマーを進め、指定のタイマーまで到達していたら
-	//		if (++shakeUpTimer >= 30) {
-	//			shakeUpTimer = 0;
-	//			isAttack = true; // 攻撃フラグを立てる
-	//		}
-	//	} else {
-	//
-	//		if (attackTimer < 10) {
-	//
-	//			Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-	//			worldTransforms_[kBase]->translation_ += forward * moveSpeed;
-	//
-	//			
-	//		}
-	//
-	//
-	//
-	//		//攻撃フェーズの処理
-	//		if (++attackTimer >= 30) {
-	//			attackTimer = 0;
-	//			isAttack = false;
-	//		
-	//			//攻撃リクエストに、通常行動をリクエスト
-	//			behaviorRequest_ = Behavior::kRoot;
-	//		}
-	//	}
-	//
-	//
-	// #ifdef _DEBUG
-	//
-	//	DragInt("breakTimer", &shakeUpTimer, 0.01f);
-	//	DragInt("attackTimer", &attackTimer, 0.01f);
-	//	Checkbox("isAttack", &isAttack);
-	//
-	//
-	// #endif // _DEBUG
-
-	
-	//if (chargeTime < 10) {
-	//	Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-	//	worldTransforms_[kBase]->translation_ += forward * chargeSpeed;
-	//}
-
-
-	if (++anticpationTime > 20) {
-		chargeTime++;
-		if (chargeTime > 5) {
-			swingTime++;
-			if (swingTime > 20) {
-				recoveryTime++;
-				if (recoveryTime > 10) {
-					worldTransforms_[khammer]->rotation_.x = 3;
-					behaviorRequest_ = Player::Behavior::kRoot;
-				}
-			} else if (swingTime < 10) {
-				// 振り下ろす処理
-				worldTransforms_[kLeft_arm]->rotation_.x += swingSpeed;
-			    worldTransforms_[kRight_arm]->rotation_.x += swingSpeed;
-				worldTransforms_[khammer]->rotation_.x += 0.2422f;
-			} 
-		} else if (chargeSpeed < 2.5f) {
-			
-			Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-			worldTransforms_[kBase]->translation_ += forward * chargeSpeed;
-		}
-	} else if (anticpationTime < 10) {
-		worldTransforms_[kLeft_arm]->rotation_.x -= anticipationSpeed;
-		worldTransforms_[kRight_arm]->rotation_.x -= anticipationSpeed;
-		worldTransforms_[khammer]->rotation_.x -= anticipationSpeed;
-	}
 }
 
 // ダッシュ更新
@@ -421,14 +303,12 @@ void Player::ApplyGlobalVariables() {
 
 void (Player::*Player::behaviorInitializeTable[])(){ 
 	&Player::BehaviorRootInitialize,
-	&Player::BehaviorAttackInitialize,
 	&Player::BehaviorDashInitialize,
 	&Player::BehaviorJumpInitialize
 };
 
 void (Player::*Player::behaviorUpdateTable[])(){ 
 	&Player::BehaviorRootUpdate,
-	&Player::BehaviorAttackUpdate,
 	&Player::BehaviorDashUpdate,
 	&Player::BehaviorJumpUpdate
 };
