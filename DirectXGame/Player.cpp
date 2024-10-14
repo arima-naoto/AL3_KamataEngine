@@ -116,8 +116,10 @@ void Player::BehaviorRootInitialize() {}
 // 攻撃行動初期化
 void Player::BehaviorAttackInitialize() {
 	worldTransforms_[kBase]->translation_.y = 0;
-	worldTransforms_[kLeft_arm]->rotation_.x = 0;
-	worldTransforms_[kRight_arm]->rotation_.x = 0;
+	worldTransforms_[kLeft_arm]->rotation_.x = -1.53f;
+	worldTransforms_[kRight_arm]->rotation_.x = -1.53f;
+	worldTransforms_[khammer]->rotation_.x = 3;
+	
 
 	workAttack_.attackParameter_ = 0;
 }
@@ -256,28 +258,47 @@ void Player::BehaviorAttackUpdate() {
 
 	workAttack_.attackParameter_++;
 
-	if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 10) {
-		worldTransforms_[kLeft_arm]->rotation_.x -= 0.4f;
-		worldTransforms_[kRight_arm]->rotation_.x -= 0.4f;
-		worldTransforms_[khammer]->rotation_.x -= 0.4f;
+	if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 55) {
+		worldTransforms_[kBase]->rotation_.y -= 0.15f;
+		worldTransforms_[khammer]->rotation_.x = 1.58f;
 	}
-
-	if (workAttack_.attackParameter_ > 15 && workAttack_.attackParameter_ < 25) {
-
-		Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-		worldTransforms_[kBase]->translation_ += forward * 0.2f;
-	}
-	
-	if (workAttack_.attackParameter_ > 30 && workAttack_.attackParameter_ < 40) {
-		worldTransforms_[kLeft_arm]->rotation_.x += 0.23f;
-		worldTransforms_[kRight_arm]->rotation_.x += 0.23f;
-		worldTransforms_[khammer]->rotation_.x += 0.2422f;
-	} 
 
 	if (workAttack_.attackParameter_ > 60) {
 		worldTransforms_[khammer]->rotation_.x = 3;
 		behaviorRequest_ = Behavior::kRoot;
 	}
+
+#pragma region ホームラン処理
+
+	/*worldTransforms_[khammer]->rotation_ = {0.0f, -1.58f, 4.72f};
+	if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 15) {
+		worldTransforms_[kBase]->rotation_.y += 0.15f;
+	}*/
+
+#pragma endregion
+
+
+#pragma region 振りかぶり処理
+
+	/*if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 10) {
+	    worldTransforms_[kLeft_arm]->rotation_.x -= 0.4f;
+	    worldTransforms_[kRight_arm]->rotation_.x -= 0.4f;
+	    worldTransforms_[khammer]->rotation_.x -= 0.4f;
+	}
+
+	if (workAttack_.attackParameter_ > 15 && workAttack_.attackParameter_ < 25) {
+
+	    Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
+	    worldTransforms_[kBase]->translation_ += forward * 0.2f;
+	}
+
+	if (workAttack_.attackParameter_ > 30 && workAttack_.attackParameter_ < 40) {
+	    worldTransforms_[kLeft_arm]->rotation_.x += 0.23f;
+	    worldTransforms_[kRight_arm]->rotation_.x += 0.23f;
+	    worldTransforms_[khammer]->rotation_.x += 0.2422f;
+	} */
+
+#pragma endregion
 		
 #pragma endregion
 
