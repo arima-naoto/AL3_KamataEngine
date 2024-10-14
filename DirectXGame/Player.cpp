@@ -285,6 +285,12 @@ void Player::BehaviorAttackUpdate() {
 				workAttack_.comboNext = true;
 				workAttack_.attackParameter_ = 0;
 				workAttack_.comboIndex += 1;
+
+				if (workAttack_.comboIndex == 1) {
+					worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
+					worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
+					worldTransforms_[khammer]->rotation_ = {3.0f, 0.0f, 0.0f};
+				}
 			}
 		}
 	}
@@ -294,22 +300,19 @@ void Player::BehaviorAttackUpdate() {
 #pragma region コンボ切り替えまたは攻撃終了
 
 	//予備動作の時間
-	static int32_t anticipationTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime;
-	static int32_t chargeTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
-	static int32_t swingTime = kConstAttacks_[workAttack_.comboIndex].swingTime;
-	static int32_t recoveryTime = kConstAttacks_[workAttack_.comboIndex].recoveryTime;
 
-	static int32_t TotalTime = anticipationTime + chargeTime + swingTime + recoveryTime;
+	int32_t anticipationTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime;
+	int32_t chargeTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
+	int32_t swingTime = kConstAttacks_[workAttack_.comboIndex].swingTime;
+	int32_t recoveryTime = kConstAttacks_[workAttack_.comboIndex].recoveryTime;
+
+	int32_t TotalTime = anticipationTime + chargeTime + swingTime + recoveryTime;
 
 	DragInt("anticipation", &anticipationTime, 0.01f);
-	DragInt("charge", &chargeTime, 0.01f);
-	DragInt("swing", &swingTime, 0.01f);
-	DragInt("recovery", &recoveryTime, 0.01f);
-	DragInt("Total", &TotalTime, 0.01f);
-	Checkbox("isCombo", &workAttack_.comboNext);
 
 	//既定の時間経過で通常行動に戻る
 	if (++workAttack_.attackParameter_ >= TotalTime) {
+
 		//コンボ継続なら次のコンボに進む
 		if (workAttack_.comboNext) {
 			//コンボ継続フラグをリセット
@@ -325,10 +328,7 @@ void Player::BehaviorAttackUpdate() {
 		}
 		//コンボ継続出ないなら攻撃を終了して通常行動に戻る
 		else {
-			worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
-			worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
-
-			worldTransforms_[khammer]->rotation_ = {3.0f, 0.0f, 0.0f};
+			worldTransforms_[khammer]->rotation_.x = 3;
 			behaviorRequest_ = Behavior::kRoot;
 		}
 	}
@@ -383,26 +383,14 @@ void Player::BehaviorAttackUpdate() {
 		worldTransforms_[kRight_arm]->rotation_.x = -1.53f;
 		worldTransforms_[khammer]->rotation_ = {0.0f, -1.58f, 4.72f};
 		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 15) {
-			worldTransforms_[kBase]->rotation_.y += 0.15f;
+			worldTransforms_[kBase]->rotation_.y += kConstAttacks_[2].swingSpeed;
 		}
 
 		break;
 	}
 
 #pragma endregion 
-
-
-#pragma region プレイヤーの攻撃処理
-
-#pragma region ホームラン処理
-
-	
-
-#pragma endregion
-		
-#pragma endregion
-
-}
+};
 
 // ダッシュ更新
 void Player::BehaviorDashUpdate() {

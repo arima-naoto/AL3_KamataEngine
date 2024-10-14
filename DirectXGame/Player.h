@@ -43,7 +43,7 @@ public:
 	};
 		 
 	struct WorkAttack {
-		int32_t attackParameter_;
+		int32_t attackParameter_ = 0;
 		int32_t comboIndex = 0;
 		int32_t inComboPhase = 0;
 		bool comboNext = false;
