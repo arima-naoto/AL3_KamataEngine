@@ -13,6 +13,18 @@
 using namespace ImGui;
 #endif // _DEBUG
 
+//コンボ定数表
+const std::array < Player::ConstAttack, Player::ComboNum>
+Player::kConstAttacks_ = {
+	{
+		//振りかぶり、攻撃前硬直,攻撃振り時間、硬直、各フェーズの移動速さ
+         {0, 0, 60, 0, 0.0f, 0.0f, 0.4f},
+         {15,15,15, 10,0.4f, 0.2f, 0.23f},
+		 {0, 0, 20, 0, 0.0f, 0.0f, 0.15f}
+    }
+};
+
+//初期化
 void Player::Initialize(std::vector<Model*> model, ViewProjection* viewProjection) {
 
 	// 引数として受け取ったデータをメンバ変数に記録する
@@ -43,6 +55,7 @@ void Player::Initialize(std::vector<Model*> model, ViewProjection* viewProjectio
 
 }
 
+//更新
 void Player::Update() 
 { 
 	InitializeBehavior();
@@ -53,10 +66,12 @@ void Player::Update()
 	DragFloat3("hammer.translate", &worldTransforms_[khammer]->translation_.x, 0.01f);
 	DragFloat3("hammer.rotation", &worldTransforms_[khammer]->rotation_.x, 0.01f);
 	DragInt("parameter", &workAttack_.attackParameter_, 0.01f);
+	DragInt("combo", &workAttack_.comboIndex, 0.01f);
 #endif // _DEBUG
 
 }
 
+//描画
 void Player::Draw() { 
 
 	// 3Dモデルを描画
@@ -70,6 +85,7 @@ void Player::Draw() {
 	
 }
 
+//ビュープロジェクションのsetter
 void Player::SetViewProjection(const ViewProjection* viewProjection) { 
 	viewProjection_ = viewProjection; 
 }
@@ -254,49 +270,133 @@ void Player::BehaviorRootUpdate() {
 // 攻撃行動更新
 void Player::BehaviorAttackUpdate() {
 
-#pragma region プレイヤーの攻撃処理
+#pragma region コンボ継続判定
 
-	workAttack_.attackParameter_++;
+	XINPUT_STATE joyStatePre;
+	XINPUT_STATE joyState;
 
-	if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 55) {
-		worldTransforms_[kBase]->rotation_.y -= 0.15f;
-		worldTransforms_[khammer]->rotation_.x = 1.58f;
+	//コンボ条件に達していない
+	if (workAttack_.comboIndex < ComboNum) {
+		// 今回のゲームパッドの状態を取得 && 前回のゲームパッドの状態を取得
+		if (input_->GetJoystickState(0,joyState) && input_->GetJoystickStatePrevious(0,joyStatePre)) {
+			//攻撃ボタンをトリガーしたら
+			if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X) && !(joyStatePre.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
+				//コンボ有効
+				workAttack_.comboNext = true;
+				workAttack_.attackParameter_ = 0;
+				workAttack_.comboIndex += 1;
+			}
+		}
 	}
-
-	if (workAttack_.attackParameter_ > 60) {
-		worldTransforms_[khammer]->rotation_.x = 3;
-		behaviorRequest_ = Behavior::kRoot;
-	}
-
-#pragma region ホームラン処理
-
-	/*worldTransforms_[khammer]->rotation_ = {0.0f, -1.58f, 4.72f};
-	if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 15) {
-		worldTransforms_[kBase]->rotation_.y += 0.15f;
-	}*/
 
 #pragma endregion
 
+#pragma region コンボ切り替えまたは攻撃終了
 
-#pragma region 振りかぶり処理
+	//予備動作の時間
+	static int32_t anticipationTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime;
+	static int32_t chargeTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
+	static int32_t swingTime = kConstAttacks_[workAttack_.comboIndex].swingTime;
+	static int32_t recoveryTime = kConstAttacks_[workAttack_.comboIndex].recoveryTime;
 
-	/*if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 10) {
-	    worldTransforms_[kLeft_arm]->rotation_.x -= 0.4f;
-	    worldTransforms_[kRight_arm]->rotation_.x -= 0.4f;
-	    worldTransforms_[khammer]->rotation_.x -= 0.4f;
+	static int32_t TotalTime = anticipationTime + chargeTime + swingTime + recoveryTime;
+
+	DragInt("anticipation", &anticipationTime, 0.01f);
+	DragInt("charge", &chargeTime, 0.01f);
+	DragInt("swing", &swingTime, 0.01f);
+	DragInt("recovery", &recoveryTime, 0.01f);
+	DragInt("Total", &TotalTime, 0.01f);
+	Checkbox("isCombo", &workAttack_.comboNext);
+
+	//既定の時間経過で通常行動に戻る
+	if (++workAttack_.attackParameter_ >= TotalTime) {
+		//コンボ継続なら次のコンボに進む
+		if (workAttack_.comboNext) {
+			//コンボ継続フラグをリセット
+			workAttack_.comboNext = false;
+
+			workAttack_.attackParameter_ = 0;
+			workAttack_.comboIndex = 0;
+
+			//各パーツの角度を次のコンボ用に初期化
+			worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
+			worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
+			worldTransforms_[khammer]->rotation_ = {3.0f,0.0f,0.0f};
+		}
+		//コンボ継続出ないなら攻撃を終了して通常行動に戻る
+		else {
+			worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
+			worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
+
+			worldTransforms_[khammer]->rotation_ = {3.0f, 0.0f, 0.0f};
+			behaviorRequest_ = Behavior::kRoot;
+		}
 	}
 
-	if (workAttack_.attackParameter_ > 15 && workAttack_.attackParameter_ < 25) {
+#pragma endregion 
 
-	    Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-	    worldTransforms_[kBase]->translation_ += forward * 0.2f;
+
+
+#pragma region コンボ中のパーツ制御
+
+	//コンボ段階によってモーションに分岐
+	switch (workAttack_.comboIndex) {
+
+		//0:右から反時計回り
+	case 0:
+
+		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 55) {
+			worldTransforms_[kBase]->rotation_.y -= kConstAttacks_[0].swingTime / 9.729f;
+			worldTransforms_[khammer]->rotation_.x = 1.58f;
+		}
+
+		break;
+
+		//1:上から振り下ろし
+	case 1:
+
+		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 10) {
+			worldTransforms_[kLeft_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
+			worldTransforms_[kRight_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
+			worldTransforms_[khammer]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
+		}
+
+		if (workAttack_.attackParameter_ > 15 && workAttack_.attackParameter_ < 25) {
+
+			Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
+			worldTransforms_[kBase]->translation_ += forward * kConstAttacks_[1].chargeSpeed;
+		}
+
+		if (workAttack_.attackParameter_ > 30 && workAttack_.attackParameter_ < 40) {
+			worldTransforms_[kLeft_arm]->rotation_.x += kConstAttacks_[1].swingSpeed;
+			worldTransforms_[kRight_arm]->rotation_.x += kConstAttacks_[1].swingSpeed;
+			worldTransforms_[khammer]->rotation_.x += 0.2422f;
+		} 
+
+
+		break;
+
+		//2:右からホームラン
+	case 2:
+
+		worldTransforms_[kLeft_arm]->rotation_.x = -1.53f;
+		worldTransforms_[kRight_arm]->rotation_.x = -1.53f;
+		worldTransforms_[khammer]->rotation_ = {0.0f, -1.58f, 4.72f};
+		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 15) {
+			worldTransforms_[kBase]->rotation_.y += 0.15f;
+		}
+
+		break;
 	}
 
-	if (workAttack_.attackParameter_ > 30 && workAttack_.attackParameter_ < 40) {
-	    worldTransforms_[kLeft_arm]->rotation_.x += 0.23f;
-	    worldTransforms_[kRight_arm]->rotation_.x += 0.23f;
-	    worldTransforms_[khammer]->rotation_.x += 0.2422f;
-	} */
+#pragma endregion 
+
+
+#pragma region プレイヤーの攻撃処理
+
+#pragma region ホームラン処理
+
+	
 
 #pragma endregion
 		

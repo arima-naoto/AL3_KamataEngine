@@ -32,8 +32,21 @@ public:
 		kJump,
 	};
 
+	struct ConstAttack {
+		int32_t anticipationTime;
+		int32_t chargeTime;
+		int32_t swingTime;
+		int32_t recoveryTime;
+		float anticipationSpeed;
+		float chargeSpeed;
+		float swingSpeed;
+	};
+		 
 	struct WorkAttack {
 		int32_t attackParameter_;
+		int32_t comboIndex = 0;
+		int32_t inComboPhase = 0;
+		bool comboNext = false;
 	};
 
 	//ダッシュ用ワーク
@@ -41,6 +54,13 @@ public:
 		// ダッシュ用の媒介変数
 		int32_t dashParameter_;
 	};
+
+	//コンボの数
+	static const int ComboNum = 3;
+
+	//コンボ定数表
+	static const std::array<ConstAttack, ComboNum> kConstAttacks_;
+
 
 public://メンバ関数
 
