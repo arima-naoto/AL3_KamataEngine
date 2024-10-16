@@ -49,6 +49,15 @@ void Enemy::Draw() {
 
 }
 
+/// 中心座標取得
+Vector3 Enemy::GetCenterPosition() const {
+	//見た目上の中心オフセット(モデル座標系)
+	const Vector3 offset{0.f, 1.f, 0.f};
+	//ワールド座標に変換
+	Vector3 worldPos = Rendering::Transform(offset, worldTransforms_[0]->matWorld_);
+	return worldPos;
+}
+
 void Enemy::InitializeWorldTransform() {
 
 	for (int i = 0; i < 4; i++) {

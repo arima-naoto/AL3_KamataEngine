@@ -21,6 +21,8 @@ public: // メンバ関数
 	// 描画処理
 	void Draw();
 
+	Vector3 GetCenterPosition() const;
+
 	const std::vector<WorldTransform*> GetWorldTransform(){ return worldTransforms_;};
 
 private:

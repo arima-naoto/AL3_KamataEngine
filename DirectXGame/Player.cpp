@@ -4,7 +4,6 @@
 #include "Input.h"
 #include "Rendering.h"
 #include "GlobalVariables.h"
-
 #define M_PI 3.14f
 
 #include "cassert"

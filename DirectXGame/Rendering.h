@@ -22,6 +22,8 @@ public:
 
 	static Matrix4x4 Inverse(const Matrix4x4& m);
 
+	static Matrix4x4 ViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
+
 	static Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
 
 	static Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);

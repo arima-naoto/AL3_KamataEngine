@@ -170,6 +170,15 @@ Matrix4x4 Rendering::Inverse(const Matrix4x4& m) {
 
 }
 
+Matrix4x4 Rendering::ViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
+	return {
+		width / 2.0f, 0.0f, 0.0f, 0.0f, 
+		0.0f, -height / 2.0f, 0.0f, 0.0f, 
+		0.0f, 0.0f, maxDepth - minDepth, 0.0f, 
+		(left + width) / 2.0f, (top + height) / 2.0f, minDepth, 1.0f
+	};
+}
+
 Vector3 Rendering::Transform(const Vector3& vector, const Matrix4x4& matrix)
 {
 	Vector3 result;
@@ -198,5 +207,4 @@ Vector3 Rendering::TransformNormal(const Vector3& v, const Matrix4x4& m) {
 	return result;
 
 }
-
 

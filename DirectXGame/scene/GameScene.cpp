@@ -7,6 +7,7 @@
 #include "Enemy.h"
 #include "Ground.h"
 #include "SkyDome.h"
+#include "LockOn.h"
 #include "FollowCamera.h"
 #include "DebugCamera.h"
 
@@ -52,6 +53,7 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -67,9 +69,12 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw();  // プレイヤー
-	enemy_->Draw();   // 敵
+	for (auto& enemy : enemies_) {
+		enemy->Draw(); // 敵
+	}
 	ground_->Draw();  // 地面
 	skyDome_->Draw(); // 天球
+	
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -82,6 +87,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	lockOn_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -133,8 +139,9 @@ void GameScene::InitializeObject() {
 		modelEnemyR_spear_.get()
 	};
 
-	enemy_ = make_unique<Enemy>();
-	enemy_->Initialize(enemyParts, &viewProjection_);
+	unique_ptr<Enemy> enemy = make_unique<Enemy>();
+	enemy->Initialize(enemyParts, &viewProjection_);
+	enemies_.push_back(std::move(enemy));
 
 	followCamera_ = make_unique<FollowCamera>();
 	followCamera_->Initialize(&viewProjection_);
@@ -149,16 +156,23 @@ void GameScene::InitializeObject() {
 	// 天球の生成
 	skyDome_ = make_unique<SkyDome>();
 	skyDome_->Initialize(modelSkydome_.get(), &viewProjection_);
+
+	lockOn_ = make_unique<LockOn>();
+	lockOn_->Initialize();//ロックオンの初期化
+
 }
 
 ///各オブジェクトの更新処理
 void GameScene::UpdateObject() {
-	player_->Update();       // プレイヤー
-	enemy_->Update();        // 敵
-	ground_->Update();       // 地面
-	skyDome_->Update();      // 天球
-	followCamera_->Update(); // レールカメラ
-	MoveDebugCamera();       // デバッグカメラ
+	player_->Update(); // プレイヤー
+	for (auto& enemy : enemies_) {
+		enemy->Update(); // 敵
+	}
+	ground_->Update();                          // 地面
+	skyDome_->Update();                         // 天球
+	lockOn_->Update(enemies_, viewProjection_); // ロックオン
+	followCamera_->Update();                    // レールカメラ
+	MoveDebugCamera();                          // デバッグカメラ
 };
 
 void GameScene::MoveDebugCamera() {

@@ -8,6 +8,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 
+#include "list"
 #include "memory"
 using namespace std;
 
@@ -16,6 +17,7 @@ class Player;        // プレイヤー
 class Enemy;         // 敵
 class Ground;        // 地面
 class SkyDome;       // 天球
+class LockOn;        // ロックオン
 class FollowCamera;  // レールカメラ
 class DebugCamera;   // デバッグカメラ
 
@@ -90,11 +92,13 @@ private: // メンバ変数
 	// 自キャラ
 	unique_ptr<Player> player_ = nullptr;
 	// 敵
-	unique_ptr<Enemy> enemy_ = nullptr;
+	list<unique_ptr<Enemy>> enemies_;
 	// 地面
 	unique_ptr<Ground> ground_ = nullptr;
 	// 天球
 	unique_ptr<SkyDome> skyDome_ = nullptr;
+	// ロックオン
+	unique_ptr<LockOn> lockOn_ = nullptr;
 	// レールカメラ
 	unique_ptr<FollowCamera> followCamera_ = nullptr;
 
