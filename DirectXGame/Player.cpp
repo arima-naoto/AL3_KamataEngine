@@ -281,7 +281,6 @@ void Player::BehaviorAttackUpdate() {
 				workAttack_.comboNext = true;
 				workAttack_.attackParameter_ = 0;
 				workAttack_.comboIndex += 1;
-
 				if (workAttack_.comboIndex == 1) {
 					worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
 					worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
@@ -314,17 +313,19 @@ void Player::BehaviorAttackUpdate() {
 			//コンボ継続フラグをリセット
 			workAttack_.comboNext = false;
 
-			workAttack_.attackParameter_ = 0;
-			workAttack_.comboIndex = 0;
-
 			//各パーツの角度を次のコンボ用に初期化
+		
+
 			worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
 			worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
 			worldTransforms_[khammer]->rotation_ = {3.0f,0.0f,0.0f};
 		}
 		//コンボ継続出ないなら攻撃を終了して通常行動に戻る
 		else {
+			worldTransforms_[kBase]->rotation_.y = destinationAngleY;
 			worldTransforms_[khammer]->rotation_.x = 3;
+			workAttack_.attackParameter_ = 0;
+			workAttack_.comboIndex = 0;
 			behaviorRequest_ = Behavior::kRoot;
 		}
 	}
@@ -341,6 +342,7 @@ void Player::BehaviorAttackUpdate() {
 		//0:右から反時計回り
 	case 0:
 
+	
 		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 55) {
 			worldTransforms_[kBase]->rotation_.y -= kConstAttacks_[0].swingTime / 9.729f;
 			worldTransforms_[khammer]->rotation_.x = 1.58f;

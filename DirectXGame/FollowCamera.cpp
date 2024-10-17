@@ -65,21 +65,21 @@ void FollowCamera::JoyStickRotation() {
 
 	XINPUT_STATE joyState;
 
-	if (input_->GetJoystickState(0, joyState)) {
-
-		const float kRotateSpeed = 1.f / 60.f;
-
-		viewProjection_->rotation_.y += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kRotateSpeed;
-
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
-			float targetAngle = target_->rotation_.y + 2 * float(M_PI);
-
-			const float rotateLerpSpeed = 0.03f;
-			viewProjection_->rotation_.y = Calculator::LerpShortAngle(viewProjection_->rotation_.y, targetAngle, rotateLerpSpeed);
-		}
-
+	if (!input_->GetJoystickState(0, joyState)) {
+		return;
 	}
-}
+
+	const float kRotateSpeed = 1.f / 60.f;
+
+	viewProjection_->rotation_.y += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kRotateSpeed;
+
+	if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB)) {
+		float targetAngle = target_->rotation_.y + 2 * float(M_PI);
+
+		const float rotateLerpSpeed = 0.03f;
+		viewProjection_->rotation_.y = Calculator::LerpShortAngle(viewProjection_->rotation_.y, targetAngle, rotateLerpSpeed);
+	}
+};
 
 Vector3 FollowCamera::CalcOffset() const {
 
