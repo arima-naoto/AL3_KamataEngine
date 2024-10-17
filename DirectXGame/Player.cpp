@@ -80,7 +80,9 @@ void Player::Draw() {
 	models_[kRight_arm]->Draw(*worldTransforms_[kRight_arm], *viewProjection_); // 右腕
 
 	
-	models_[khammer]->Draw(*worldTransforms_[khammer], *viewProjection_);
+	if (behavior_ == Behavior::kAttack) {
+		models_[khammer]->Draw(*worldTransforms_[khammer], *viewProjection_);
+	}
 	
 }
 
