@@ -15,11 +15,8 @@ using namespace ImGui;
 ///初期化処理
 void Enemy::Initialize(std::vector<Model*> models, ViewProjection* viewProjection) {
 
-	//NULLポインタチェック
-
 	// 引数で受け取ったデータをメンバ変数に記録する
-	models_ = models;
-	viewProjection_ = viewProjection;
+	BaseCharacter::Initialize(models, viewProjection);
 
 	InitializeWorldTransform();
 }
@@ -54,7 +51,7 @@ Vector3 Enemy::GetCenterPosition() const {
 	//見た目上の中心オフセット(モデル座標系)
 	const Vector3 offset{0.f, 1.f, 0.f};
 	//ワールド座標に変換
-	Vector3 worldPos = Rendering::Transform(offset, worldTransforms_[0]->matWorld_);
+	Vector3 worldPos = Transform(offset, worldTransforms_[0]->matWorld_);
 	return worldPos;
 }
 
@@ -88,7 +85,7 @@ void Enemy::Move() {
 	const float kCharacterSpeed = 0.1f;
 	velocity_ = {0, 0, kCharacterSpeed};
 
-	velocity_ = Rendering::TransformNormal(velocity_, worldTransforms_[0]->matWorld_);
+	velocity_ = TransformNormal(velocity_, worldTransforms_[0]->matWorld_);
 
 	worldTransforms_[0]->translation_ += velocity_;
 

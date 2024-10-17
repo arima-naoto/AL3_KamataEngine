@@ -1,43 +1,47 @@
 #include "LockOn.h"
-#include "TextureManager.h"
-#include "Sprite.h"
 #include "Enemy.h"
-#include "ViewProjection.h"
 #include "Input.h"
-#include "cmath"
+#include "Sprite.h"
+#include "TextureManager.h"
+#include "ViewProjection.h"
 #include "WinApp.h"
+#include "cmath"
 
 #ifdef _DEBUG
 #include <imgui.h>
 using namespace ImGui;
 #endif // _DEBUG
 
- 
 void LockOn::Initialize() {
 
 	lockOnTexture_ = TextureManager::Load("Reticle.png");
 	lockOnMark_ = Sprite::Create(lockOnTexture_, {0, 0});
 
-	//インプット生成処理
+	// インプット生成処理
 	input_ = Input::GetInstance();
-
 }
 
 void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const ViewProjection& viewProjection) {
-	
-	XINPUT_STATE joyState;
 
+	XINPUT_STATE joyState;
+	XINPUT_STATE joyStatePre;
+
+	static bool islockOn = false;
 	// 何も押されていなかったら
-	if (!input_->GetJoystickState(0, joyState)) {
-		return;
+	if (input_->GetJoystickState(0, joyState) && input_->GetJoystickStatePrevious(0, joyStatePre)) {
+
+		if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) && !(joyStatePre.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB)) {
+			islockOn ^= true;
+		}
 	}
 
-	//ロックオン状態だったら
-	if (target_) {
-		//C.ロックオン解除処理
 
-		// ロックオンボタンを押したら
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+	// ロックオン状態だったら
+	if (target_) {
+		// C.ロックオン解除処理
+
+		//ロックオンフラグが折られてる場合
+		if (!islockOn) {
 			// ロックオンを外す
 			target_ = nullptr;
 		}
@@ -49,16 +53,14 @@ void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 
 	} else {
 
-
-		if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB)) {
+		if (islockOn) {
 			// A.ロックオン対象の検索
 			LockOn::SearchTarget(enemies, viewProjection);
-		} 
-
+		}
 	}
 
-    //B.ロックオンマークの座標計算
-	//  ロックオン継続
+	// B.ロックオンマークの座標計算
+	//   ロックオン継続
 	if (target_) {
 		// 敵のロックオン座標取得
 		Vector3 positionWorld = target_->GetCenterPosition();
@@ -69,7 +71,6 @@ void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 		// スプライトの座標を設定
 		lockOnMark_->SetPosition(positionScreenV2);
 	}
-	
 }
 
 void LockOn::Draw() {
@@ -130,30 +131,29 @@ Vector3 LockOn::ToScreen(Vector3 world, const ViewProjection& viewProjection) {
 	Matrix4x4 matViewProjectionViewport = viewProjection.matView * viewProjection.matProjection * matViewport;
 
 	world = Transform(world, matViewProjectionViewport);
-		
+
 	return world;
 }
 
 bool LockOn::JudgmentOutScope(const ViewProjection& viewProjection) {
 
-	//敵のロックオン座標取得
+	// 敵のロックオン座標取得
 	Vector3 positionWorld = target_->GetCenterPosition();
-	//ワールドからビュー座標変換
+	// ワールドからビュー座標変換
 	Vector3 positionView = Transform(positionWorld, viewProjection.matView);
-	//距離条件チェック
-	//  距離条件チェック
+	// 距離条件チェック
+	//   距離条件チェック
 	if (minDistance_ <= positionView.z && positionView.z <= maxDistance_) {
 
 		// カメラ前方との角度を計算
-		float arcTangent = std::atan2f(std::sqrtf(
-			std::powf(positionView.x, 2) + std::powf(positionView.y, 2)), positionView.z);
-		//角度条件チェック(コーンに収まっているか)
+		float arcTangent = std::atan2f(std::sqrtf(std::powf(positionView.x, 2) + std::powf(positionView.y, 2)), positionView.z);
+		// 角度条件チェック(コーンに収まっているか)
 		if (std::fabsf(arcTangent) <= angleRange_) {
-			//範囲外ではない
+			// 範囲外ではない
 			return false;
 		}
 	}
 
-	//範囲外である
+	// 範囲外である
 	return true;
 }

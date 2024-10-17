@@ -2,7 +2,6 @@
 #include "Model.h"
 #include "ViewProjection.h"
 #include "Input.h"
-#include "Rendering.h"
 #include "GlobalVariables.h"
 #define M_PI 3.14f
 
@@ -12,7 +11,6 @@
 using namespace ImGui;
 #endif // _DEBUG
 
-//コンボ定数表
 const std::array < Player::ConstAttack, Player::ComboNum>
 Player::kConstAttacks_ = {
 	{
@@ -23,14 +21,9 @@ Player::kConstAttacks_ = {
     }
 };
 
-//初期化
-void Player::Initialize(std::vector<Model*> model, ViewProjection* viewProjection) {
+void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjection) {
 
-	// 引数として受け取ったデータをメンバ変数に記録する
-	models_ = model; // モデル
-
-	// 引数の内容をメンバ変数に記録
-	viewProjection_ = viewProjection;
+	BaseCharacter::Initialize(models, viewProjection);
 
 	input_ = Input::GetInstance();
 
@@ -54,7 +47,6 @@ void Player::Initialize(std::vector<Model*> model, ViewProjection* viewProjectio
 
 }
 
-//更新
 void Player::Update() 
 { 
 	InitializeBehavior();
@@ -70,7 +62,6 @@ void Player::Update()
 
 }
 
-//描画
 void Player::Draw() { 
 
 	// 3Dモデルを描画
@@ -79,19 +70,29 @@ void Player::Draw() {
 	models_[kLeft_arm]->Draw(*worldTransforms_[kLeft_arm], *viewProjection_);   // 左腕
 	models_[kRight_arm]->Draw(*worldTransforms_[kRight_arm], *viewProjection_); // 右腕
 
-	
-	models_[khammer]->Draw(*worldTransforms_[khammer], *viewProjection_);
-	
+	//ふるまいが攻撃の時のみ
+	if (behavior_ == Behavior::kAttack) {
+		//近接武器(ハンマー)を描画する
+		models_[khammer]->Draw(*worldTransforms_[khammer], *viewProjection_);
+	}
+
 }
 
-//ビュープロジェクションのsetter
-void Player::SetViewProjection(const ViewProjection* viewProjection) { 
-	viewProjection_ = viewProjection; 
+void Player::OnCollision() { 
+	//衝突していれば、ジャンプ行動をリクエストする
+	behaviorRequest_ = Behavior::kJump; 
+}
+
+Vector3 Player::GetCenterPosition() const {
+	//ローカル座標でのオフセット
+	const Vector3 offset = {0.f, 1.5f, 0.f};
+	//ワールド座標に変換
+	Vector3 worldPos = Transform(offset, worldTransforms_[kBase]->matWorld_);
+	return worldPos;
 }
 
 #pragma region 初期化処理メンバ関数の定義
 
-// 各ワールドトランスフォームの初期化
 void Player::InitializeWorldTransform() {
 	for (int i = 0; i < 6; i++) {
 		worldTransforms_.resize(6);
@@ -121,14 +122,10 @@ void Player::InitializeWorldTransform() {
 
 }
 
-// 浮遊ギミック初期化
 void Player::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
 
-
-// 通常行動初期化
 void Player::BehaviorRootInitialize() {}
 
-// 攻撃行動初期化
 void Player::BehaviorAttackInitialize() {
 	worldTransforms_[kBase]->translation_.y = 0;
 	worldTransforms_[kLeft_arm]->rotation_.x = -1.53f;
@@ -139,7 +136,6 @@ void Player::BehaviorAttackInitialize() {
 	workAttack_.attackParameter_ = 0;
 }
 
-// ダッシュ初期化
 void Player::BehaviorDashInitialize() {
 	workDash_.dashParameter_ = 0;
 	worldTransforms_[kBase]->rotation_.y = destinationAngleY;
@@ -147,7 +143,6 @@ void Player::BehaviorDashInitialize() {
 	worldTransforms_[kRight_arm]->rotation_.x = 0.5f;
 }
 
-// ジャンプ初期化
 void Player::BehaviorJumpInitialize() {
 
 	worldTransforms_[kBody]->translation_.y = 0;
@@ -160,7 +155,6 @@ void Player::BehaviorJumpInitialize() {
 	velocity_.y =  kJumpFirstSpeed;
 }
 
-// ふるまいの初期化
 void Player::InitializeBehavior() {
 
 	 if (behaviorRequest_) {
@@ -171,14 +165,20 @@ void Player::InitializeBehavior() {
 		(this->*behaviorInitializeTable[static_cast<size_t>(behavior_)])();
 	
 		behaviorRequest_ = std::nullopt;
-	}
+	 }
 }
+
+void (Player::*Player::behaviorInitializeTable[])(){ 
+	&Player::BehaviorRootInitialize,
+	&Player::BehaviorAttackInitialize,
+	&Player::BehaviorDashInitialize,
+	&Player::BehaviorJumpInitialize
+};
 
 #pragma endregion
 
 #pragma region 更新処理メンバ関数の定義
 
-// ジョイスティックによる移動
 void Player::JoyStickMove(const float speed) {
 
 	XINPUT_STATE joyState;
@@ -200,9 +200,9 @@ void Player::JoyStickMove(const float speed) {
 
 			velocity_ = ~velocity_ * speed;
 
-			Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
+			Matrix4x4 rotateYMatrix = MakeRotateYMatrix(viewProjection_->rotation_.y);
 
-			velocity_ = Rendering::TransformNormal(velocity_, rotateYMatrix);
+			velocity_ = TransformNormal(velocity_, rotateYMatrix);
 
 			worldTransforms_[kBase]->translation_ += velocity_;
 			velocity_ = velocity_;
@@ -210,12 +210,11 @@ void Player::JoyStickMove(const float speed) {
 			targetRotate_.y = std::atan2(velocity_.x, velocity_.z);
 		}
 
-		worldTransforms_[kBase]->rotation_.y = Calculator::LerpShortAngle(
+		worldTransforms_[kBase]->rotation_.y = LerpShortAngle(
 			worldTransforms_[kBase]->rotation_.y, targetRotate_.y, destinationAngleY);
 	}
 }
 
-// 浮遊ギミック更新
 void Player::UpdateFloatingGimmick() {
 
 	///===================================================<浮遊アニメーション>========================================================
@@ -232,7 +231,6 @@ void Player::UpdateFloatingGimmick() {
 	worldTransforms_[kRight_arm]->rotation_.x = std::sin(floatingParameter_) * armAngle_;
 };
 
-// 通常行動更新
 void Player::BehaviorRootUpdate() {
 
 	const float speed = 0.3f;
@@ -266,7 +264,6 @@ void Player::BehaviorRootUpdate() {
 
 }
 
-// 攻撃行動更新
 void Player::BehaviorAttackUpdate() {
 
 #pragma region コンボ継続判定
@@ -391,7 +388,6 @@ void Player::BehaviorAttackUpdate() {
 #pragma endregion 
 };
 
-// ダッシュ更新
 void Player::BehaviorDashUpdate() {
 
 	const float dashSpeed = 0.7f;
@@ -406,7 +402,6 @@ void Player::BehaviorDashUpdate() {
 
 }
 
-// ジャンプ更新
 void Player::BehaviorJumpUpdate() {
 
 	// 移動
@@ -426,7 +421,6 @@ void Player::BehaviorJumpUpdate() {
 
 }
 
-// ふるまいの更新処理
 void Player::UpdateBehavior() {
 
 	//ふるまい更新をメンバ関数ポインタで呼び出す
@@ -438,9 +432,15 @@ void Player::UpdateBehavior() {
 	}
 }
 
+void (Player::*Player::behaviorUpdateTable[])(){ 
+	&Player::BehaviorRootUpdate,
+	&Player::BehaviorAttackUpdate,
+	&Player::BehaviorDashUpdate,
+	&Player::BehaviorJumpUpdate
+};
+
 #pragma endregion
 
-/// デバッグテキスト描画
 void Player::DrawDebugText() {
 
 #ifdef _DEBUG
@@ -469,16 +469,3 @@ void Player::ApplyGlobalVariables() {
 
 }
 
-void (Player::*Player::behaviorInitializeTable[])(){ 
-	&Player::BehaviorRootInitialize,
-	&Player::BehaviorAttackInitialize,
-	&Player::BehaviorDashInitialize,
-	&Player::BehaviorJumpInitialize
-};
-
-void (Player::*Player::behaviorUpdateTable[])(){ 
-	&Player::BehaviorRootUpdate,
-	&Player::BehaviorAttackUpdate,
-	&Player::BehaviorDashUpdate,
-	&Player::BehaviorJumpUpdate
-};

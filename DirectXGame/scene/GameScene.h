@@ -15,10 +15,11 @@ using namespace std;
 // 各クラスの前方宣言
 class Player;        // プレイヤー
 class Enemy;         // 敵
+class FollowCamera;  // レールカメラ
 class Ground;        // 地面
 class SkyDome;       // 天球
 class LockOn;        // ロックオン
-class FollowCamera;  // レールカメラ
+class CollisionManager; //衝突マネージャ
 class DebugCamera;   // デバッグカメラ
 
 /// <summary>
@@ -60,6 +61,9 @@ private:
 
 	void MoveDebugCamera();
 
+	// 衝突判定と応答
+	void CheckAllCollisions();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -93,15 +97,17 @@ private: // メンバ変数
 	unique_ptr<Player> player_ = nullptr;
 	// 敵
 	list<unique_ptr<Enemy>> enemies_;
+	// レールカメラ
+	unique_ptr<FollowCamera> followCamera_ = nullptr;
 	// 地面
 	unique_ptr<Ground> ground_ = nullptr;
 	// 天球
 	unique_ptr<SkyDome> skyDome_ = nullptr;
 	// ロックオン
 	unique_ptr<LockOn> lockOn_ = nullptr;
-	// レールカメラ
-	unique_ptr<FollowCamera> followCamera_ = nullptr;
 
+	//衝突マネージャ
+	unique_ptr<CollisionManager> collisionManager_ = nullptr;
 	// デバッグカメラ
 	bool isDebugCameraActive_ = false;
 	unique_ptr<DebugCamera> debugCamera_ = nullptr;

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "WorldTransform.h"
+#include "BaseCharacter.h"
+#include "Rendering.h"
 #include "vector"
 #include <optional>
 
-class Model;
-class ViewProjection;
 class Input;
 
 //プレイヤーパーツの列挙体
@@ -21,7 +20,7 @@ enum Parts {
 /// <summary>
 /// 自キャラ
 /// </summary>
-class Player {
+class Player : public BaseCharacter,Rendering{
 
 public:
 
@@ -65,24 +64,20 @@ public:
 public://メンバ関数
 
 	/// 初期化
-	void Initialize(std::vector<Model*> models, ViewProjection* viewProjection);
+	void Initialize(std::vector<Model*> models, ViewProjection* viewProjection) override;
 
-	/// <summary>
 	/// 更新
-	/// </summary>
-	void Update();
+	void Update() override;
 
-	/// <summary>
 	/// 描画
-	/// </summary>
-	void Draw();
+	void Draw() override;
 
-	const std::vector<WorldTransform*> GetWorldTransform() { return worldTransforms_; };
+	void OnCollision() override;
 
-	void SetViewProjection(const ViewProjection* viewProjection);
 
-	///ふるまいのゲッター
-	const Behavior& GetBehevior() { return this->behavior_; }
+	///中心座標を取得
+	Vector3 GetCenterPosition() const override;
+
 
 private:
 
@@ -144,14 +139,6 @@ private:
 
 	
 private://メンバ変数
-
-	std::vector<Model*> models_;
-
-	//ワールド変換データ
-	std::vector<WorldTransform*> worldTransforms_;
-
-	//ビュープロジェクション
-	const ViewProjection *viewProjection_ = nullptr;
 
 	Input* input_ = nullptr;
 

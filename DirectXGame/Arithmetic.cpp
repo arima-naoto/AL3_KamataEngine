@@ -27,3 +27,4 @@ Vector3 operator+=(Vector3& v1, const Vector3& v2) {
 	v1.z += v2.z;
 	return v1;
 }
+

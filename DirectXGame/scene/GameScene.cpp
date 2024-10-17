@@ -5,10 +5,11 @@
 
 #include "Player.h"
 #include "Enemy.h"
+#include "FollowCamera.h"
 #include "Ground.h"
 #include "SkyDome.h"
 #include "LockOn.h"
-#include "FollowCamera.h"
+#include "CollisionManager.h"
 #include "DebugCamera.h"
 
 GameScene::GameScene() {}
@@ -38,7 +39,11 @@ void GameScene::Initialize() {
 
 }
 
-void GameScene::Update() { UpdateObject(); }
+void GameScene::Update() { 
+	UpdateObject(); 
+
+	CheckAllCollisions();
+}
 
 void GameScene::Draw() {
 
@@ -160,6 +165,8 @@ void GameScene::InitializeObject() {
 	lockOn_ = make_unique<LockOn>();
 	lockOn_->Initialize();//ロックオンの初期化
 
+	//衝突マネージャの生成
+	collisionManager_ = make_unique<CollisionManager>();
 }
 
 ///各オブジェクトの更新処理
@@ -200,4 +207,21 @@ void GameScene::MoveDebugCamera() {
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		viewProjection_.TransferMatrix();
 	}
+}
+
+void GameScene::CheckAllCollisions() {
+
+	//衝突マネージャのリセット
+	collisionManager_->Reset();
+
+	//コライダーをリストに登録
+	collisionManager_->AddCollider(player_.get());
+	//敵全てについて
+	for (const unique_ptr<Enemy>& enemy : enemies_) {
+		collisionManager_->AddCollider(enemy.get());
+	}
+
+	//衝突判定と応答
+	collisionManager_->CheckAllCollisions();
+
 }
