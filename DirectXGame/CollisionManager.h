@@ -1,6 +1,8 @@
 #pragma once
 #include "list"
 #include "Rendering.h"
+#include "Model.h"
+#include "memory"
 
 class Collider;
 
@@ -8,6 +10,15 @@ class Collider;
 class CollisionManager : public Rendering{
 
 public:
+
+	// 初期化
+	void Initialize();
+
+	// ワールドトランスフォームの更新
+	void UpdateWorldTransform();
+
+	// 描画
+	void Draw(const ViewProjection& viewProjection);
 
 	// リセット
 	void Reset();
@@ -20,9 +31,15 @@ public:
 
 	void AddCollider(Collider* collider);
 
+	void ApplyGlobalVariables();
+
 private:
 
 	//コライダー
 	std::list<Collider*> collider_;
+	//デバッグ表示用モデル
+	std::unique_ptr<Model> colliderModel_ = nullptr;
+   
+	bool visible_ = false;
 
 };

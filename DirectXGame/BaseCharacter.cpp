@@ -5,7 +5,11 @@ void BaseCharacter::Initialize(std::vector<Model*> models, ViewProjection* viewP
 	models_ = models;
 	viewProjection_ = viewProjection;
 
+	Collider::Initialize();
+
 }
+
+
 
 Vector3 BaseCharacter::GetCenterPosition() const {
 

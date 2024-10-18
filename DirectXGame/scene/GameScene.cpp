@@ -79,7 +79,8 @@ void GameScene::Draw() {
 	}
 	ground_->Draw();  // 地面
 	skyDome_->Draw(); // 天球
-	
+
+	collisionManager_->Draw(viewProjection_);//当たり判定の表示
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -167,6 +168,7 @@ void GameScene::InitializeObject() {
 
 	//衝突マネージャの生成
 	collisionManager_ = make_unique<CollisionManager>();
+	collisionManager_->Initialize();
 }
 
 ///各オブジェクトの更新処理
@@ -175,10 +177,11 @@ void GameScene::UpdateObject() {
 	for (auto& enemy : enemies_) {
 		enemy->Update(); // 敵
 	}
+	followCamera_->Update();                    // レールカメラ
 	ground_->Update();                          // 地面
 	skyDome_->Update();                         // 天球
 	lockOn_->Update(enemies_, viewProjection_); // ロックオン
-	followCamera_->Update();                    // レールカメラ
+	collisionManager_->UpdateWorldTransform();  //デバッグ表示用にワールドトランスフォームを更新
 	MoveDebugCamera();                          // デバッグカメラ
 };
 

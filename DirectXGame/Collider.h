@@ -1,5 +1,8 @@
 #pragma once
 #include "Vector3.h"
+#include "WorldTransform.h"
+#include "Model.h"
+#include "ViewProjection.h"
 
 // 衝突判定オブジェクト
 class Collider {
@@ -7,6 +10,12 @@ public:
 
 	// 仮想デストラクタ
 	virtual ~Collider() = default;
+	//初期化
+	void Initialize();
+	//ワールドトランスフォームの初期化
+	void UpdateWorldTransform();
+	//描画
+	void Draw(Model* model, const ViewProjection& viewProjection);
 	// 衝突時に呼ばれる関数
 	virtual void OnCollision(){};
 	//中心座標を取得
@@ -19,4 +28,6 @@ public:
 private:
 	// 衝突半径
 	float radius_ = 1.5f;
+	//ワールドトランスフォーム
+	WorldTransform worldTransform_;
 };

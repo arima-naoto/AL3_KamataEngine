@@ -7,14 +7,12 @@
 #include "imgui.h"
 #endif // _DEBUG
 
-//シングルトンパターン
 GlobalVariables* GlobalVariables::GetInstance() { 
 	//静的インスタンスを作成
 	static GlobalVariables instance;
 	return &instance;
 }
 
-//更新処理
 void GlobalVariables::Update() {
 
 	if (!ImGui::Begin("Global Variables", nullptr, ImGuiWindowFlags_MenuBar)) {
@@ -51,21 +49,30 @@ void GlobalVariables::Update() {
 			if (std::holds_alternative<int32_t>(item.value)) {
 				int32_t* ptr = std::get_if<int32_t>(&item.value);
 				ImGui::SliderInt(itemName.c_str(), ptr, 0, 100);
-			} else if (std::holds_alternative<float>(item.value)) {
+			}
+			// float型の値を保持していれば
+			else if (std::holds_alternative<float>(item.value)) {
 				float* ptr = std::get_if<float>(&item.value);
 				ImGui::SliderFloat(itemName.c_str(), ptr, 0, 100);
-			} else if (std::holds_alternative<Vector3>(item.value)) {
+			}
+			// Vector3型の値を保持していれば
+			else if (std::holds_alternative<Vector3>(item.value)) {
 				Vector3* ptr = std::get_if<Vector3>(&item.value);
 				ImGui::SliderFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), -10, 10);
 			}
+			//bool型の値を保持していれば
+			else if (std::holds_alternative<bool>(item.value)) {
+				bool* ptr = std::get_if<bool>(&item.value);
+				ImGui::Checkbox(itemName.c_str(), ptr);
+			}
 
-			/*ImGui::Text("\n");
+			ImGui::Text("\n");
 
 			if (ImGui::Button("Save")) {
 				SaveFile(groupName);
 				std::string message = std::format("{}.json saved.", groupName);
 				MessageBoxA(nullptr, message.c_str(), "GlobalVariables", 0);
-			}*/
+			}
 		}
 		ImGui::EndMenu();
 	}
@@ -73,12 +80,12 @@ void GlobalVariables::Update() {
 	ImGui::End();
 }
 
-//グループの作成
 void GlobalVariables::CreateGroup(const std::string& groupName) { 
 	dates_[groupName]; 
 }
 
-//値のセット(int32_t)
+#pragma region 値のセット
+
 void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, int32_t value) {
 
 	Group& group = dates_[groupName];
@@ -90,7 +97,6 @@ void GlobalVariables::SetValue(const std::string& groupName, const std::string& 
 
 }
 
-//値のセット(float)
 void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, float value) {
 
 	Group& group = dates_[groupName];
@@ -101,7 +107,6 @@ void GlobalVariables::SetValue(const std::string& groupName, const std::string& 
 	group.items[key] = newItem;
 }
 
-//値のセット(Vector3)
 void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, const Vector3& value) {
 
 	Group& group = dates_[groupName];
@@ -112,7 +117,17 @@ void GlobalVariables::SetValue(const std::string& groupName, const std::string& 
 	group.items[key] = newItem;
 }
 
-//ファイル書き出し
+void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, bool value) {
+	Group&group = dates_[groupName];
+
+	Item newItem{};
+	newItem.value = value;
+
+	group.items[key] = newItem;
+}
+
+#pragma endregion
+
 void GlobalVariables::SaveFile(const std::string& groupName) {
 
 	/// グループを検索
@@ -153,6 +168,11 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 			Vector3 value = std::get<Vector3>(item.value);
 			root[groupName][itemName] = json::array({value.x, value.y, value.z});
 		}
+		// bool型の値を保持していれば
+		else if (std::holds_alternative<bool>(item.value)) {
+			//bool型の値を登録
+			root[groupName][itemName] = std::get<bool>(item.value);
+		}
 
 		// ディレクトリが無ければ作成する
 		std::filesystem::path dir(kDirectoryPath);
@@ -182,7 +202,6 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 	}
 }
 
-//ディレクトリの全ファイル読み込み
 void GlobalVariables::LoadFiles() { 
 	//保存先ディレクトリのパスをローカル変数で宣言
 	std::filesystem::path dir(kDirectoryPath); 
@@ -211,7 +230,6 @@ void GlobalVariables::LoadFiles() {
 	}
 }
 
-//ファイルから読み込む
 void GlobalVariables::LoadFile(const std::string& groupName) {
 
 	//読み込むJSONファイルのフルパスを合成する
@@ -266,13 +284,21 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 			Vector3 value = {itItem->at(0), itItem->at(1), itItem->at(2)};
 			SetValue(groupName, itemName, value);
 			//Vector3型のSetValue
+		} 
+		//bool型の値を保持していれば
+		else if (itItem->is_boolean()) {
+			//bool型の値を登録
+			bool value = itItem->get<bool>();
+			SetValue(groupName, itemName, value);
+			//bool型のSetValue
 		}
 
 	}
 
 }
 
-//項目の追加(int32_t)
+#pragma region 項目の追加
+
 void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, int32_t value) {
 
 	Group& group = dates_[groupName];
@@ -285,7 +311,6 @@ void GlobalVariables::AddItem(const std::string& groupName, const std::string& k
 	}	
 }
 
-//項目の追加(float)
 void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, float value) {
 
 	Group& group = dates_[groupName];
@@ -298,7 +323,6 @@ void GlobalVariables::AddItem(const std::string& groupName, const std::string& k
 
 }
 
-//項目の追加(Vector3)
 void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, const Vector3& value) {
 
 	Group& group = dates_[groupName];
@@ -310,6 +334,20 @@ void GlobalVariables::AddItem(const std::string& groupName, const std::string& k
 	}	
 
 }
+
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, bool value) {
+	Group& group = dates_[groupName];
+
+	// 項目が未登録なら
+	if (group.items.find(key) == group.items.end()) {
+		// SetValueの呼び出し
+		SetValue(groupName, key, value);
+	}
+}
+
+#pragma endregion
+
+#pragma region 値の取得
 
 int32_t GlobalVariables::GetIntValue(const std::string& groupName, const std::string& key) const {
 
@@ -355,3 +393,19 @@ Vector3 GlobalVariables::GetVector3Value(const std::string& groupName, const std
 	return std::get<Vector3>(group.items.at(key).value);
 
 }
+
+bool GlobalVariables::GetBoolValue(const std::string& groupName, const std::string& key) const {
+	// 指定グループが存在しているか
+	assert(dates_.find(groupName) != dates_.end());
+
+	// グループの参照を取得
+	const Group& group = dates_.at(groupName);
+
+	// 指定グループに指定のキーが存在するかチェック
+	assert(group.items.find(key) != group.items.end());
+
+	// 指定グループから指定のキーの値を取得
+	return std::get<bool>(group.items.at(key).value);
+}
+
+#pragma endregion

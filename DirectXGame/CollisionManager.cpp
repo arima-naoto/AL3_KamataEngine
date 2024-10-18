@@ -1,5 +1,55 @@
 #include "CollisionManager.h"
 #include "Collider.h"
+#include "GlobalVariables.h"
+
+#ifdef _DEBUG
+#include <imgui.h>
+using namespace ImGui;
+#endif // _DEBUG
+
+
+void CollisionManager::Initialize() {
+
+	colliderModel_.reset(Model::CreateFromOBJ("sphere",true));
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Collision";
+
+	globalVariables->CreateGroup(groupName);
+	globalVariables->AddItem(groupName, "Visible", visible_);
+
+	ApplyGlobalVariables();
+}
+
+void CollisionManager::UpdateWorldTransform() {
+
+	ImGui::Checkbox("Visible", &visible_);
+
+	if (!visible_ ) {
+		return;
+	}
+
+	//全てのコライダーについて
+	for (auto* collider : collider_) {
+		// コライダーの更新
+		collider->UpdateWorldTransform();
+	}
+}
+
+void CollisionManager::Draw(const ViewProjection& viewProjection) {
+
+	
+
+	if (!visible_) {
+		return;
+	}
+
+	//全てのコライダーについて
+	for (auto* collider : collider_) {
+		// コライダーの描画
+		collider->Draw(colliderModel_.get(), viewProjection);
+	}
+}
 
 void CollisionManager::Reset() {
 	// リストを空にする
@@ -52,4 +102,12 @@ void CollisionManager::CheckAllCollisions() {
 
 void CollisionManager::AddCollider(Collider* collider) { 
 	collider_.push_back(collider);
+}
+
+void CollisionManager::ApplyGlobalVariables() {
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Collision";
+	visible_ = globalVariables->GetBoolValue(groupName, "Visible");
+
 }
