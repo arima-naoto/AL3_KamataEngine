@@ -5,7 +5,7 @@
 #include "ImGuiManager.h"
 #include "PrimitiveDrawer.h"
 #include "TextureManager.h"
-#include "GlobalVariables.h"
+#include "assets/process/global/GlobalVariables.h"
 #include "WinApp.h"
 
 // Windowsアプリでのエントリーポイント(main関数)

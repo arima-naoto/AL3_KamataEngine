@@ -90,47 +90,47 @@
     <ClCompile Include="scene\GameScene.cpp">
       <Filter>assets\scene</Filter>
     </ClCompile>
-    <ClCompile Include="BaseCharacter.cpp">
-      <Filter>assets\gameObject</Filter>
-    </ClCompile>
     <ClCompile Include="WorldTransform.cpp">
       <Filter>assets\Process</Filter>
     </ClCompile>
-    <ClCompile Include="Arithmetic.cpp">
+    <ClCompile Include="assets\gameobject\skydome\SkyDome.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\gameobject\player\Player.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\gameobject\lockOn\LockOn.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\gameobject\ground\Ground.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\gameobject\enemy\Enemy.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\process\math\Arithmetic.cpp">
       <Filter>assets\Process\math</Filter>
     </ClCompile>
-    <ClCompile Include="Calculator.cpp">
+    <ClCompile Include="assets\gameobject\BaseCharacter.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\gameobject\camera\FollowCamera.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\process\math\Calculator.cpp">
       <Filter>assets\Process\math</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering.cpp">
+    <ClCompile Include="assets\process\math\Rendering.cpp">
       <Filter>assets\Process\math</Filter>
     </ClCompile>
-    <ClCompile Include="Collider.cpp">
-      <Filter>assets\Process\collision</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionManager.cpp">
-      <Filter>assets\Process\collision</Filter>
-    </ClCompile>
-    <ClCompile Include="GlobalVariables.cpp">
+    <ClCompile Include="assets\process\global\GlobalVariables.cpp">
       <Filter>assets\Process\glovalVariables</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>assets\gameObject</Filter>
+    <ClCompile Include="assets\process\collision\Collider.cpp">
+      <Filter>assets\Process\collision</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>assets\gameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyDome.cpp">
-      <Filter>assets\gameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="FollowCamera.cpp">
-      <Filter>assets\gameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="LockOn.cpp">
-      <Filter>assets\gameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="Ground.cpp">
-      <Filter>assets\gameObject</Filter>
+    <ClCompile Include="assets\process\collision\CollisionManager.cpp">
+      <Filter>assets\Process\collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,43 +221,43 @@
     <ClInclude Include="scene\GameScene.h">
       <Filter>assets\scene</Filter>
     </ClInclude>
-    <ClInclude Include="BaseCharacter.h">
-      <Filter>assets\gameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="Arithmetic.h">
+    <ClInclude Include="assets\process\math\Arithmetic.h">
       <Filter>assets\Process\math</Filter>
     </ClInclude>
-    <ClInclude Include="Calculator.h">
+    <ClInclude Include="assets\process\math\Calculator.h">
       <Filter>assets\Process\math</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering.h">
+    <ClInclude Include="assets\process\math\Rendering.h">
       <Filter>assets\Process\math</Filter>
     </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>assets\Process\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionManager.h">
-      <Filter>assets\Process\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="GlobalVariables.h">
+    <ClInclude Include="assets\process\global\GlobalVariables.h">
       <Filter>assets\Process\glovalVariables</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
+    <ClInclude Include="assets\process\collision\Collider.h">
+      <Filter>assets\Process\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\process\collision\CollisionManager.h">
+      <Filter>assets\Process\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\gameobject\enemy\Enemy.h">
       <Filter>assets\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="SkyDome.h">
+    <ClInclude Include="assets\gameobject\BaseCharacter.h">
       <Filter>assets\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="FollowCamera.h">
+    <ClInclude Include="assets\gameobject\camera\FollowCamera.h">
       <Filter>assets\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="LockOn.h">
+    <ClInclude Include="assets\gameobject\ground\ground.h">
       <Filter>assets\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="Ground.h">
+    <ClInclude Include="assets\gameobject\lockOn\LockOn.h">
       <Filter>assets\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
+    <ClInclude Include="assets\gameobject\player\Player.h">
+      <Filter>assets\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\gameobject\skydome\SkyDome.h">
       <Filter>assets\gameObject</Filter>
     </ClInclude>
   </ItemGroup>

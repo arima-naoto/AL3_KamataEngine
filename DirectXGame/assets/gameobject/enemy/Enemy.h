@@ -1,7 +1,7 @@
 #pragma once
-#include "BaseCharacter.h"
 #include "vector"
-#include "Rendering.h"
+#include "assets/gameobject/BaseCharacter.h"
+#include "assets/process/math/Rendering.h"
 
 /// <summary>
 /// 敵クラス

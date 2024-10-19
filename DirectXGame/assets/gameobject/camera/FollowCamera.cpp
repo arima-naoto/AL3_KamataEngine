@@ -1,9 +1,9 @@
 #include "FollowCamera.h"
 #include "ViewProjection.h"
-#include "Rendering.h"
+#include "assets/process/math/Rendering.h"
 #include "input.h"
 
-#include "Player.h"
+#include "assets/gameobject/player/Player.h"
 
 #ifdef _DEBUG
 #include <imgui.h>

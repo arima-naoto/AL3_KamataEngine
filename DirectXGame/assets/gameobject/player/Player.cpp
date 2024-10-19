@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "ViewProjection.h"
 #include "Input.h"
-#include "GlobalVariables.h"
+#include "assets/process/global/GlobalVariables.h"
 #define M_PI 3.14f
 
 #include "cassert"

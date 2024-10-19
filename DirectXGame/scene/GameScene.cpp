@@ -3,13 +3,13 @@
 #include <cassert>
 #include "AxisIndicator.h"
 
-#include "Player.h"
-#include "Enemy.h"
-#include "FollowCamera.h"
-#include "Ground.h"
-#include "SkyDome.h"
-#include "LockOn.h"
-#include "CollisionManager.h"
+#include "assets/gameobject/camera/FollowCamera.h"
+#include "assets/gameobject/enemy/Enemy.h"
+#include "assets/gameobject/ground/ground.h"
+#include "assets/gameobject/lockOn/LockOn.h"
+#include "assets/gameobject/player/Player.h"
+#include "assets/gameobject/skydome/SkyDome.h"
+#include "assets/process/collision/CollisionManager.h"
 #include "DebugCamera.h"
 
 GameScene::GameScene() {}

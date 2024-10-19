@@ -1,6 +1,6 @@
 #include "CollisionManager.h"
 #include "Collider.h"
-#include "GlobalVariables.h"
+#include "assets/process/global/GlobalVariables.h"
 
 #ifdef _DEBUG
 #include <imgui.h>

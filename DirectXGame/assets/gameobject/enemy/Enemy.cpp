@@ -4,7 +4,6 @@
 #include "cassert"
 #include "numbers"
 using namespace std::numbers;
-#include "Rendering.h"
 
 #ifdef _DEBUG
 #include "imgui.h"

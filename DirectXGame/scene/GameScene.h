@@ -7,20 +7,19 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-
 #include "list"
 #include "memory"
 using namespace std;
 
 // 各クラスの前方宣言
-class Player;        // プレイヤー
-class Enemy;         // 敵
-class FollowCamera;  // レールカメラ
-class Ground;        // 地面
-class SkyDome;       // 天球
-class LockOn;        // ロックオン
-class CollisionManager; //衝突マネージャ
-class DebugCamera;   // デバッグカメラ
+class Player;           // プレイヤー
+class Enemy;            // 敵
+class FollowCamera;     //レールカメラ
+class Ground;           // 地面
+class LockOn;           // ロックオン
+class SkyDome;          // 天球
+class CollisionManager; // 衝突マネージャ
+class DebugCamera;      // デバッグカメラ
 
 /// <summary>
 /// ゲームシーン
@@ -106,7 +105,7 @@ private: // メンバ変数
 	// ロックオン
 	unique_ptr<LockOn> lockOn_ = nullptr;
 
-	//衝突マネージャ
+	// 衝突マネージャ
 	unique_ptr<CollisionManager> collisionManager_ = nullptr;
 	// デバッグカメラ
 	bool isDebugCameraActive_ = false;

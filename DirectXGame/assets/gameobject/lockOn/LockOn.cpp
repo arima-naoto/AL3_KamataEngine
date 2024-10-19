@@ -1,11 +1,12 @@
 #include "LockOn.h"
-#include "Enemy.h"
 #include "Input.h"
 #include "Sprite.h"
 #include "TextureManager.h"
 #include "ViewProjection.h"
 #include "WinApp.h"
 #include "cmath"
+
+#include "assets/gameobject/enemy/Enemy.h"
 
 #ifdef _DEBUG
 #include <imgui.h>

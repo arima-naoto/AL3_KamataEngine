@@ -2,8 +2,8 @@
 
 #include "list"
 #include "memory"
-#include "Rendering.h"
 #include "Vector2.h"
+#include "assets/process/math/Rendering.h"
 
 class Sprite;
 class Enemy;

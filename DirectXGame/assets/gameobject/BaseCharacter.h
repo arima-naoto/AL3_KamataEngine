@@ -3,7 +3,7 @@
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include "vector"
-#include "Collider.h"
+#include "assets/process/collision/Collider.h"
 
 class BaseCharacter : public Collider{
 

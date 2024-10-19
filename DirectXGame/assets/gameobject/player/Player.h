@@ -1,9 +1,8 @@
 #pragma once
-
-#include "BaseCharacter.h"
-#include "Rendering.h"
 #include "vector"
 #include <optional>
+#include "assets/gameobject/BaseCharacter.h"
+#include "assets/process/math/Rendering.h"
 
 class Input;
 
