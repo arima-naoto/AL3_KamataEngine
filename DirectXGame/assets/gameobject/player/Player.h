@@ -3,8 +3,11 @@
 #include <optional>
 #include "assets/gameobject/BaseCharacter.h"
 #include "assets/process/math/Rendering.h"
+#include "assets/gameobject/hammer/Hammer.h"
+#include "memory"
 
 class Input;
+
 
 //プレイヤーパーツの列挙体
 enum Parts {
@@ -13,7 +16,6 @@ enum Parts {
 	kHead,
 	kLeft_arm,
 	kRight_arm,
-	khammer,
 };
 
 /// <summary>
@@ -71,11 +73,12 @@ public://メンバ関数
 	/// 描画
 	void Draw() override;
 
-	void OnCollision() override;
-
+	void OnCollision([[maybe_unused]] Collider* other) override;
 
 	///中心座標を取得
 	Vector3 GetCenterPosition() const override;
+
+	const Hammer* GetHammer() { return hammer.get(); }
 
 
 private:
@@ -162,5 +165,8 @@ private://メンバ変数
 
 	static void (Player::*behaviorInitializeTable[])();
 	static void (Player::*behaviorUpdateTable[])();
+
+	std::unique_ptr<Model> modelHammer;
+	std::unique_ptr<Hammer>hammer;
 
 };

@@ -32,7 +32,6 @@ public:
 	void AddCollider(Collider* collider);
 
 	void ApplyGlobalVariables();
-
 private:
 
 	//コライダー

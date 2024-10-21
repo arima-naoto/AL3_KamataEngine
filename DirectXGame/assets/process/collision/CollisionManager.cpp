@@ -73,9 +73,9 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 	//球と球の交差判定
 	if (distance <= radius) {
 		//コライダーAの衝突時コールバッグを呼び出す
-		colliderA->OnCollision();
+		colliderA->OnCollision(colliderB);
 		//コライダーBの衝突時コールバッグを呼び出す
-		colliderB->OnCollision();
+		colliderB->OnCollision(colliderA);
 	}
 }
 

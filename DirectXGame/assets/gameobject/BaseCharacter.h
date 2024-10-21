@@ -19,6 +19,8 @@ public:
 
     const std::vector<WorldTransform*> GetWorldTransform() { return worldTransforms_; };
 
+	const ViewProjection* GetViewProjection() { return viewProjection_; }
+	
 	void SetViewProjection(const ViewProjection* viewProjection) { viewProjection_ = viewProjection;}
 
 protected:

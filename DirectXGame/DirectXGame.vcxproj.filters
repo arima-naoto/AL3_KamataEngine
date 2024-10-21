@@ -132,6 +132,9 @@
     <ClCompile Include="assets\process\collision\CollisionManager.cpp">
       <Filter>assets\Process\collision</Filter>
     </ClCompile>
+    <ClCompile Include="assets\gameobject\hammer\Hammer.cpp">
+      <Filter>assets\gameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3d\ViewProjection.h">
@@ -259,6 +262,12 @@
     </ClInclude>
     <ClInclude Include="assets\gameobject\skydome\SkyDome.h">
       <Filter>assets\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\gameobject\hammer\Hammer.h">
+      <Filter>assets\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\process\collision\CollisionTypeIdDef.h">
+      <Filter>assets\Process\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

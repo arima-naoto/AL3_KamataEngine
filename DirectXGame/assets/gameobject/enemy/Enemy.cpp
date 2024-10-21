@@ -18,6 +18,8 @@ void Enemy::Initialize(std::vector<Model*> models, ViewProjection* viewProjectio
 	BaseCharacter::Initialize(models, viewProjection);
 
 	InitializeWorldTransform();
+
+	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::KEnemy));
 }
 
 /// 更新処理
@@ -53,6 +55,8 @@ Vector3 Enemy::GetCenterPosition() const {
 	Vector3 worldPos = Transform(offset, worldTransforms_[0]->matWorld_);
 	return worldPos;
 }
+
+Vector3 Enemy::GetPosition() { return worldTransforms_[0]->translation_; }
 
 void Enemy::InitializeWorldTransform() {
 

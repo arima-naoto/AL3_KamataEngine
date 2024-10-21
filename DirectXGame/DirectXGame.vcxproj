@@ -111,6 +111,7 @@
     <ClCompile Include="assets\gameobject\camera\FollowCamera.cpp" />
     <ClCompile Include="assets\gameobject\enemy\Enemy.cpp" />
     <ClCompile Include="assets\gameobject\ground\Ground.cpp" />
+    <ClCompile Include="assets\gameobject\hammer\Hammer.cpp" />
     <ClCompile Include="assets\gameobject\lockOn\LockOn.cpp" />
     <ClCompile Include="assets\gameobject\player\Player.cpp" />
     <ClCompile Include="assets\gameobject\skydome\SkyDome.cpp" />
@@ -149,11 +150,13 @@
     <ClInclude Include="assets\gameobject\camera\FollowCamera.h" />
     <ClInclude Include="assets\gameobject\enemy\Enemy.h" />
     <ClInclude Include="assets\gameobject\ground\ground.h" />
+    <ClInclude Include="assets\gameobject\hammer\Hammer.h" />
     <ClInclude Include="assets\gameobject\lockOn\LockOn.h" />
     <ClInclude Include="assets\gameobject\player\Player.h" />
     <ClInclude Include="assets\gameobject\skydome\SkyDome.h" />
     <ClInclude Include="assets\process\collision\Collider.h" />
     <ClInclude Include="assets\process\collision\CollisionManager.h" />
+    <ClInclude Include="assets\process\collision\CollisionTypeIdDef.h" />
     <ClInclude Include="assets\process\global\GlobalVariables.h" />
     <ClInclude Include="assets\process\math\Arithmetic.h" />
     <ClInclude Include="assets\process\math\Calculator.h" />

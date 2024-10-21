@@ -20,6 +20,8 @@ public: // メンバ関数
 
 	Vector3 GetCenterPosition() const override;
 
+	Vector3 GetPosition();
+
 private:
 
 	void InitializeWorldTransform();

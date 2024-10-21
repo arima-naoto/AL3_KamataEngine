@@ -3,6 +3,7 @@
 #include "ViewProjection.h"
 #include "Input.h"
 #include "assets/process/global/GlobalVariables.h"
+
 #define M_PI 3.14f
 
 #include "cassert"
@@ -29,7 +30,11 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 
 	InitializeWorldTransform();
 	InitializeFloatingGimmick();
-	
+
+	modelHammer.reset(Model::CreateFromOBJ("hammer", true));
+	hammer = std::make_unique<Hammer>();
+	hammer->Initialize(modelHammer.get());
+	hammer->SetParent(this->GetWorldTransform()[kBody]);
 
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Player";
@@ -49,13 +54,13 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 
 void Player::Update() 
 { 
+
+
 	InitializeBehavior();
 	UpdateBehavior();
 
 #ifdef _DEBUG
 	DragFloat3("player.translate", &worldTransforms_[kBase]->translation_.x, 0.01f);
-	DragFloat3("hammer.translate", &worldTransforms_[khammer]->translation_.x, 0.01f);
-	DragFloat3("hammer.rotation", &worldTransforms_[khammer]->rotation_.x, 0.01f);
 	DragInt("parameter", &workAttack_.attackParameter_, 0.01f);
 	DragInt("combo", &workAttack_.comboIndex, 0.01f);
 #endif // _DEBUG
@@ -73,12 +78,12 @@ void Player::Draw() {
 	//ふるまいが攻撃の時のみ
 	if (behavior_ == Behavior::kAttack) {
 		//近接武器(ハンマー)を描画する
-		models_[khammer]->Draw(*worldTransforms_[khammer], *viewProjection_);
+		hammer->Draw(*viewProjection_);
 	}
 
 }
 
-void Player::OnCollision() { 
+void Player::OnCollision([[maybe_unused]] Collider* other) { 
 	//衝突していれば、ジャンプ行動をリクエストする
 	behaviorRequest_ = Behavior::kJump; 
 }
@@ -94,8 +99,8 @@ Vector3 Player::GetCenterPosition() const {
 #pragma region 初期化処理メンバ関数の定義
 
 void Player::InitializeWorldTransform() {
-	for (int i = 0; i < 6; i++) {
-		worldTransforms_.resize(6);
+	for (int i = 0; i < 5; i++) {
+		worldTransforms_.resize(5);
 		WorldTransform* worldTransform = new WorldTransform();
 		worldTransform->Initialize();
 		worldTransforms_[i] = worldTransform;
@@ -116,9 +121,9 @@ void Player::InitializeWorldTransform() {
 	worldTransforms_[kRight_arm]->parent_ = GetWorldTransform()[kBody];
 	worldTransforms_[kRight_arm]->translation_ = {0.527f, 1.262f, 0.0f}; // 座標設定
 
-	worldTransforms_[khammer]->parent_ = GetWorldTransform()[kBody];
-	worldTransforms_[khammer]->translation_.y = 1.37f;
-	worldTransforms_[khammer]->rotation_.x = 3;
+	//worldTransforms_[khammer]->parent_ = GetWorldTransform()[kBody];
+	//worldTransforms_[khammer]->translation_.y = 1.37f;
+	//worldTransforms_[khammer]->rotation_.x = 3;
 
 }
 
@@ -130,7 +135,7 @@ void Player::BehaviorAttackInitialize() {
 	worldTransforms_[kBase]->translation_.y = 0;
 	worldTransforms_[kLeft_arm]->rotation_.x = -1.53f;
 	worldTransforms_[kRight_arm]->rotation_.x = -1.53f;
-	worldTransforms_[khammer]->rotation_.x = 3;
+	hammer->SetRotation({.x = 3.0f});
 	
 
 	workAttack_.attackParameter_ = 0;
@@ -265,7 +270,6 @@ void Player::BehaviorRootUpdate() {
 }
 
 void Player::BehaviorAttackUpdate() {
-
 #pragma region コンボ継続判定
 
 	XINPUT_STATE joyStatePre;
@@ -284,7 +288,7 @@ void Player::BehaviorAttackUpdate() {
 				if (workAttack_.comboIndex == 1) {
 					worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
 					worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
-					worldTransforms_[khammer]->rotation_ = {3.0f, 0.0f, 0.0f};
+					hammer->SetRotation({.x = 3.0f});
 				}
 			}
 		}
@@ -295,7 +299,6 @@ void Player::BehaviorAttackUpdate() {
 #pragma region コンボ切り替えまたは攻撃終了
 
 	//予備動作の時間
-
 	int32_t anticipationTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime;
 	int32_t chargeTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
 	int32_t swingTime = kConstAttacks_[workAttack_.comboIndex].swingTime;
@@ -314,16 +317,12 @@ void Player::BehaviorAttackUpdate() {
 			workAttack_.comboNext = false;
 
 			//各パーツの角度を次のコンボ用に初期化
-		
-
 			worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
 			worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
-			worldTransforms_[khammer]->rotation_ = {3.0f,0.0f,0.0f};
 		}
 		//コンボ継続出ないなら攻撃を終了して通常行動に戻る
 		else {
 			worldTransforms_[kBase]->rotation_.y = destinationAngleY;
-			worldTransforms_[khammer]->rotation_.x = 3;
 			workAttack_.attackParameter_ = 0;
 			workAttack_.comboIndex = 0;
 			behaviorRequest_ = Behavior::kRoot;
@@ -342,10 +341,9 @@ void Player::BehaviorAttackUpdate() {
 		//0:右から反時計回り
 	case 0:
 
-	
 		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 55) {
 			worldTransforms_[kBase]->rotation_.y -= kConstAttacks_[0].swingTime / 9.729f;
-			worldTransforms_[khammer]->rotation_.x = 1.58f;
+			hammer->SetRotation({.x = 1.58f});
 		}
 
 		break;
@@ -356,7 +354,9 @@ void Player::BehaviorAttackUpdate() {
 		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 10) {
 			worldTransforms_[kLeft_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
 			worldTransforms_[kRight_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
-			worldTransforms_[khammer]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
+			Vector3 hammerAngle = hammer->GetRotation();//ハンマーの回転
+			hammerAngle.x -= kConstAttacks_[1].anticipationSpeed;
+			hammer->SetRotation(hammerAngle);
 		}
 
 		if (workAttack_.attackParameter_ > 15 && workAttack_.attackParameter_ < 25) {
@@ -368,7 +368,9 @@ void Player::BehaviorAttackUpdate() {
 		if (workAttack_.attackParameter_ > 30 && workAttack_.attackParameter_ < 40) {
 			worldTransforms_[kLeft_arm]->rotation_.x += kConstAttacks_[1].swingSpeed;
 			worldTransforms_[kRight_arm]->rotation_.x += kConstAttacks_[1].swingSpeed;
-			worldTransforms_[khammer]->rotation_.x += 0.2422f;
+			Vector3 hammerAngle = hammer->GetRotation();
+			hammerAngle.x += 0.2422f;
+			hammer->SetRotation(hammerAngle);
 		} 
 
 
@@ -379,7 +381,7 @@ void Player::BehaviorAttackUpdate() {
 
 		worldTransforms_[kLeft_arm]->rotation_.x = -1.53f;
 		worldTransforms_[kRight_arm]->rotation_.x = -1.53f;
-		worldTransforms_[khammer]->rotation_ = {0.0f, -1.58f, 4.72f};
+		hammer->SetRotation({0.0f, -1.58f, 4.72f});
 		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 15) {
 			worldTransforms_[kBase]->rotation_.y += kConstAttacks_[2].swingSpeed;
 		}
@@ -424,6 +426,8 @@ void Player::BehaviorJumpUpdate() {
 }
 
 void Player::UpdateBehavior() {
+
+	hammer->Update();
 
 	//ふるまい更新をメンバ関数ポインタで呼び出す
 	(this->*behaviorUpdateTable[static_cast<size_t>(behavior_)])();
