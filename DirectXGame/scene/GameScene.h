@@ -92,16 +92,18 @@ private: // メンバ変数
 	unique_ptr<Model> modelGround_ = {nullptr};
 	unique_ptr<Model> modelSkydome_ = {nullptr};
 
+	// 地面
+	unique_ptr<Ground> ground_ = nullptr;
+	// 天球
+	unique_ptr<SkyDome> skyDome_ = nullptr;
+
 	// 自キャラ
 	unique_ptr<Player> player_ = nullptr;
 	// 敵
 	list<unique_ptr<Enemy>> enemies_;
 	// レールカメラ
 	unique_ptr<FollowCamera> followCamera_ = nullptr;
-	// 地面
-	unique_ptr<Ground> ground_ = nullptr;
-	// 天球
-	unique_ptr<SkyDome> skyDome_ = nullptr;
+
 	// ロックオン
 	unique_ptr<LockOn> lockOn_ = nullptr;
 

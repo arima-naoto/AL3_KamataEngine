@@ -33,9 +33,9 @@ private://メンバ変数
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//存続時間(消滅までの時間)<秒>
-	static inline const float kDuration = 2.5f;
+	static inline const float kDuration = 0.3f;
 	//移動の速さ
-	static inline const float kSpeed = 0.002f;
+	static inline const float kSpeed = 0.07f;
 	//終了フラグ
 	bool isFinished_ = false;
 	//経過時間カウント

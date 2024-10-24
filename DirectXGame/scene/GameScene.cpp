@@ -73,12 +73,13 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
+	ground_->Draw();  // 地面
+	skyDome_->Draw(); // 天球
+
 	player_->Draw();  // プレイヤー
 	for (auto& enemy : enemies_) {
 		enemy->Draw(); // 敵
 	}
-	ground_->Draw();  // 地面
-	skyDome_->Draw(); // 天球
 
 	collisionManager_->Draw(viewProjection_);//当たり判定の表示
 
@@ -124,6 +125,14 @@ void GameScene::CreateModel() {
 
 void GameScene::InitializeObject() {
 
+	// 地面の生成
+	ground_ = make_unique<Ground>();
+	ground_->Initialize(modelGround_.get(), &viewProjection_);
+
+	// 天球の生成
+	skyDome_ = make_unique<SkyDome>();
+	skyDome_->Initialize(modelSkydome_.get(), &viewProjection_);
+
 	// パーツ
 	std::vector<Model*> playerParts = {
 	    nullptr,                  // ベース(存在していないのでnullptrにしている)
@@ -154,13 +163,7 @@ void GameScene::InitializeObject() {
 
 	player_->SetViewProjection(followCamera_->GetViewProjection());
 
-	// 地面の生成
-	ground_ = make_unique<Ground>();
-	ground_->Initialize(modelGround_.get(), &viewProjection_);
-
-	// 天球の生成
-	skyDome_ = make_unique<SkyDome>();
-	skyDome_->Initialize(modelSkydome_.get(), &viewProjection_);
+	
 
 	lockOn_ = make_unique<LockOn>();
 	lockOn_->Initialize();//ロックオンの初期化
@@ -172,13 +175,13 @@ void GameScene::InitializeObject() {
 
 ///各オブジェクトの更新処理
 void GameScene::UpdateObject() {
+	ground_->Update();  // 地面
+	skyDome_->Update(); // 天球
 	player_->Update(); // プレイヤー
 	for (auto& enemy : enemies_) {
 		enemy->Update(); // 敵
 	}
 	followCamera_->Update();                    // レールカメラ
-	ground_->Update();                          // 地面
-	skyDome_->Update();                         // 天球
 	lockOn_->Update(enemies_, viewProjection_); // ロックオン
 	collisionManager_->UpdateWorldTransform();  //デバッグ表示用にワールドトランスフォームを更新
 	MoveDebugCamera();                          // デバッグカメラ

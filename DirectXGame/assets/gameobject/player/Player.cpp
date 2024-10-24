@@ -38,9 +38,11 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 	hammer->SetParent(this->GetWorldTransform()[kBody]);
 
 	//ヒットエフェクトの生成
-	modelEffect_.reset(Model::CreateSphere());
-	hitEffect_ = std::make_unique<HitEffect>();
-	hitEffect_->Initialize(modelEffect_.get(), viewProjection, {0.0f, 1.48f, 0.0f});
+	if (isHit_) {
+		modelEffect_.reset(Model::CreateSphere());
+		hitEffect_ = std::make_unique<HitEffect>();
+		hitEffect_->Initialize(modelEffect_.get(), viewProjection, {0.0f, 1.48f, 0.0f});
+	}
 
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Player";
@@ -60,7 +62,7 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 
 void Player::Update() 
 { 
-	if (isHit_) {
+	if (hitEffect_) {
 		hitEffect_->Update();
 	}
 
@@ -91,7 +93,7 @@ void Player::Draw() {
 		hammer->Draw(*viewProjection_);
 	}
 
-	if (isHit_) {
+	if (hitEffect_) {
 		hitEffect_->Draw();
 	}
 

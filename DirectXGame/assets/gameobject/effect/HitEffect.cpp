@@ -15,7 +15,7 @@ void HitEffect::Initialize(Model* model, ViewProjection* viewProjection, const V
 	// ワールド変換データの初期化
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
-	worldTransform_.scale_ = {1.0f, 1.0f, 1.0f};
+	worldTransform_.scale_ = {0.2f, 0.2f, 0.2f};
 
 	objectColor_.Initialize();
 	color_ = {1, 1, 1, 1};
@@ -26,8 +26,6 @@ void HitEffect::Update() {
 	if (isFinished_) {
 		return;
 	}
-
-	
 
 	// ワールド変換データの更新
 	worldTransform_.UpdateMatrix();
