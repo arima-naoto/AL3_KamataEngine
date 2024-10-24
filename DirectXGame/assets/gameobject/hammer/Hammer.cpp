@@ -43,7 +43,7 @@ void Hammer::OnCollision([[maybe_unused]] Collider* other) {
 	// 衝突相手が敵なら
 	if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::KEnemy)) {
 		Enemy* enemy = static_cast<Enemy*>(other);
-		
+		enemy;
 	}
 }
 

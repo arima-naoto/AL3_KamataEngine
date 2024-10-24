@@ -4,6 +4,7 @@
 #include "assets/gameobject/BaseCharacter.h"
 #include "assets/process/math/Rendering.h"
 #include "assets/gameobject/hammer/Hammer.h"
+#include "assets/gameobject/effect/HitEffect.h"
 #include "memory"
 
 class Input;
@@ -77,9 +78,6 @@ public://メンバ関数
 
 	///中心座標を取得
 	Vector3 GetCenterPosition() const override;
-
-	const Hammer* GetHammer() { return hammer.get(); }
-
 
 private:
 
@@ -166,7 +164,12 @@ private://メンバ変数
 	static void (Player::*behaviorInitializeTable[])();
 	static void (Player::*behaviorUpdateTable[])();
 
-	std::unique_ptr<Model> modelHammer;
-	std::unique_ptr<Hammer>hammer;
+	std::unique_ptr<Model> modelHammer = nullptr;
+	std::unique_ptr<Hammer>hammer = nullptr;
+
+	std::unique_ptr<Model> modelEffect_ = nullptr;
+	std::unique_ptr<HitEffect> hitEffect_ = nullptr; 
+
+	bool isHit_ = true;
 
 };

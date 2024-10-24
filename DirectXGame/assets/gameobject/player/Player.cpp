@@ -31,10 +31,16 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 	InitializeWorldTransform();
 	InitializeFloatingGimmick();
 
+	//ハンマーの生成
 	modelHammer.reset(Model::CreateFromOBJ("hammer", true));
 	hammer = std::make_unique<Hammer>();
 	hammer->Initialize(modelHammer.get());
 	hammer->SetParent(this->GetWorldTransform()[kBody]);
+
+	//ヒットエフェクトの生成
+	modelEffect_.reset(Model::CreateSphere());
+	hitEffect_ = std::make_unique<HitEffect>();
+	hitEffect_->Initialize(modelEffect_.get(), viewProjection, {0.0f, 1.48f, 0.0f});
 
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Player";
@@ -54,7 +60,9 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 
 void Player::Update() 
 { 
-
+	if (isHit_) {
+		hitEffect_->Update();
+	}
 
 	InitializeBehavior();
 	UpdateBehavior();
@@ -79,6 +87,10 @@ void Player::Draw() {
 	if (behavior_ == Behavior::kAttack) {
 		//近接武器(ハンマー)を描画する
 		hammer->Draw(*viewProjection_);
+	}
+
+	if (isHit_) {
+		hitEffect_->Draw();
 	}
 
 }

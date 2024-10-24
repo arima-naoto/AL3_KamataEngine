@@ -109,6 +109,7 @@
     <ClCompile Include="2d\ImGuiManager.cpp" />
     <ClCompile Include="assets\gameobject\BaseCharacter.cpp" />
     <ClCompile Include="assets\gameobject\camera\FollowCamera.cpp" />
+    <ClCompile Include="assets\gameobject\effect\HitEffect.cpp" />
     <ClCompile Include="assets\gameobject\enemy\Enemy.cpp" />
     <ClCompile Include="assets\gameobject\ground\Ground.cpp" />
     <ClCompile Include="assets\gameobject\hammer\Hammer.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="3d\WorldTransform.h" />
     <ClInclude Include="assets\gameobject\BaseCharacter.h" />
     <ClInclude Include="assets\gameobject\camera\FollowCamera.h" />
+    <ClInclude Include="assets\gameobject\effect\HitEffect.h" />
     <ClInclude Include="assets\gameobject\enemy\Enemy.h" />
     <ClInclude Include="assets\gameobject\ground\ground.h" />
     <ClInclude Include="assets\gameobject\hammer\Hammer.h" />
