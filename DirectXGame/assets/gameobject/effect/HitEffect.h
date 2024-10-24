@@ -22,8 +22,6 @@ public:
 	//描画
 	void Draw();
 
-	void DrawDebugText();
-
 private://メンバ変数
 
 	//モデルデータ
@@ -33,7 +31,7 @@ private://メンバ変数
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//存続時間(消滅までの時間)<秒>
-	static inline const float kDuration = 0.3f;
+	static inline const float kDuration = 0.4f;
 	//移動の速さ
 	static inline const float kSpeed = 0.07f;
 	//終了フラグ

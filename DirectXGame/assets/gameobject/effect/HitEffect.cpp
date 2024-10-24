@@ -65,6 +65,4 @@ void HitEffect::Draw() {
 
 }
 
-void HitEffect::DrawDebugText() { ImGui::DragFloat3("hitEffect translate", &worldTransform_.translation_.x, 0.01f); }
-
 

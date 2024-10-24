@@ -66,8 +66,6 @@ void Player::Update()
 		hitEffect_->Update();
 	}
 
-	hitEffect_.get()->DrawDebugText();
-
 	InitializeBehavior();
 	UpdateBehavior();
 
@@ -102,6 +100,7 @@ void Player::Draw() {
 void Player::OnCollision([[maybe_unused]] Collider* other) { 
 	//衝突していれば、ジャンプ行動をリクエストする
 	behaviorRequest_ = Behavior::kJump; 
+
 }
 
 Vector3 Player::GetCenterPosition() const {
