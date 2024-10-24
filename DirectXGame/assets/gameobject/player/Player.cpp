@@ -64,6 +64,8 @@ void Player::Update()
 		hitEffect_->Update();
 	}
 
+	hitEffect_.get()->DrawDebugText();
+
 	InitializeBehavior();
 	UpdateBehavior();
 

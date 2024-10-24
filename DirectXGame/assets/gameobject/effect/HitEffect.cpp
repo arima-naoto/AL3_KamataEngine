@@ -15,6 +15,7 @@ void HitEffect::Initialize(Model* model, ViewProjection* viewProjection, const V
 	// ワールド変換データの初期化
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
+	worldTransform_.scale_ = {1.0f, 1.0f, 1.0f};
 
 	objectColor_.Initialize();
 	color_ = {1, 1, 1, 1};
@@ -26,10 +27,12 @@ void HitEffect::Update() {
 		return;
 	}
 
+	
+
 	// ワールド変換データの更新
 	worldTransform_.UpdateMatrix();
 
-	Vector3 velocity = Vector3(kSpeed);
+	Vector3 velocity = {kSpeed,kSpeed,0};
 	// 移動処理
 	worldTransform_.scale_ += velocity;
 
@@ -63,5 +66,7 @@ void HitEffect::Draw() {
 	model_->Draw(worldTransform_, *viewProjection_, &objectColor_);
 
 }
+
+void HitEffect::DrawDebugText() { ImGui::DragFloat3("hitEffect translate", &worldTransform_.translation_.x, 0.01f); }
 
 
