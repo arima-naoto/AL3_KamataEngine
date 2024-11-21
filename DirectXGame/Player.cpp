@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "Rendering.h"
 #include "ViewProjection.h"
+#include "numbers"
 
 #define M_PI 3.14f
 
@@ -24,7 +25,6 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 	input_ = Input::GetInstance();
 
 	InitializeWorldTransform();
-	InitializeFloatingGimmick();
 }
 
 ///更新処理
@@ -32,7 +32,6 @@ void Player::Update() {
 
 	DrawDebugText();
 	JoyStickMove();
-	UpdateFloatingGimmick();
 
 	//行列の更新
 	for (auto worldTransform : worldTransforms_) {
@@ -42,45 +41,84 @@ void Player::Update() {
 
 ///描画処理
 void Player::Draw() {
-
-	
 	// 3Dモデルを描画
-	models_[kBody]->Draw(*worldTransforms_[kBody], *viewProjection_);           // 体
-	models_[kHead]->Draw(*worldTransforms_[kHead], *viewProjection_);           // 頭
-	models_[kLeft_arm]->Draw(*worldTransforms_[kLeft_arm], *viewProjection_);   // 左腕
-	models_[kRight_arm]->Draw(*worldTransforms_[kRight_arm], *viewProjection_); // 右腕
+
+	//体
+	models_[kBody]->Draw(*worldTransforms_[kBody], *viewProjection_);
+	models_[kUpperClothes]->Draw(*worldTransforms_[kUpperClothes], *viewProjection_);
+	models_[kLowerClothes]->Draw(*worldTransforms_[kLowerClothes], *viewProjection_);
+	
+	//頭
+	models_[kFace]->Draw(*worldTransforms_[kFace], *viewProjection_);
+	models_[kEyebrow]->Draw(*worldTransforms_[kEyebrow], *viewProjection_);
+	models_[kHairLeft]->Draw(*worldTransforms_[kHairLeft], *viewProjection_);
+	models_[kHairRight]->Draw(*worldTransforms_[kHairRight], *viewProjection_);
+	
+	//左側パーツ
+	models_[kLeft_arm]->Draw(*worldTransforms_[kLeft_arm], *viewProjection_);
+	models_[kLeft_thigh]->Draw(*worldTransforms_[kLeft_thigh], *viewProjection_);
+	models_[kLeft_leg]->Draw(*worldTransforms_[kLeft_leg], *viewProjection_);
+
+	// 左側パーツ
+	models_[kRight_arm]->Draw(*worldTransforms_[kRight_arm], *viewProjection_);
+	models_[kRight_thigh]->Draw(*worldTransforms_[kRight_thigh], *viewProjection_);
+	models_[kRight_leg]->Draw(*worldTransforms_[kRight_leg], *viewProjection_);
 };
 
 ///ワールドトランスフォームの初期化処理
 void Player::InitializeWorldTransform() {
 
-	for (int i = 0; i < 5; i++) {
-		worldTransforms_.resize(5);
-		WorldTransform *worldTransform=new WorldTransform();
+	for (int i = 0; i < 14; i++) {
+		worldTransforms_.resize(14);
+		WorldTransform* worldTransform = new WorldTransform();
 		worldTransform->Initialize();
 		worldTransforms_[i] = worldTransform;
 	}
 
-	//体の親子関係
-	worldTransforms_[kBody]->parent_ = GetWorldTransform()[kBase];
-	
-	//頭の親子関係
-	worldTransforms_[kHead]->parent_ = GetWorldTransform()[kBody];
-	worldTransforms_[kHead]->translation_ = {0.0f, 1.504f, 0.0f};//座標設定
-
-	//左腕の親子関係
-	worldTransforms_[kLeft_arm]->parent_ = GetWorldTransform()[kBody];
-	worldTransforms_[kLeft_arm]->translation_ = {-0.527f, 1.262f, 0.0f};//座標設定
-
-	//右腕の親子関係
-	worldTransforms_[kRight_arm]->parent_ = GetWorldTransform()[kBody];
-	worldTransforms_[kRight_arm]->translation_ = {0.527f, 1.262f, 0.0f};//座標設定
-	
+	//親子関係を設定
+	this->SettingParent();
 
 }
 
-///浮遊ギミック初期化
-void Player::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
+void Player::SettingParent() {
+
+	worldTransforms_[kBase]->translation_.y = -0.5f;
+	//worldTransforms_[kBase]->rotation_.y = std::numbers::pi_v<float>;
+
+	// 体
+	worldTransforms_[kBody]->parent_ = this->GetWorldTransform()[kBase];
+	worldTransforms_[kBody]->translation_.z = -4.0f;
+
+	// 服
+	worldTransforms_[kUpperClothes]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kLowerClothes]->parent_ = this->GetWorldTransform()[kBody];
+
+	// 顔
+	worldTransforms_[kFace]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kEyebrow]->parent_ = this->GetWorldTransform()[kFace];
+	worldTransforms_[kEyebrow]->translation_.z = -0.006f;
+	worldTransforms_[kHairLeft]->parent_ = this->GetWorldTransform()[kFace];
+	worldTransforms_[kHairRight]->parent_ = this->GetWorldTransform()[kFace];
+
+	// 左側
+	worldTransforms_[kLeft_arm]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kLeft_arm]->translation_ = {-0.05f, 0.05f, 0.0f};
+
+
+	worldTransforms_[kLeft_thigh]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kLeft_thigh]->translation_.y = 0.015f;
+	worldTransforms_[kLeft_leg]->parent_ = this->GetWorldTransform()[kLeft_thigh];
+	worldTransforms_[kLeft_leg]->translation_.y = 0.035f;
+
+	// 右側
+	worldTransforms_[kRight_arm]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kRight_arm]->translation_ = {0.05f, 0.05f, 0.0f};
+
+	worldTransforms_[kRight_thigh]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kRight_thigh]->translation_.y = 0.02f;
+	worldTransforms_[kRight_leg]->parent_ = this->GetWorldTransform()[kRight_thigh];
+	worldTransforms_[kRight_leg]->translation_.y = 0.03f;
+};
 
 ///ジョイスティックによる移動処理
 void Player::JoyStickMove() {
@@ -117,34 +155,27 @@ void Player::JoyStickMove() {
 	}
 }
 
-///浮遊ギミック更新
-void Player::UpdateFloatingGimmick() {
-
-///===================================================<浮遊アニメーション>========================================================
-
-	// 1フレーム出のパラメータ加算値
-	const float step = 2.0f * M_PI / cycle_;
-	// パラメータを1ステップ分加算
-	floatingParameter_ += step;
-	// 2π超えたら0に戻す
-	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * M_PI);
-	// 浮遊を座標に反映
-	worldTransforms_[kBody]->translation_.y = std::sin(floatingParameter_) * amplitube;
-	worldTransforms_[kLeft_arm]->rotation_.x = std::sin(floatingParameter_) * armAngle_;
-	worldTransforms_[kRight_arm]->rotation_.x = std::sin(floatingParameter_) * armAngle_;
-};
-
 ///デバッグテキスト描画
 void Player::DrawDebugText() {
 
 #ifdef _DEBUG
-	SliderFloat3("Body Translate", &worldTransforms_[kBody]->translation_.x, -5.0f, 5.0f);
-	SliderFloat3("Head Translate", &worldTransforms_[kHead]->translation_.x, -5.0f, 5.0f);
-	SliderFloat3("L_arm Rotation", &worldTransforms_[kLeft_arm]->rotation_.x, -5.0f, 5.0f);
-	SliderFloat3("R_arm Rotation", &worldTransforms_[kRight_arm]->rotation_.x, -5.0f, 5.0f);
-	SliderInt("FloatingCycle", &cycle_, 1, 200);
-	SliderFloat("FloaingAmplitube", &amplitube, 0, 10);
-	SliderFloat("IdelArmAngleMax",&armAngle_,0,3.5f);
+	DragFloat3("Base Translate", &worldTransforms_[kBase]->translation_.x, 0.01f);
+	DragFloat3("Base Rotation", &worldTransforms_[kBase]->rotation_.x, 0.01f);
+	
+	DragFloat3("Eyebrow Translate", &worldTransforms_[kEyebrow]->translation_.x, 0.01f);
+
+	DragFloat3("Body Translate", &worldTransforms_[kBody]->translation_.x, 0.01f);
+	DragFloat3("UpperClothes scale", &worldTransforms_[kUpperClothes]->scale_.x, 0.01f);
+	DragFloat3("UpperClothes Rotation", &worldTransforms_[kUpperClothes]->rotation_.x, 0.01f);
+	DragFloat3("UpperClothes Translate", &worldTransforms_[kUpperClothes]->translation_.x, 0.01f);
+	
+	DragFloat3("L_Arm Translate", &worldTransforms_[kLeft_arm]->translation_.x, 0.01f);
+	DragFloat3("L_thigh Translate", &worldTransforms_[kLeft_thigh]->translation_.x, 0.01f);
+	DragFloat3("L_leg Translate", &worldTransforms_[kLeft_leg]->translation_.x, 0.01f);
+
+	DragFloat3("R_Arm Translate", &worldTransforms_[kRight_arm]->translation_.x, 0.01f);
+	DragFloat3("R_thigh Translate", &worldTransforms_[kRight_thigh]->translation_.x, 0.01f);
+	DragFloat3("R_leg Translate", &worldTransforms_[kRight_leg]->translation_.x, 0.01f);
 #endif // _DEBUG
 }
 

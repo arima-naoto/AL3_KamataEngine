@@ -7,13 +7,26 @@ class Model;
 class ViewProjection;
 class Input;
 
+
 //プレイヤーパーツの列挙体
 enum Parts {
-	kBase,
-	kBody,
-	kHead,
-	kLeft_arm,
-	kRight_arm
+	kBase,         // ベース
+	kBody,         // 体
+	kUpperClothes, // 服
+	kLowerClothes, // スカート
+
+	kFace,    // 顔
+	kEyebrow, // 眉
+	kHairLeft,    // 左髪
+	kHairRight,    // 左髪
+
+	kLeft_arm,   // 左腕
+	kLeft_thigh, // 左太もも
+	kLeft_leg,   // 左脚
+
+	kRight_arm,   // 右腕
+	kRight_thigh, // 右太もも
+	kRight_leg,   // 右脚
 };
 
 /// <summary>
@@ -43,20 +56,15 @@ public: // メンバ関数
 	void SetViewProjection(const ViewProjection* viewProjection);
 
 private: // メンバ関数(このクラスでしか使わない関数)
+
+	//親子関係を設定
+	void SettingParent();
+
 	/// 各ワールドトランスフォーム初期化
 	void InitializeWorldTransform();
 
-	/// 浮遊ギミック初期化
-	void InitializeFloatingGimmick();
-
 	/// ジョイスティックによる移動処理
 	void JoyStickMove();
-
-	/// 浮遊ギミック更新
-	void UpdateFloatingGimmick();
-
-	/// アームアニメーション更新
-	void UpdateArmFloatingMovement(float& floatingValue, float& floatingParameter, int32_t cycle, float armAngle);
 
 	/// デバッグテキスト描画
 	void DrawDebugText();
@@ -74,12 +82,4 @@ private: // メンバ変数
 
 	Vector3 velocity_ = {};
 	Vector3 targetRotate_ = {};
-
-	/// 浮遊ギミックの媒介変数
-	float floatingParameter_ = 0.0f;
-	/// 浮遊移動のサイクル<frame>
-	static inline int32_t cycle_ = 90;
-	/// 浮遊の振幅
-	static inline float amplitube = 0.2f;
-	static inline float armAngle_ = 0.5f;
 };
