@@ -11,11 +11,11 @@ public:
 	//デストラクタ
 	~Hammer() override = default;
 	//初期化
-	void Initialize(Model *model);
+	void Initialize(Model* model, ViewProjection* viewProjection);
 	//更新
 	void Update();
 	//描画
-	void Draw(const ViewProjection& viewProjection);
+	void Draw();
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision([[maybe_unused]] Collider* other) override;
 	//中心座標を取得
@@ -30,6 +30,7 @@ public:
 private:
 
 	Model* model_ = nullptr;
+	ViewProjection* viewProjection_ = nullptr;
 	WorldTransform worldTransform_;
 	std::unique_ptr<Model> effect_;
 

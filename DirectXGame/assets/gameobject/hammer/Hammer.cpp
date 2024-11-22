@@ -6,17 +6,19 @@
 using namespace ImGui;
 #endif // _DEBUG
 
-void Hammer::Initialize(Model* model) {
+void Hammer::Initialize(Model* model, ViewProjection* viewProjection) {
 
 	assert(model);
 
 	model_ = model;
+	viewProjection_ = viewProjection;
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_.y = 1.37f;
 	worldTransform_.rotation_.x = 3;
 
-	effect_.reset(Model::CreateFromOBJ("sphere", true));
+	Collider::Initialize();
+
 	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayerWeapon));
 }
 
@@ -29,12 +31,13 @@ void Hammer::Update() {
 	End();
 #endif // DEBUG
 
+	Collider::UpdateWorldTransform();
 
 	worldTransform_.UpdateMatrix(); 
 }
 
-void Hammer::Draw(const ViewProjection &viewProjection) { 
-	model_->Draw(worldTransform_, viewProjection); 
+void Hammer::Draw() { 
+	model_->Draw(worldTransform_, *viewProjection_); 
 }
 
 void Hammer::OnCollision([[maybe_unused]] Collider* other) {

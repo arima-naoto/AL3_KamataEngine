@@ -76,7 +76,7 @@ void FollowCamera::JoyStickRotation() {
 	if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB)) {
 		float targetAngle = target_->rotation_.y + 2 * float(M_PI);
 
-		const float rotateLerpSpeed = 0.03f;
+		const float rotateLerpSpeed = 0.5f;
 		viewProjection_->rotation_.y = Calculator::LerpShortAngle(viewProjection_->rotation_.y, targetAngle, rotateLerpSpeed);
 	}
 };

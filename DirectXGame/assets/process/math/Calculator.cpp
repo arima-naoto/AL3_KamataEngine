@@ -108,9 +108,10 @@ Vector3 Calculator::Lerp(const Vector3& a, const Vector3& b, float t) {
 
 float Calculator::LerpShortAngle(float a, float b, float t) {
 
-	// aとbの間の差を計算し,正規化する
-	float diff = fmod(b - a + float(M_PI), 2 * float(M_PI)) - float(M_PI);
+	float diff = b - a;
 
-	// 線形補間を適用する
+	diff = fmod(diff + float(M_PI), 2 * float(M_PI)) - float(M_PI);
+
 	return a + diff * t;
+
 }

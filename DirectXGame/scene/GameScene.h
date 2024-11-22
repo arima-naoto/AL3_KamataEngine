@@ -12,12 +12,13 @@
 using namespace std;
 
 // 各クラスの前方宣言
-class Player;           // プレイヤー
-class Enemy;            // 敵
-class FollowCamera;     //レールカメラ
-class Ground;           // 地面
-class LockOn;           // ロックオン
 class SkyDome;          // 天球
+class Ground;           // 地面
+class Player;           // プレイヤー
+class FollowCamera;     //レールカメラ
+class Enemy;            // 敵
+class Hammer;
+class LockOn;           // ロックオン
 class CollisionManager; // 衝突マネージャ
 class DebugCamera;      // デバッグカメラ
 
@@ -99,10 +100,12 @@ private: // メンバ変数
 
 	// 自キャラ
 	unique_ptr<Player> player_ = nullptr;
-	// 敵
-	list<unique_ptr<Enemy>> enemies_;
 	// レールカメラ
 	unique_ptr<FollowCamera> followCamera_ = nullptr;
+	// 敵
+	list<unique_ptr<Enemy>> enemies_;
+	// ハンマー
+	unique_ptr<Hammer> hammer_ = nullptr;
 
 	// ロックオン
 	unique_ptr<LockOn> lockOn_ = nullptr;

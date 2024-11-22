@@ -34,7 +34,7 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 	//ハンマーの生成
 	modelHammer.reset(Model::CreateFromOBJ("hammer", true));
 	hammer = std::make_unique<Hammer>();
-	hammer->Initialize(modelHammer.get());
+	hammer->Initialize(modelHammer.get(),viewProjection);
 	hammer->SetParent(this->GetWorldTransform()[kBody]);
 
 	//ヒットエフェクトの生成
@@ -86,10 +86,10 @@ void Player::Draw() {
 	models_[kRight_arm]->Draw(*worldTransforms_[kRight_arm], *viewProjection_); // 右腕
 
 	//ふるまいが攻撃の時のみ
-	if (behavior_ == Behavior::kAttack) {
+	//if (behavior_ == Behavior::kAttack) {
 		//近接武器(ハンマー)を描画する
-		hammer->Draw(*viewProjection_);
-	}
+		hammer->Draw();
+	//}
 
 	if (hitEffect_) {
 		hitEffect_->Draw();

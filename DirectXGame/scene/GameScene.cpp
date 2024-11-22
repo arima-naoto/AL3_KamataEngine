@@ -225,7 +225,9 @@ void GameScene::CheckAllCollisions() {
 	for (const unique_ptr<Enemy>& enemy : enemies_) {
 		collisionManager_->AddCollider(enemy.get());
 	}
-	
+	if (hammer_) {
+		collisionManager_->AddCollider(hammer_.get());
+	}
 
 	//衝突判定と応答
 	collisionManager_->CheckAllCollisions();
