@@ -48,41 +48,39 @@ void Player::Draw()
 
 
 void Player::JoyStickMove() {
+	GamePadController();
+	if (isMoving) {
 
-	XINPUT_STATE joyState;
+		move = ~move * speed;
 
-	if (input_->GetJoystickState(0, joyState)) {
+		Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
 
-		const float threshold = 0.7f;
-		const float speed = 0.3f;
-		bool isMoving = false;
-	   
-		Vector3 move = {
-			(float)joyState.Gamepad.sThumbLX / SHRT_MAX ,0.f, (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
-		
-		if (Calculator::Length(move) > threshold) {
-			isMoving = true;
-		}
+		move = Rendering::TransformNormal(move, rotateYMatrix);
 
-		if (isMoving) {
+		worldTransform_.translation_ += move;
 
-			move = ~move * speed;
-
-			Matrix4x4 rotateYMatrix = Rendering::MakeRotateYMatrix(viewProjection_->rotation_.y);
-
-			move = Rendering::TransformNormal(move, rotateYMatrix);
-
-			worldTransform_.translation_ += move;
-			velocity_ = move;
-
-			targetRotate_.y = std::atan2(move.x, move.z);
-		}
-
-		worldTransform_.rotation_.y = Calculator::LerpShortAngle(worldTransform_.rotation_.y, targetRotate_.y, 1.0f);
+		targetRotate_.y = std::atan2(move.x, move.z);
 	}
 
+	worldTransform_.rotation_.y = Calculator::LerpShortAngle(worldTransform_.rotation_.y, targetRotate_.y, destinationAngleY);
+	worldTransform_.UpdateMatrix();
 
 }
+
+void Player::GamePadController() { 
+	XINPUT_STATE joyState;
+	if (input_->GetJoystickState(0, joyState)) {
+		const float threshold = 0.7f;
+		move = {(float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.f, (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
+
+		if (Calculator::Length(move) > threshold) {
+			isMoving = true;
+		} else {
+			isMoving = false;
+		}
+	}
+}
+
 
 void Player::SetViewProjection(const ViewProjection* viewProjection) {
 	viewProjection_ = viewProjection;

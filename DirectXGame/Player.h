@@ -25,6 +25,8 @@ public://メンバ関数
 	/// </summary>
 	void Draw();
 
+	void GamePadController();
+
 	const WorldTransform& GetWorldTransform() { return worldTransform_; };
 
 	void SetViewProjection(const ViewProjection* viewProjection);
@@ -46,7 +48,11 @@ private://メンバ変数
 
 	Input* input_ = nullptr;
 
-	Vector3 velocity_ = {};
+	const float speed = 0.3f;
+	Vector3 move = {};
+	bool isMoving = false;
+
 	Vector3 targetRotate_ = {};
+	float destinationAngleY = 0.1f;
 
 };

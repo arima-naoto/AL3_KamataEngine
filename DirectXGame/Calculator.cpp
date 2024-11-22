@@ -106,8 +106,7 @@ float Calculator::LerpShortAngle(float a, float b, float t) {
 
 	float diff = b - a;
 
-	float Lerp = std::fmod(-2 * float(M_PI), 2 * float(M_PI)) + diff * t;
-	Lerp = std::fmod(float(-M_PI), float(M_PI)) + diff * t;
+	diff = fmod(diff + float(M_PI), 2 * float(M_PI)) - float(M_PI);
 
-	return a + Lerp * t;
+	return a + diff * t;
 }
