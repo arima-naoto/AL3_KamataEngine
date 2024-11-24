@@ -4,6 +4,7 @@
 #include "input.h"
 
 #include "assets/gameobject/player/Player.h"
+#include "assets/gameobject/lockOn/LockOn.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -27,13 +28,24 @@ void FollowCamera::Update() {
 		// 追従座標の補間
 		interTarget_ = Calculator::Lerp(interTarget_, target_->translation_,cameraLerp);
 	}
+
+	if (lockOn_ && lockOn_->ExistTarget()) {
+		//ロックオン対象の座標取得
+		Vector3 lockOnPos = lockOn_->GetTargetPosition();
+		// 追従対象からロックオン対象へのベクトルを求める
+		Vector3 sub = lockOnPos - viewProjection_->translation_;
+		// Y軸周り角度
+		viewProjection_->rotation_.y = std::atan2(sub.x, sub.z);
+	} else {
+		// ジョイスティックによるカメラの回転
+		FollowCamera::JoyStickRotation();
+	}
 	
 	// 追従対象からのオフセット
 	Vector3 offset = CalcOffset();
 	// カメラ座標
 	viewProjection_->translation_ = interTarget_ + offset;
-	//ジョイスティックによるカメラの回転
-	FollowCamera::JoyStickRotation();
+	
 	//ビュー行列の更新
 	viewProjection_->UpdateViewMatrix();
 }
@@ -44,7 +56,7 @@ void FollowCamera::Reset() {
 	if (target_) {
 		// 追従座標・角度の初期化
 		interTarget_ = target_->translation_;
-		viewProjection_->rotation_.y = target_->rotation_.y;
+		viewProjection_->rotation_.y = Rendering::LerpShortAngle(viewProjection_->rotation_.y, target_->rotation_.y, 0.025f);
 	}
 
 	desticationAngleY = viewProjection_->rotation_.y;
@@ -74,10 +86,7 @@ void FollowCamera::JoyStickRotation() {
 	viewProjection_->rotation_.y += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kRotateSpeed;
 
 	if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB)) {
-		float targetAngle = target_->rotation_.y + 2 * float(M_PI);
-
-		const float rotateLerpSpeed = 0.5f;
-		viewProjection_->rotation_.y = Calculator::LerpShortAngle(viewProjection_->rotation_.y, targetAngle, rotateLerpSpeed);
+		FollowCamera::Reset();
 	}
 };
 

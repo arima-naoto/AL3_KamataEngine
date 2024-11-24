@@ -3,6 +3,7 @@
 #include "ViewProjection.h"
 #include "Input.h"
 #include "assets/process/global/GlobalVariables.h"
+#include "assets/gameobject/lockOn/LockOn.h"
 
 #define M_PI 3.14f
 
@@ -253,6 +254,13 @@ void Player::JoyStickMove(const float speed) {
 		worldTransforms_[kBase]->translation_ += velocity_;
 
 		targetRotate_.y = std::atan2(velocity_.x, velocity_.z);
+	} else if (lockOn_ && lockOn_->ExistTarget()) {
+		// ロックオン対象の座標取得
+		Vector3 lockOnPos = lockOn_->GetTargetPosition();
+		// 追従対象からロックオン対象へのベクトルを求める
+		Vector3 sub = lockOnPos - this->GetCenterPosition();
+		// Y軸周り角度
+		worldTransforms_[kBase]->rotation_.y = std::atan2(sub.x, sub.z);
 	}
 
 	worldTransforms_[kBase]->rotation_.y = LerpShortAngle(
@@ -280,15 +288,13 @@ void Player::UpdateFloatingGimmick() {
 //通常行動
 void Player::BehaviorRootUpdate() {
 
-	const float speed = 0.3f;
-
-	JoyStickMove(speed);
-	UpdateFloatingGimmick();
-
 	XINPUT_STATE joyState;
 
-	if (!input_->GetJoystickState(0, joyState)) {
-		return;
+	if (input_->GetJoystickState(0, joyState)) {
+		const float speed = 0.3f;
+
+		JoyStickMove(speed);
+		UpdateFloatingGimmick();
 	}
 
 	//攻撃ボタンを押したら
@@ -319,6 +325,7 @@ void Player::JudgementComboContinue() {
 	XINPUT_STATE joyStatePre;
 	XINPUT_STATE joyState;
 
+	
 	// コンボ条件に達していない
 	if (workAttack_.comboIndex < ComboNum) {
 		// 今回のゲームパッドの状態を取得 && 前回のゲームパッドの状態を取得
@@ -341,6 +348,9 @@ void Player::JudgementComboContinue() {
 
 // コンボの切り替えまたはコンボ終了
 void Player::ExChangeCombo() {
+
+	
+
 	// 予備動作の時間
 	int32_t anticipationTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime;
 	int32_t chargeTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
@@ -365,7 +375,7 @@ void Player::ExChangeCombo() {
 		}
 		// コンボ継続出ないなら攻撃を終了して通常行動に戻る
 		else {
-			worldTransforms_[kBase]->rotation_.y = 0.0f;
+			worldTransforms_[kBody]->rotation_.y = 0.0f;
 			workAttack_.attackParameter_ = 0;
 			workAttack_.comboIndex = 0;
 			behaviorRequest_ = Behavior::kRoot;
@@ -375,6 +385,29 @@ void Player::ExChangeCombo() {
 
 // コンボ時のパーツ処理
 void Player::ComboPartsControl() {
+	
+	if (lockOn_ && lockOn_->ExistTarget()) {
+		// ロックオン対象の座標取得
+		Vector3 lockOnPos = lockOn_->GetTargetPosition();
+		// 追従対象からロックオン対象へのベクトルを求める
+		Vector3 sub = lockOnPos - this->GetCenterPosition();
+		// 距離
+		float distance = Rendering::Length(sub);
+		// 距離しきい値
+		const float threshold = 0.2f;
+		// しきい値より離れている時のみ
+		if (distance > threshold) {
+			// Y軸周り角度
+			worldTransforms_[kBase]->rotation_.y = std::atan2(sub.x, sub.z);
+
+			//しきい値を超える速さなら補正する
+			if (speed_ > distance - threshold) {
+				//ロックオン対象へのめり込み防止
+				speed_ = distance - threshold;
+			}
+		}
+	}
+
 	// コンボ段階によってモーションに分岐
 	switch (workAttack_.comboIndex) {
 
@@ -382,7 +415,7 @@ void Player::ComboPartsControl() {
 	case 0:
 
 		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 55) {
-			worldTransforms_[kBase]->rotation_.y -= kConstAttacks_[0].swingTime / 9.729f;
+			worldTransforms_[kBody]->rotation_.y -= kConstAttacks_[0].swingTime / 9.729f;
 			hammer->SetRotation({.x = 1.58f});
 		}
 
@@ -422,7 +455,7 @@ void Player::ComboPartsControl() {
 		worldTransforms_[kRight_arm]->rotation_.x = -1.53f;
 		hammer->SetRotation({0.0f, -1.58f, 4.72f});
 		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 15) {
-			worldTransforms_[kBase]->rotation_.y += kConstAttacks_[2].swingSpeed;
+			worldTransforms_[kBody]->rotation_.y += kConstAttacks_[2].swingSpeed;
 		}
 
 		break;
@@ -433,10 +466,13 @@ void Player::ComboPartsControl() {
 
 //攻撃行動
 void Player::BehaviorAttackUpdate() {
+
 	//フェーズアタックで使う関数の呼び出し
 	this->JudgementComboContinue(); 
 	this->ExChangeCombo();
 	this->ComboPartsControl();
+
+	
 };
 
 //ダッシュ行動

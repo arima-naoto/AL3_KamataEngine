@@ -163,10 +163,11 @@ void GameScene::InitializeObject() {
 
 	player_->SetViewProjection(followCamera_->GetViewProjection());
 
-	
-
 	lockOn_ = make_unique<LockOn>();
 	lockOn_->Initialize();//ロックオンの初期化
+
+	followCamera_->SetLockOn(lockOn_.get());
+	player_->SetLockOn(lockOn_.get());
 
 	//衝突マネージャの生成
 	collisionManager_ = make_unique<CollisionManager>();

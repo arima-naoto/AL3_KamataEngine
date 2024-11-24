@@ -4,11 +4,11 @@
 #include "memory"
 #include "Vector2.h"
 #include "assets/process/math/Rendering.h"
+#include "Input.h"
 
 class Sprite;
 class Enemy;
 class ViewProjection;
-class Input;
 
 /// <summary>
 /// ロックオン
@@ -25,7 +25,16 @@ public:
 	///	描画処理
 	void Draw();
 
+	// ロックオン対象の座標取得
+	Vector3 GetTargetPosition() const;
+
+	// ロックオン中かどうか
+	bool ExistTarget() const { return target_ ? true : false; }
+
 private:
+
+	bool JoyStickTrigger(XINPUT_STATE joyState, XINPUT_STATE joyStatePre);
+
 	// ターゲット検索
 	void SearchTarget(const std::list<std::unique_ptr<Enemy>>& enemies, const ViewProjection& viewProjection);
 

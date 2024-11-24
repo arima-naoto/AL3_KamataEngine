@@ -8,6 +8,7 @@
 #include "memory"
 
 class Input;
+class LockOn;
 
 
 //プレイヤーパーツの列挙体
@@ -78,6 +79,8 @@ public://メンバ関数
 
 	///中心座標を取得
 	Vector3 GetCenterPosition() const override;
+
+	void SetLockOn(const LockOn* lockOn) { this->lockOn_ = lockOn; } 
 
 private:
 
@@ -176,6 +179,9 @@ private://メンバ変数
 
 	static void (Player::*behaviorInitializeTable[])();
 	static void (Player::*behaviorUpdateTable[])();
+
+	const LockOn* lockOn_ = nullptr;
+	float speed_ = {};
 
 	std::unique_ptr<Model> modelHammer = nullptr;
 	std::unique_ptr<Hammer>hammer = nullptr;

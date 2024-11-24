@@ -3,6 +3,7 @@
 class ViewProjection;
 class Input;
 class Player;
+class LockOn;
 
 class FollowCamera {
 
@@ -17,6 +18,8 @@ public:
 	void SetTarget(const WorldTransform* target);
 
 	const ViewProjection* GetViewProjection(){ return viewProjection_; }
+
+	void SetLockOn(const LockOn* lockOn) { this->lockOn_ = lockOn; }
 
 private:
 
@@ -40,6 +43,5 @@ private:
 
 	float desticationAngleY = 0.0f;
 
-	Player* player_ = nullptr;
-
+	const LockOn* lockOn_ = nullptr;
 };
