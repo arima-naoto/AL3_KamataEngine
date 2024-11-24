@@ -16,11 +16,13 @@ public:
 	//デストラクタ
 	~HitEffect() = default;
 	//初期化
-	void Initialize(Model* model, ViewProjection* viewProjection, const Vector3 position);
+	void Initialize(Model* model,  ViewProjection* viewProjection);
 	//更新
 	void Update();
 	//描画
 	void Draw();
+	//親子関係
+	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
 
 private://メンバ変数
 

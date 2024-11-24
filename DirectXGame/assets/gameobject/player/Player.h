@@ -106,16 +106,27 @@ private:
 
 #pragma endregion
 
+#pragma region 更新処理メンバ関数
+
+	bool GamePadController();
+
 	///ジョイスティックによる座標の移動
 	void JoyStickMove(const float speed);
-
-#pragma region 更新処理メンバ関数
 
 	/// 浮遊ギミック更新
 	void UpdateFloatingGimmick();
 
 	/// 通常行動更新
 	void BehaviorRootUpdate();
+
+	// コンボ続行判定
+	void JudgementComboContinue();
+
+	// コンボ切り替え
+	void ExChangeCombo();
+
+	// コンボ時パーツ制御
+	void ComboPartsControl();
 
 	/// 攻撃行動更新
 	void BehaviorAttackUpdate();
@@ -141,8 +152,10 @@ private:
 private://メンバ変数
 
 	Input* input_ = nullptr;
+	ViewProjection *viewProjection_ = nullptr;
 
 	Vector3 velocity_ = {};
+	bool isMoving = false;
 	Vector3 targetRotate_ = {};
 
 	/// 浮遊ギミックの媒介変数
@@ -159,7 +172,7 @@ private://メンバ変数
 	WorkAttack workAttack_;
 
 	WorkDash workDash_;
-	float destinationAngleY = 1.0f;
+	float destinationAngleY = 0.1f;
 
 	static void (Player::*behaviorInitializeTable[])();
 	static void (Player::*behaviorUpdateTable[])();
@@ -170,6 +183,6 @@ private://メンバ変数
 	std::unique_ptr<Model> modelEffect_ = nullptr;
 	std::unique_ptr<HitEffect> hitEffect_ = nullptr; 
 
-	bool isHit_ = true;
+	bool isHit_ = false;
 
 };

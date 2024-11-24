@@ -4,7 +4,7 @@
 #include "algorithm"
 #include"imgui.h"
 
-void HitEffect::Initialize(Model* model, ViewProjection* viewProjection, const Vector3 position) {
+void HitEffect::Initialize(Model* model, ViewProjection* viewProjection) {
 	// NULLポインタチェック
 	assert(model);
 
@@ -14,7 +14,7 @@ void HitEffect::Initialize(Model* model, ViewProjection* viewProjection, const V
 
 	// ワールド変換データの初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = position;
+	worldTransform_.translation_.y = 1.0f;
 	worldTransform_.scale_ = {0.2f, 0.2f, 0.2f};
 
 	objectColor_.Initialize();
@@ -27,12 +27,14 @@ void HitEffect::Update() {
 		return;
 	}
 
-	// ワールド変換データの更新
-	worldTransform_.UpdateMatrix();
+	ImGui::DragFloat3("effect", &worldTransform_.translation_.x, 0.01f);
 
 	Vector3 velocity = {kSpeed,kSpeed,0};
 	// 移動処理
 	worldTransform_.scale_ += velocity;
+
+	// ワールド変換データの更新
+	worldTransform_.UpdateMatrix();
 
 	// カウンターを一フレーム文の秒数を進める
 	counter_ += 1.0f / 60.0f;

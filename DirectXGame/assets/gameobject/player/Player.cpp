@@ -22,10 +22,11 @@ Player::kConstAttacks_ = {
     }
 };
 
+// 初期化処理
 void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjection) {
 
 	BaseCharacter::Initialize(models, viewProjection);
-
+	viewProjection_ = viewProjection;
 	input_ = Input::GetInstance();
 
 	InitializeWorldTransform();
@@ -38,11 +39,14 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 	hammer->SetParent(this->GetWorldTransform()[kBody]);
 
 	//ヒットエフェクトの生成
-	if (isHit_) {
-		modelEffect_.reset(Model::CreateSphere());
-		hitEffect_ = std::make_unique<HitEffect>();
-		hitEffect_->Initialize(modelEffect_.get(), viewProjection, {0.0f, 1.48f, 0.0f});
-	}
+
+	modelEffect_.reset(Model::CreateSphere());
+	hitEffect_ = std::make_unique<HitEffect>();
+	hitEffect_->Initialize(modelEffect_.get(), viewProjection_);
+	hitEffect_->SetParent(this->GetWorldTransform()[kBody]);
+
+
+	Collider::SetTypeID(static_cast<uint32_t>(CollisionTypeIdDef::kPlayer));
 
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Player";
@@ -60,9 +64,10 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 
 }
 
+// 更新処理
 void Player::Update() 
 { 
-	if (hitEffect_) {
+	if (isHit_ && hitEffect_) {
 		hitEffect_->Update();
 	}
 
@@ -73,10 +78,12 @@ void Player::Update()
 	DragFloat3("player.translate", &worldTransforms_[kBase]->translation_.x, 0.01f);
 	DragInt("parameter", &workAttack_.attackParameter_, 0.01f);
 	DragInt("combo", &workAttack_.comboIndex, 0.01f);
+	Checkbox("Hit", &isHit_);
 #endif // _DEBUG
 
 }
 
+// 描画処理
 void Player::Draw() { 
 
 	// 3Dモデルを描画
@@ -86,23 +93,29 @@ void Player::Draw() {
 	models_[kRight_arm]->Draw(*worldTransforms_[kRight_arm], *viewProjection_); // 右腕
 
 	//ふるまいが攻撃の時のみ
-	//if (behavior_ == Behavior::kAttack) {
+	if (behavior_ == Behavior::kAttack) {
 		//近接武器(ハンマー)を描画する
 		hammer->Draw();
-	//}
+	}
 
-	if (hitEffect_) {
+	if (isHit_ && hitEffect_) {
 		hitEffect_->Draw();
 	}
 
 }
 
+// 衝突時処理
 void Player::OnCollision([[maybe_unused]] Collider* other) { 
-	//衝突していれば、ジャンプ行動をリクエストする
-	behaviorRequest_ = Behavior::kJump; 
-
+	uint32_t typeID = other->GetTypeID();
+	
+	if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::KEnemy)) {
+		// 衝突していれば、ジャンプ行動をリクエストする
+		//behaviorRequest_ = Behavior::kJump;
+		isHit_ = true;
+	}
 }
 
+// 中心座標取得
 Vector3 Player::GetCenterPosition() const {
 	//ローカル座標でのオフセット
 	const Vector3 offset = {0.f, 1.5f, 0.f};
@@ -113,7 +126,10 @@ Vector3 Player::GetCenterPosition() const {
 
 #pragma region 初期化処理メンバ関数の定義
 
+// 各ワールド変換データの初期化
 void Player::InitializeWorldTransform() {
+
+	// 各パーツのワールド変換データを初期化する
 	for (int i = 0; i < 5; i++) {
 		worldTransforms_.resize(5);
 		WorldTransform* worldTransform = new WorldTransform();
@@ -135,17 +151,15 @@ void Player::InitializeWorldTransform() {
 	// 右腕の親子関係
 	worldTransforms_[kRight_arm]->parent_ = GetWorldTransform()[kBody];
 	worldTransforms_[kRight_arm]->translation_ = {0.527f, 1.262f, 0.0f}; // 座標設定
-
-	//worldTransforms_[khammer]->parent_ = GetWorldTransform()[kBody];
-	//worldTransforms_[khammer]->translation_.y = 1.37f;
-	//worldTransforms_[khammer]->rotation_.x = 3;
-
 }
 
+// 浮遊ギミック初期化
 void Player::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
 
+// 通常行動初期化
 void Player::BehaviorRootInitialize() {}
 
+// 攻撃行動初期化
 void Player::BehaviorAttackInitialize() {
 	worldTransforms_[kBase]->translation_.y = 0;
 	worldTransforms_[kLeft_arm]->rotation_.x = -1.53f;
@@ -156,6 +170,7 @@ void Player::BehaviorAttackInitialize() {
 	workAttack_.attackParameter_ = 0;
 }
 
+// ダッシュ行動初期化
 void Player::BehaviorDashInitialize() {
 	workDash_.dashParameter_ = 0;
 	worldTransforms_[kBase]->rotation_.y = destinationAngleY;
@@ -163,6 +178,7 @@ void Player::BehaviorDashInitialize() {
 	worldTransforms_[kRight_arm]->rotation_.x = 0.5f;
 }
 
+// ジャンプ行動初期化
 void Player::BehaviorJumpInitialize() {
 
 	worldTransforms_[kBody]->translation_.y = 0;
@@ -175,6 +191,7 @@ void Player::BehaviorJumpInitialize() {
 	velocity_.y =  kJumpFirstSpeed;
 }
 
+// ふるまいの初期化
 void Player::InitializeBehavior() {
 
 	 if (behaviorRequest_) {
@@ -199,42 +216,51 @@ void (Player::*Player::behaviorInitializeTable[])(){
 
 #pragma region 更新処理メンバ関数の定義
 
-void Player::JoyStickMove(const float speed) {
-
+// ゲームパッド操作
+bool Player::GamePadController() { 
 	XINPUT_STATE joyState;
 
 	if (input_->GetJoystickState(0, joyState)) {
+		const float deadZone = 0.7f;
 
-		const float threshold = 0.7f;
-	
-		bool isMoving = false;
-	   
-		velocity_ = {
-			(float)joyState.Gamepad.sThumbLX / SHRT_MAX ,0.f, (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
-		
-		if (Calculator::Length(velocity_) > threshold) {
-			isMoving = true;
+		velocity_ = {(float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.f, (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
+
+		if (Calculator::Length(velocity_) > deadZone) {
+			return true;
 		}
-
-		if (isMoving) {
-
-			velocity_ = ~velocity_ * speed;
-
-			Matrix4x4 rotateYMatrix = MakeRotateYMatrix(viewProjection_->rotation_.y);
-
-			velocity_ = TransformNormal(velocity_, rotateYMatrix);
-
-			worldTransforms_[kBase]->translation_ += velocity_;
-			velocity_ = velocity_;
-
-			targetRotate_.y = std::atan2(velocity_.x, velocity_.z);
-		}
-
-		worldTransforms_[kBase]->rotation_.y = LerpShortAngle(
-			worldTransforms_[kBase]->rotation_.y, targetRotate_.y, destinationAngleY);
 	}
+
+	return false;
 }
 
+// ジョイスティックによる移動
+void Player::JoyStickMove(const float speed) {
+
+	if (this->GamePadController()) {
+		isMoving = true;
+	} else {
+		isMoving = false;
+	}
+
+	if (isMoving) {
+
+		velocity_ = ~velocity_ * speed;
+
+		Matrix4x4 rotateYMatrix = MakeRotateYMatrix(viewProjection_->rotation_.y);
+
+		velocity_ = TransformNormal(velocity_, rotateYMatrix);
+
+		worldTransforms_[kBase]->translation_ += velocity_;
+
+		targetRotate_.y = std::atan2(velocity_.x, velocity_.z);
+	}
+
+	worldTransforms_[kBase]->rotation_.y = LerpShortAngle(
+		worldTransforms_[kBase]->rotation_.y, targetRotate_.y, destinationAngleY);
+	
+}
+
+// 浮遊ギミック
 void Player::UpdateFloatingGimmick() {
 
 	///===================================================<浮遊アニメーション>========================================================
@@ -251,6 +277,7 @@ void Player::UpdateFloatingGimmick() {
 	worldTransforms_[kRight_arm]->rotation_.x = std::sin(floatingParameter_) * armAngle_;
 };
 
+//通常行動
 void Player::BehaviorRootUpdate() {
 
 	const float speed = 0.3f;
@@ -284,19 +311,21 @@ void Player::BehaviorRootUpdate() {
 
 }
 
-void Player::BehaviorAttackUpdate() {
-#pragma region コンボ継続判定
+#pragma region フェーズアタック用の関数の定義
+
+// コンボ続行判定
+void Player::JudgementComboContinue() {
 
 	XINPUT_STATE joyStatePre;
 	XINPUT_STATE joyState;
 
-	//コンボ条件に達していない
+	// コンボ条件に達していない
 	if (workAttack_.comboIndex < ComboNum) {
 		// 今回のゲームパッドの状態を取得 && 前回のゲームパッドの状態を取得
-		if (input_->GetJoystickState(0,joyState) && input_->GetJoystickStatePrevious(0,joyStatePre)) {
-			//攻撃ボタンをトリガーしたら
+		if (input_->GetJoystickState(0, joyState) && input_->GetJoystickStatePrevious(0, joyStatePre)) {
+			// 攻撃ボタンをトリガーしたら
 			if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X) && !(joyStatePre.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
-				//コンボ有効
+				// コンボ有効
 				workAttack_.comboNext = true;
 				workAttack_.attackParameter_ = 0;
 				workAttack_.comboIndex += 1;
@@ -308,12 +337,11 @@ void Player::BehaviorAttackUpdate() {
 			}
 		}
 	}
+}
 
-#pragma endregion
-
-#pragma region コンボ切り替えまたは攻撃終了
-
-	//予備動作の時間
+// コンボの切り替えまたはコンボ終了
+void Player::ExChangeCombo() {
+	// 予備動作の時間
 	int32_t anticipationTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime;
 	int32_t chargeTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
 	int32_t swingTime = kConstAttacks_[workAttack_.comboIndex].swingTime;
@@ -323,37 +351,34 @@ void Player::BehaviorAttackUpdate() {
 
 	DragInt("anticipation", &anticipationTime, 0.01f);
 
-	//既定の時間経過で通常行動に戻る
+	// 既定の時間経過で通常行動に戻る
 	if (++workAttack_.attackParameter_ >= TotalTime) {
 
-		//コンボ継続なら次のコンボに進む
+		// コンボ継続なら次のコンボに進む
 		if (workAttack_.comboNext) {
-			//コンボ継続フラグをリセット
+			// コンボ継続フラグをリセット
 			workAttack_.comboNext = false;
 
-			//各パーツの角度を次のコンボ用に初期化
+			// 各パーツの角度を次のコンボ用に初期化
 			worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
 			worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
 		}
-		//コンボ継続出ないなら攻撃を終了して通常行動に戻る
+		// コンボ継続出ないなら攻撃を終了して通常行動に戻る
 		else {
-			worldTransforms_[kBase]->rotation_.y = destinationAngleY;
+			worldTransforms_[kBase]->rotation_.y = 0.0f;
 			workAttack_.attackParameter_ = 0;
 			workAttack_.comboIndex = 0;
 			behaviorRequest_ = Behavior::kRoot;
 		}
 	}
+}
 
-#pragma endregion 
-
-
-
-#pragma region コンボ中のパーツ制御
-
-	//コンボ段階によってモーションに分岐
+// コンボ時のパーツ処理
+void Player::ComboPartsControl() {
+	// コンボ段階によってモーションに分岐
 	switch (workAttack_.comboIndex) {
 
-		//0:右から反時計回り
+		// 0:右から反時計回り
 	case 0:
 
 		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 55) {
@@ -363,13 +388,13 @@ void Player::BehaviorAttackUpdate() {
 
 		break;
 
-		//1:上から振り下ろし
+		// 1:上から振り下ろし
 	case 1:
 
 		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 10) {
 			worldTransforms_[kLeft_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
 			worldTransforms_[kRight_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
-			Vector3 hammerAngle = hammer->GetRotation();//ハンマーの回転
+			Vector3 hammerAngle = hammer->GetRotation(); // ハンマーの回転
 			hammerAngle.x -= kConstAttacks_[1].anticipationSpeed;
 			hammer->SetRotation(hammerAngle);
 		}
@@ -386,12 +411,11 @@ void Player::BehaviorAttackUpdate() {
 			Vector3 hammerAngle = hammer->GetRotation();
 			hammerAngle.x += 0.2422f;
 			hammer->SetRotation(hammerAngle);
-		} 
-
+		}
 
 		break;
 
-		//2:右からホームラン
+		// 2:右からホームラン
 	case 2:
 
 		worldTransforms_[kLeft_arm]->rotation_.x = -1.53f;
@@ -403,10 +427,19 @@ void Player::BehaviorAttackUpdate() {
 
 		break;
 	}
+}
 
-#pragma endregion 
+#pragma endregion
+
+//攻撃行動
+void Player::BehaviorAttackUpdate() {
+	//フェーズアタックで使う関数の呼び出し
+	this->JudgementComboContinue(); 
+	this->ExChangeCombo();
+	this->ComboPartsControl();
 };
 
+//ダッシュ行動
 void Player::BehaviorDashUpdate() {
 
 	const float dashSpeed = 0.7f;
@@ -421,6 +454,7 @@ void Player::BehaviorDashUpdate() {
 
 }
 
+//ジャンプ行動
 void Player::BehaviorJumpUpdate() {
 
 	// 移動
@@ -462,6 +496,7 @@ void (Player::*Player::behaviorUpdateTable[])(){
 
 #pragma endregion
 
+// デバッグテキストの描画
 void Player::DrawDebugText() {
 
 #ifdef _DEBUG
