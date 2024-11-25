@@ -24,15 +24,6 @@ void Hammer::Initialize(Model* model, ViewProjection* viewProjection) {
 
 void Hammer::Update() { 
 
-#ifdef _DEBUG
-	Begin("hammer");
-	DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
-	DragFloat3("translate", &worldTransform_.translation_.x, 0.01f);
-	End();
-#endif // DEBUG
-
-	Collider::UpdateWorldTransform();
-
 	worldTransform_.UpdateMatrix(); 
 }
 

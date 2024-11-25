@@ -60,14 +60,13 @@ void Player::Initialize(std::vector<Model*> models, ViewProjection* viewProjecti
 	globalVariables->AddItem(groupName, "FloatingCycle", cycle_);
 	globalVariables->AddItem(groupName, "FloatingAmplitube", amplitube);
 	globalVariables->AddItem(groupName, "idelArmAngleMax", armAngle_);
-
-	ApplyGlobalVariables();
-
 }
 
 // 更新処理
 void Player::Update() 
 { 
+	ApplyGlobalVariables();
+
 	if (isHit_ && hitEffect_) {
 		hitEffect_->Update();
 	}
@@ -111,8 +110,8 @@ void Player::OnCollision([[maybe_unused]] Collider* other) {
 	
 	if (typeID == static_cast<uint32_t>(CollisionTypeIdDef::KEnemy)) {
 		// 衝突していれば、ジャンプ行動をリクエストする
-		//behaviorRequest_ = Behavior::kJump;
-		isHit_ = true;
+		behaviorRequest_ = Behavior::kJump;
+		//isHit_ = true;
 	}
 }
 
@@ -289,12 +288,13 @@ void Player::UpdateFloatingGimmick() {
 void Player::BehaviorRootUpdate() {
 
 	XINPUT_STATE joyState;
+	const float speed = 0.3f;
 
-	if (input_->GetJoystickState(0, joyState)) {
-		const float speed = 0.3f;
+	JoyStickMove(speed);
+	UpdateFloatingGimmick();
 
-		JoyStickMove(speed);
-		UpdateFloatingGimmick();
+	if (!input_->GetJoystickState(0, joyState)) {
+		return;
 	}
 
 	//攻撃ボタンを押したら
@@ -460,8 +460,8 @@ void Player::ApplyGlobalVariables() {
 	worldTransforms_[kLeft_arm]->translation_ = globalVariables->GetVector3Value(groupName, "L_Arm Translate");
 	worldTransforms_[kRight_arm]->translation_ = globalVariables->GetVector3Value(groupName, "R_Arm Translate");
 	cycle_ = globalVariables->GetIntValue(groupName, "FloatingCycle");
-	amplitube = globalVariables->GetfloatValue(groupName, "FloatingAmplitube");
-	armAngle_ = globalVariables->GetfloatValue(groupName, "idelArmAngleMax");
+	amplitube = globalVariables->GetFloatValue(groupName, "FloatingAmplitube");
+	armAngle_ = globalVariables->GetFloatValue(groupName, "idelArmAngleMax");
 
 }
 

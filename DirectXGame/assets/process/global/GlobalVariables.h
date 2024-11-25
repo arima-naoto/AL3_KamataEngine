@@ -47,7 +47,7 @@ public:
 
 	///値の取得
 	int32_t GetIntValue(const std::string& groupName, const std::string& key) const;
-    float GetfloatValue(const std::string& groupName, const std::string& key) const;
+    float GetFloatValue(const std::string& groupName, const std::string& key) const;
 	Vector3 GetVector3Value(const std::string& groupName, const std::string& key) const;
 	bool GetBoolValue(const std::string& groupName, const std::string& key) const;
 	
@@ -73,15 +73,12 @@ private:
 	/// <returns></returns>
 	GlobalVariables& operator=(const GlobalVariables& other) = delete;
 
-	struct Item {
-		std::variant<int32_t, float, Vector3,bool> value;
-	};
+	
+	using Item = std::variant<int32_t, float, Vector3,bool>;
 
-	struct Group {
-		std::map<std::string, Item> items;
-	};
+	using Group = std::map<std::string, Item>;
 
-	std::map<std::string, Group> dates_;
+	std::map<std::string, Group> datas_;
 
 	using json = nlohmann::json;
 
