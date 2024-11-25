@@ -17,8 +17,8 @@ const std::array < Player::ConstAttack, Player::ComboNum>
 Player::kConstAttacks_ = {
 	{
 		//振りかぶり、攻撃前硬直,攻撃振り時間、硬直、各フェーズの移動速さ
-         {0, 0, 60, 0, 0.0f, 0.0f, 0.4f},
-         {15,15,15, 10,0.4f, 0.2f, 0.23f},
+         {0, 0, 45, 0, 0.0f, 0.0f, 0.15f},
+         {15,15,15, 10,0.25f, 0.2f, 0.2525f},
 		 {0, 0, 20, 0, 0.0f, 0.0f, 0.15f}
     }
 };
@@ -162,7 +162,7 @@ void Player::BehaviorRootInitialize() {}
 
 // 攻撃行動初期化
 void Player::BehaviorAttackInitialize() {
-	worldTransforms_[kBase]->translation_.y = 0;
+	worldTransforms_[kBody]->translation_.y = 0;
 	worldTransforms_[kLeft_arm]->rotation_.x = -1.53f;
 	worldTransforms_[kRight_arm]->rotation_.x = -1.53f;
 	hammer->SetRotation({.x = 3.0f});
@@ -317,75 +317,9 @@ void Player::BehaviorRootUpdate() {
 
 }
 
-#pragma region フェーズアタック用の関数の定義
+//攻撃行動
+void Player::BehaviorAttackUpdate() {
 
-// コンボ続行判定
-void Player::JudgementComboContinue() {
-
-	XINPUT_STATE joyStatePre;
-	XINPUT_STATE joyState;
-
-	
-	// コンボ条件に達していない
-	if (workAttack_.comboIndex < ComboNum) {
-		// 今回のゲームパッドの状態を取得 && 前回のゲームパッドの状態を取得
-		if (input_->GetJoystickState(0, joyState) && input_->GetJoystickStatePrevious(0, joyStatePre)) {
-			// 攻撃ボタンをトリガーしたら
-			if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X) && !(joyStatePre.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
-				// コンボ有効
-				workAttack_.comboNext = true;
-				workAttack_.attackParameter_ = 0;
-				workAttack_.comboIndex += 1;
-				if (workAttack_.comboIndex == 1) {
-					worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
-					worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
-					hammer->SetRotation({.x = 3.0f});
-				}
-			}
-		}
-	}
-}
-
-// コンボの切り替えまたはコンボ終了
-void Player::ExChangeCombo() {
-
-	
-
-	// 予備動作の時間
-	int32_t anticipationTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime;
-	int32_t chargeTime = kConstAttacks_[workAttack_.comboIndex].chargeTime;
-	int32_t swingTime = kConstAttacks_[workAttack_.comboIndex].swingTime;
-	int32_t recoveryTime = kConstAttacks_[workAttack_.comboIndex].recoveryTime;
-
-	int32_t TotalTime = anticipationTime + chargeTime + swingTime + recoveryTime;
-
-	DragInt("anticipation", &anticipationTime, 0.01f);
-
-	// 既定の時間経過で通常行動に戻る
-	if (++workAttack_.attackParameter_ >= TotalTime) {
-
-		// コンボ継続なら次のコンボに進む
-		if (workAttack_.comboNext) {
-			// コンボ継続フラグをリセット
-			workAttack_.comboNext = false;
-
-			// 各パーツの角度を次のコンボ用に初期化
-			worldTransforms_[kLeft_arm]->rotation_.x = 0.0f;
-			worldTransforms_[kRight_arm]->rotation_.x = 0.0f;
-		}
-		// コンボ継続出ないなら攻撃を終了して通常行動に戻る
-		else {
-			worldTransforms_[kBody]->rotation_.y = 0.0f;
-			workAttack_.attackParameter_ = 0;
-			workAttack_.comboIndex = 0;
-			behaviorRequest_ = Behavior::kRoot;
-		}
-	}
-}
-
-// コンボ時のパーツ処理
-void Player::ComboPartsControl() {
-	
 	if (lockOn_ && lockOn_->ExistTarget()) {
 		// ロックオン対象の座標取得
 		Vector3 lockOnPos = lockOn_->GetTargetPosition();
@@ -400,79 +334,48 @@ void Player::ComboPartsControl() {
 			// Y軸周り角度
 			worldTransforms_[kBase]->rotation_.y = std::atan2(sub.x, sub.z);
 
-			//しきい値を超える速さなら補正する
+			// しきい値を超える速さなら補正する
 			if (speed_ > distance - threshold) {
-				//ロックオン対象へのめり込み防止
+				// ロックオン対象へのめり込み防止
 				speed_ = distance - threshold;
 			}
 		}
 	}
 
-	// コンボ段階によってモーションに分岐
-	switch (workAttack_.comboIndex) {
+	workAttack_.attackParameter_++;
 
-		// 0:右から反時計回り
-	case 0:
-
-		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 55) {
-			worldTransforms_[kBody]->rotation_.y -= kConstAttacks_[0].swingTime / 9.729f;
-			hammer->SetRotation({.x = 1.58f});
-		}
-
-		break;
-
-		// 1:上から振り下ろし
-	case 1:
-
-		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 10) {
-			worldTransforms_[kLeft_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
-			worldTransforms_[kRight_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
-			Vector3 hammerAngle = hammer->GetRotation(); // ハンマーの回転
-			hammerAngle.x -= kConstAttacks_[1].anticipationSpeed;
-			hammer->SetRotation(hammerAngle);
-		}
-
-		if (workAttack_.attackParameter_ > 15 && workAttack_.attackParameter_ < 25) {
-
-			Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
-			worldTransforms_[kBase]->translation_ += forward * kConstAttacks_[1].chargeSpeed;
-		}
-
-		if (workAttack_.attackParameter_ > 30 && workAttack_.attackParameter_ < 40) {
-			worldTransforms_[kLeft_arm]->rotation_.x += kConstAttacks_[1].swingSpeed;
-			worldTransforms_[kRight_arm]->rotation_.x += kConstAttacks_[1].swingSpeed;
-			Vector3 hammerAngle = hammer->GetRotation();
-			hammerAngle.x += 0.2422f;
-			hammer->SetRotation(hammerAngle);
-		}
-
-		break;
-
-		// 2:右からホームラン
-	case 2:
-
-		worldTransforms_[kLeft_arm]->rotation_.x = -1.53f;
-		worldTransforms_[kRight_arm]->rotation_.x = -1.53f;
-		hammer->SetRotation({0.0f, -1.58f, 4.72f});
-		if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 15) {
-			worldTransforms_[kBody]->rotation_.y += kConstAttacks_[2].swingSpeed;
-		}
-
-		break;
+	if (workAttack_.attackParameter_ > 0 && workAttack_.attackParameter_ < 10) {
+		worldTransforms_[kLeft_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
+		worldTransforms_[kRight_arm]->rotation_.x -= kConstAttacks_[1].anticipationSpeed;
+		Vector3 hammerAngle = hammer->GetRotation(); // ハンマーの回転
+		hammerAngle.x -= kConstAttacks_[1].anticipationSpeed * 1.65f;
+		hammer->SetRotation(hammerAngle);
 	}
-}
 
-#pragma endregion
+	if (workAttack_.attackParameter_ > 15 && workAttack_.attackParameter_ < 25) {
 
-//攻撃行動
-void Player::BehaviorAttackUpdate() {
+		Vector3 forward = Rendering::TransformNormal({0, 0, 1}, worldTransforms_[kBase]->matWorld_);
+		worldTransforms_[kBase]->translation_ += forward * kConstAttacks_[1].chargeSpeed;
+	}
 
-	//フェーズアタックで使う関数の呼び出し
-	this->JudgementComboContinue(); 
-	this->ExChangeCombo();
-	this->ComboPartsControl();
+	if (workAttack_.attackParameter_ > 30 && workAttack_.attackParameter_ < 40) {
+		worldTransforms_[kLeft_arm]->rotation_.x += kConstAttacks_[1].swingSpeed;
+		worldTransforms_[kRight_arm]->rotation_.x += kConstAttacks_[1].swingSpeed;
+		Vector3 hammerAngle = hammer->GetRotation();
+		hammerAngle.x += kConstAttacks_[1].swingSpeed;
+		hammer->SetRotation(hammerAngle);
+	}
+    
+	int32_t totalAttackTime = kConstAttacks_[1].anticipationTime + 
+		kConstAttacks_[1].chargeTime + kConstAttacks_[1].swingTime + kConstAttacks_[1].recoveryTime;
 
-	
+	if (workAttack_.attackParameter_ >= totalAttackTime) {
+		worldTransforms_[kBody]->rotation_.y = 0.0f;
+		workAttack_.attackParameter_ = 0;
+		workAttack_.comboIndex = 0;
+		behaviorRequest_ = Behavior::kRoot;
+	}
+
 };
 
 //ダッシュ行動
@@ -510,6 +413,7 @@ void Player::BehaviorJumpUpdate() {
 
 }
 
+// ふるまい更新
 void Player::UpdateBehavior() {
 
 	hammer->Update();
