@@ -96,7 +96,7 @@ void Player::JoyStickMove() {
 		
 		}
 
-		worldTransform_.rotation_.y = Calculator::LerpShortAngle(worldTransform_.rotation_.y, targetRotate_.y, destinationAngleY);
+		worldTransform_.rotation_.y = Calculator::LerpShortAngle(worldTransform_.rotation_.y, targetRotate_.y,destinationAngleY);
 	}
 }
 
@@ -109,7 +109,7 @@ void Player::UpdateMovement(Vector3 &move,float speed) {
 	move = Rendering::TransformNormal(move, rotateYMatrix);
 
 	worldTransform_.translation_ += move;
-	velocity_ = move;
+	//velocity_ = move;
 
 	targetRotate_.y = std::atan2(move.x, move.z);
 

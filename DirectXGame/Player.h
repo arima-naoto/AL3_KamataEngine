@@ -101,6 +101,6 @@ private://メンバ変数
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
 	WorkDash workDash_;
-	float destinationAngleY = 1.0f;
+	float destinationAngleY = 0.1f;
 
 };
