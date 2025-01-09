@@ -76,21 +76,18 @@ private: // メンバ変数
 	unique_ptr<Model> modelFighterUpperClothes_ = nullptr;
 	unique_ptr<Model> modelFighterLowerClothes_ = nullptr;
 
-	//顔面
 	unique_ptr<Model> modelFighterFace_ = nullptr;
 	unique_ptr<Model> modelFighterEyebrow_ = nullptr;
-	unique_ptr<Model> modelFighterHairLeft_ = nullptr;
-	unique_ptr<Model> modelFighterHairRight_ = nullptr;
-	
-	//左側パーツ
+	unique_ptr<Model> modelFighterHair_ = nullptr;
+
 	unique_ptr<Model> modelFighterL_arm_ = nullptr;
 	unique_ptr<Model> modelFighterL_thigh_ = nullptr;
 	unique_ptr<Model> modelFighterL_leg_ = nullptr;
-	//右側パーツ
+
 	unique_ptr<Model> modelFighterR_arm_ = nullptr;
 	unique_ptr<Model> modelFighterR_thigh_ = nullptr;
 	unique_ptr<Model> modelFighterR_leg_ = nullptr;
-
+	
 	unique_ptr<Model> modelGround_ = {nullptr};
 	unique_ptr<Model> modelSkydome_ = {nullptr};
 

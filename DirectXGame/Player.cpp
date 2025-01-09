@@ -47,29 +47,29 @@ void Player::Draw() {
 	models_[kBody]->Draw(*worldTransforms_[kBody], *viewProjection_);
 	models_[kUpperClothes]->Draw(*worldTransforms_[kUpperClothes], *viewProjection_);
 	models_[kLowerClothes]->Draw(*worldTransforms_[kLowerClothes], *viewProjection_);
-	
-	//頭
-	models_[kFace]->Draw(*worldTransforms_[kFace], *viewProjection_);
-	models_[kEyebrow]->Draw(*worldTransforms_[kEyebrow], *viewProjection_);
-	models_[kHairLeft]->Draw(*worldTransforms_[kHairLeft], *viewProjection_);
-	models_[kHairRight]->Draw(*worldTransforms_[kHairRight], *viewProjection_);
-	
-	//左側パーツ
-	models_[kLeft_arm]->Draw(*worldTransforms_[kLeft_arm], *viewProjection_);
-	models_[kLeft_thigh]->Draw(*worldTransforms_[kLeft_thigh], *viewProjection_);
-	models_[kLeft_leg]->Draw(*worldTransforms_[kLeft_leg], *viewProjection_);
 
-	// 左側パーツ
-	models_[kRight_arm]->Draw(*worldTransforms_[kRight_arm], *viewProjection_);
-	models_[kRight_thigh]->Draw(*worldTransforms_[kRight_thigh], *viewProjection_);
-	models_[kRight_leg]->Draw(*worldTransforms_[kRight_leg], *viewProjection_);
+	//顔系のパーツ
+	models_[kFace]->Draw(*worldTransforms_[kFace], *viewProjection_);
+	models_[kEyeBrows]->Draw(*worldTransforms_[kEyeBrows], *viewProjection_);
+	models_[kHair]->Draw(*worldTransforms_[kHair], *viewProjection_);
+
+	//左側のパーツ
+	models_[kLeftArm]->Draw(*worldTransforms_[kLeftArm], *viewProjection_);
+	models_[kLeftThigh]->Draw(*worldTransforms_[kLeftThigh], *viewProjection_);
+	models_[kLeftLeg]->Draw(*worldTransforms_[kLeftLeg], *viewProjection_);
+
+	// 左側のパーツ
+	models_[kRightArm]->Draw(*worldTransforms_[kRightArm], *viewProjection_);
+	models_[kRightThigh]->Draw(*worldTransforms_[kRightThigh], *viewProjection_);
+	models_[kRightLeg]->Draw(*worldTransforms_[kRightLeg], *viewProjection_);
+
 };
 
 ///ワールドトランスフォームの初期化処理
 void Player::InitializeWorldTransform() {
 
-	for (int i = 0; i < 14; i++) {
-		worldTransforms_.resize(14);
+	for (int i = 0; i < kPartsNum; i++) {
+		worldTransforms_.resize(kPartsNum);
 		WorldTransform* worldTransform = new WorldTransform();
 		worldTransform->Initialize();
 		worldTransforms_[i] = worldTransform;
@@ -93,31 +93,19 @@ void Player::SettingParent() {
 	worldTransforms_[kUpperClothes]->parent_ = this->GetWorldTransform()[kBody];
 	worldTransforms_[kLowerClothes]->parent_ = this->GetWorldTransform()[kBody];
 
-	// 顔
+
 	worldTransforms_[kFace]->parent_ = this->GetWorldTransform()[kBody];
-	worldTransforms_[kEyebrow]->parent_ = this->GetWorldTransform()[kFace];
-	worldTransforms_[kEyebrow]->translation_.z = -0.006f;
-	worldTransforms_[kHairLeft]->parent_ = this->GetWorldTransform()[kFace];
-	worldTransforms_[kHairRight]->parent_ = this->GetWorldTransform()[kFace];
+	worldTransforms_[kEyeBrows]->parent_ = this->GetWorldTransform()[kFace];
+	worldTransforms_[kHair]->parent_ = this->GetWorldTransform()[kFace];
 
-	// 左側
-	worldTransforms_[kLeft_arm]->parent_ = this->GetWorldTransform()[kBody];
-	worldTransforms_[kLeft_arm]->translation_ = {-0.05f, 0.05f, 0.0f};
+	worldTransforms_[kLeftArm]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kLeftThigh]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kLeftLeg]->parent_ = this->GetWorldTransform()[kLeftThigh];
 
-
-	worldTransforms_[kLeft_thigh]->parent_ = this->GetWorldTransform()[kBody];
-	worldTransforms_[kLeft_thigh]->translation_.y = 0.015f;
-	worldTransforms_[kLeft_leg]->parent_ = this->GetWorldTransform()[kLeft_thigh];
-	worldTransforms_[kLeft_leg]->translation_.y = 0.035f;
-
-	// 右側
-	worldTransforms_[kRight_arm]->parent_ = this->GetWorldTransform()[kBody];
-	worldTransforms_[kRight_arm]->translation_ = {0.05f, 0.05f, 0.0f};
-
-	worldTransforms_[kRight_thigh]->parent_ = this->GetWorldTransform()[kBody];
-	worldTransforms_[kRight_thigh]->translation_.y = 0.02f;
-	worldTransforms_[kRight_leg]->parent_ = this->GetWorldTransform()[kRight_thigh];
-	worldTransforms_[kRight_leg]->translation_.y = 0.03f;
+	worldTransforms_[kRightArm]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kRightThigh]->parent_ = this->GetWorldTransform()[kBody];
+	worldTransforms_[kRightLeg]->parent_ = this->GetWorldTransform()[kRightThigh];
+	
 };
 
 ///ジョイスティックによる移動処理
@@ -162,20 +150,15 @@ void Player::DrawDebugText() {
 	DragFloat3("Base Translate", &worldTransforms_[kBase]->translation_.x, 0.01f);
 	DragFloat3("Base Rotation", &worldTransforms_[kBase]->rotation_.x, 0.01f);
 	
-	DragFloat3("Eyebrow Translate", &worldTransforms_[kEyebrow]->translation_.x, 0.01f);
-
+	// 体パーツのデバッグテキスト
 	DragFloat3("Body Translate", &worldTransforms_[kBody]->translation_.x, 0.01f);
 	DragFloat3("UpperClothes scale", &worldTransforms_[kUpperClothes]->scale_.x, 0.01f);
 	DragFloat3("UpperClothes Rotation", &worldTransforms_[kUpperClothes]->rotation_.x, 0.01f);
 	DragFloat3("UpperClothes Translate", &worldTransforms_[kUpperClothes]->translation_.x, 0.01f);
-	
-	DragFloat3("L_Arm Translate", &worldTransforms_[kLeft_arm]->translation_.x, 0.01f);
-	DragFloat3("L_thigh Translate", &worldTransforms_[kLeft_thigh]->translation_.x, 0.01f);
-	DragFloat3("L_leg Translate", &worldTransforms_[kLeft_leg]->translation_.x, 0.01f);
 
-	DragFloat3("R_Arm Translate", &worldTransforms_[kRight_arm]->translation_.x, 0.01f);
-	DragFloat3("R_thigh Translate", &worldTransforms_[kRight_thigh]->translation_.x, 0.01f);
-	DragFloat3("R_leg Translate", &worldTransforms_[kRight_leg]->translation_.x, 0.01f);
+	DragFloat3("Face", &worldTransforms_[kFace]->scale_.x, 0.01f);
+	
+
 #endif // _DEBUG
 }
 

@@ -7,26 +7,22 @@ class Model;
 class ViewProjection;
 class Input;
 
-
 //プレイヤーパーツの列挙体
 enum Parts {
 	kBase,         // ベース
 	kBody,         // 体
 	kUpperClothes, // 服
 	kLowerClothes, // スカート
-
-	kFace,    // 顔
-	kEyebrow, // 眉
-	kHairLeft,    // 左髪
-	kHairRight,    // 左髪
-
-	kLeft_arm,   // 左腕
-	kLeft_thigh, // 左太もも
-	kLeft_leg,   // 左脚
-
-	kRight_arm,   // 右腕
-	kRight_thigh, // 右太もも
-	kRight_leg,   // 右脚
+	kFace,         // 顔面
+	kEyeBrows,     // 眉毛
+	kHair,         // 髪
+	kLeftArm,      // 左腕
+	kLeftThigh,    // 左もも
+	kLeftLeg,      // 左脚
+	kRightArm,     // 右腕
+	kRightThigh,   // 右もも
+	kRightLeg,     // 右脚
+	kPartsNum      // パーツ数
 };
 
 /// <summary>
