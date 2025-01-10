@@ -82,12 +82,12 @@ void Player::InitializeWorldTransform() {
 
 void Player::SettingParent() {
 
-	worldTransforms_[kBase]->translation_.y = -0.5f;
 	//worldTransforms_[kBase]->rotation_.y = std::numbers::pi_v<float>;
+
+#pragma region 親子関係を結ぶ
 
 	// 体
 	worldTransforms_[kBody]->parent_ = this->GetWorldTransform()[kBase];
-	worldTransforms_[kBody]->translation_.z = -4.0f;
 
 	// 服
 	worldTransforms_[kUpperClothes]->parent_ = this->GetWorldTransform()[kBody];
@@ -106,6 +106,19 @@ void Player::SettingParent() {
 	worldTransforms_[kRightThigh]->parent_ = this->GetWorldTransform()[kBody];
 	worldTransforms_[kRightLeg]->parent_ = this->GetWorldTransform()[kRightThigh];
 	
+#pragma endregion
+
+	// 座標設定
+
+	worldTransforms_[kBase]->translation_.y = -0.5f;
+	worldTransforms_[kBody]->translation_.z = -4.0f;
+
+	worldTransforms_[kEyeBrows]->translation_.z = -0.006f;
+
+	worldTransforms_[kRightThigh]->translation_.y = 0.02f;
+	worldTransforms_[kRightLeg]->translation_.y = 0.03f;
+	worldTransforms_[kLeftThigh]->translation_.y = 0.02f;
+	worldTransforms_[kLeftLeg]->translation_.y = 0.03f;
 };
 
 ///ジョイスティックによる移動処理
@@ -152,11 +165,12 @@ void Player::DrawDebugText() {
 	
 	// 体パーツのデバッグテキスト
 	DragFloat3("Body Translate", &worldTransforms_[kBody]->translation_.x, 0.01f);
+	DragFloat3("Body Rotation", &worldTransforms_[kBody]->rotation_.x, 0.01f);
 	DragFloat3("UpperClothes scale", &worldTransforms_[kUpperClothes]->scale_.x, 0.01f);
 	DragFloat3("UpperClothes Rotation", &worldTransforms_[kUpperClothes]->rotation_.x, 0.01f);
 	DragFloat3("UpperClothes Translate", &worldTransforms_[kUpperClothes]->translation_.x, 0.01f);
 
-	DragFloat3("Face", &worldTransforms_[kFace]->scale_.x, 0.01f);
+	DragFloat3("Eyebrows", &worldTransforms_[kEyeBrows]->translation_.x, 0.01f);
 	
 
 #endif // _DEBUG
