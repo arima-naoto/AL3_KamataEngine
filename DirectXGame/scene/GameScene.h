@@ -70,23 +70,25 @@ private: // メンバ変数
 	/// </summary>
 
 	// 3Dモデルデータ
+	unique_ptr<Model> golemBody_ = nullptr;
+	unique_ptr<Model> golemFace_ = nullptr;
+	unique_ptr<Model> golemEye_ = nullptr;
 
-	//体
-	unique_ptr<Model> modelFighterBody_ = nullptr;
-	unique_ptr<Model> modelFighterUpperClothes_ = nullptr;
-	unique_ptr<Model> modelFighterLowerClothes_ = nullptr;
+	unique_ptr<Model> golemL_Protrution_ = nullptr;
+	unique_ptr<Model> golemUpperL_arm = nullptr;
+	unique_ptr<Model> golemL_Forearm = nullptr;
+	unique_ptr<Model> golemL_hand = nullptr;
+	unique_ptr<Model> golemL_Temo = nullptr;
+	unique_ptr<Model> golemL_Sin = nullptr;
+	unique_ptr<Model> golemL_Foot = nullptr;
 
-	unique_ptr<Model> modelFighterFace_ = nullptr;
-	unique_ptr<Model> modelFighterEyebrow_ = nullptr;
-	unique_ptr<Model> modelFighterHair_ = nullptr;
-
-	unique_ptr<Model> modelFighterL_arm_ = nullptr;
-	unique_ptr<Model> modelFighterL_thigh_ = nullptr;
-	unique_ptr<Model> modelFighterL_leg_ = nullptr;
-
-	unique_ptr<Model> modelFighterR_arm_ = nullptr;
-	unique_ptr<Model> modelFighterR_thigh_ = nullptr;
-	unique_ptr<Model> modelFighterR_leg_ = nullptr;
+	unique_ptr<Model> golemR_Protrution_ = nullptr;
+	unique_ptr<Model> golemUpperR_arm = nullptr;
+	unique_ptr<Model> golemR_Forearm = nullptr;
+	unique_ptr<Model> golemR_hand = nullptr;
+	unique_ptr<Model> golemR_Temo = nullptr;
+	unique_ptr<Model> golemR_Sin = nullptr;
+	unique_ptr<Model> golemR_Foot = nullptr;
 	
 	unique_ptr<Model> modelGround_ = {nullptr};
 	unique_ptr<Model> modelSkydome_ = {nullptr};

@@ -102,25 +102,27 @@ void GameScene::Draw() {
 
 void GameScene::CreateModel() {
 
-	// 自キャラモデルデータ
+	// ゴーレムモデル
+	golemBody_.reset(Model::CreateFromOBJ("back", true));
+	golemFace_.reset(Model::CreateFromOBJ("face", true));
+	golemEye_.reset(Model::CreateFromOBJ("Eye", true));
+	golemL_Protrution_.reset(Model::CreateFromOBJ("LeftProtrution", true));
+	golemUpperL_arm.reset(Model::CreateFromOBJ("UpperLeftArm", true));
+	golemL_Forearm.reset(Model::CreateFromOBJ("LeftForearm",true));
+	golemL_hand.reset(Model::CreateFromOBJ("LeftHand", true));
+	golemL_Temo.reset(Model::CreateFromOBJ("LeftTemo", true));
+	golemL_Sin.reset(Model::CreateFromOBJ("LeftSin", true));
+	golemL_Foot.reset(Model::CreateFromOBJ("LeftFoot", true));
+	golemR_Protrution_.reset(Model::CreateFromOBJ("RightProtrution", true));
+	golemUpperR_arm.reset(Model::CreateFromOBJ("UpperRightArm", true));
+	golemR_Forearm.reset(Model::CreateFromOBJ("RightForearm", true));
+	golemR_hand.reset(Model::CreateFromOBJ("RightHand", true));
+
+	golemR_Temo.reset(Model::CreateFromOBJ("RightTemo", true));
+	golemR_Sin.reset(Model::CreateFromOBJ("RightSin", true));
+	golemR_Foot.reset(Model::CreateFromOBJ("RightFoot", true));
+
 	
-	//体
-	modelFighterBody_.reset(Model::CreateFromOBJ("Body",true));
-	modelFighterUpperClothes_.reset(Model::CreateFromOBJ("UpperClothing", true));
-	modelFighterLowerClothes_.reset(Model::CreateFromOBJ("LowerClothing", true));
-
-	modelFighterFace_.reset(Model::CreateFromOBJ("Face", true));
-	modelFighterEyebrow_.reset(Model::CreateFromOBJ("EyeBrows", true));
-	modelFighterHair_.reset(Model::CreateFromOBJ("Hair", true));
-
-	modelFighterL_arm_.reset(Model::CreateFromOBJ("LeftArm", true));
-	modelFighterL_thigh_.reset(Model::CreateFromOBJ("LeftThigh", true));
-	modelFighterL_leg_.reset(Model::CreateFromOBJ("LeftLeg", true));
-
-	modelFighterR_arm_.reset(Model::CreateFromOBJ("RightArm", true));
-	modelFighterR_thigh_.reset(Model::CreateFromOBJ("RightThigh", true));
-	modelFighterR_leg_.reset(Model::CreateFromOBJ("RightLeg", true));
-
 	// 地面モデルデータ
 	modelGround_.reset(Model::CreateFromOBJ("ground", true));
 
@@ -133,19 +135,24 @@ void GameScene::InitializeObject() {
 
 	//パーツ
 	std::vector<Model*> playerParts = {
-		nullptr,                 // ベース(存在していないのでnullptrにしている)
-		modelFighterBody_.get(), // 体
-		modelFighterUpperClothes_.get(),
-		modelFighterLowerClothes_.get(), // 服
-		modelFighterFace_.get(),
-	    modelFighterEyebrow_.get(),
-	    modelFighterHair_.get(),
-		modelFighterL_arm_.get(),
-	    modelFighterL_thigh_.get(),
-		modelFighterL_leg_.get(),
-	    modelFighterR_arm_.get(),
-	    modelFighterR_thigh_.get(),
-	    modelFighterR_leg_.get()
+		nullptr, // ベース(存在していないのでnullptrにしている)
+		golemBody_.get(),
+		golemFace_.get(),
+		golemEye_.get(),
+		golemL_Protrution_.get(),
+		golemUpperL_arm.get(),
+		golemL_Forearm.get(), 
+		golemL_hand.get(),
+		golemL_Temo.get(),
+		golemL_Sin.get(),
+		golemL_Foot.get(),
+	    golemR_Protrution_.get(),
+		golemUpperR_arm.get(),
+		golemR_Forearm.get(), 
+		golemR_hand.get(),
+		golemR_Temo.get(),
+		golemR_Sin.get(),
+		golemR_Foot.get(),
 	};
 
 	// 自キャラの生成

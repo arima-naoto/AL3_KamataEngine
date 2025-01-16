@@ -11,17 +11,24 @@ class Input;
 enum Parts {
 	kBase,         // ベース
 	kBody,         // 体
-	kUpperClothes, // 服
-	kLowerClothes, // スカート
 	kFace,         // 顔面
-	kEyeBrows,     // 眉毛
-	kHair,         // 髪
-	kLeftArm,      // 左腕
-	kLeftThigh,    // 左もも
-	kLeftLeg,      // 左脚
-	kRightArm,     // 右腕
-	kRightThigh,   // 右もも
-	kRightLeg,     // 右脚
+	kEye,          // 目
+
+	kL_Protrution, // 左突起
+	kUpperL_Arm,   // 左上腕
+	kL_Forearm,    // 左前腕
+	kL_Hand,       // 左手
+	kL_Temo,       // 左もも
+	kL_Sin,        // 左膝
+	kL_Foot,       // 左脚
+	
+	kR_Protrution, // 右突起
+	kUpperR_Arm,   // 右上腕
+	kR_Forearm,    // 右前腕
+	kR_Hand,       // 右手
+	kR_Temo,       // 右もも
+	kR_Sin,        // 右膝
+	kR_Foot,       // 右脚
 	kPartsNum      // パーツ数
 };
 
